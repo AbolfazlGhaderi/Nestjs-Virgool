@@ -5,6 +5,6 @@ import { SwaggerConfig } from './configs';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   SwaggerConfig(app)
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
