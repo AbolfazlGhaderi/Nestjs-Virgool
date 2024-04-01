@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './configs';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -10,8 +11,9 @@ import { typeOrmConfig } from './configs';
       envFilePath: (process.cwd(), '.env'),
     }),
     TypeOrmModule.forRoot(typeOrmConfig()),
+    AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [AuthModule],
 })
 export class AppModule {}
