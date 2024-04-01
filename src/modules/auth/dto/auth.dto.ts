@@ -13,5 +13,5 @@ export class AuthDto {
   type: string;
   @ApiProperty({ enum: AuthMethods })
   @IsEnum(AuthMethods)
-  method: string;
+  method: AuthMethods;
 }
