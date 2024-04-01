@@ -4,9 +4,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProfileEntity } from './profile.entity';
 
 @Entity({ name: EntityEnum.User })
 export class UserEntity {
@@ -24,4 +27,8 @@ export class UserEntity {
   update_at: Date;
   @DeleteDateColumn({ nullable: true, default: null })
   delete_at: Date;
+  
+  @OneToOne(() => ProfileEntity)
+  @JoinColumn({ name: 'profile_id' })
+  profile: ProfileEntity;
 }

@@ -1,5 +1,6 @@
 export enum EntityEnum {
-    User = 'user',
+    User = 'users',
+    Profile = 'profiles'
     // Post = 'post',
     // Comment = 'comment'
 }
