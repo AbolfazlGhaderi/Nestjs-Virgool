@@ -28,7 +28,6 @@ export class UserEntity {
   @DeleteDateColumn({ nullable: true, default: null })
   delete_at: Date;
   
-  @OneToOne(() => ProfileEntity)
-  @JoinColumn({ name: 'profile_id' })
+  @OneToOne(() => ProfileEntity, (profile) => profile.user) // specify inverse side as a second parameter
   profile: ProfileEntity;
 }
