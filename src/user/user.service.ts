@@ -17,9 +17,9 @@ export class UserService {
       where: { phone: phone },
       relations: { profile: true },
     });
-    if (!user) {
-      throw new NotFoundException(AuthMessage.notFoundAccount);
-    }
+    // if (!user) {
+    //   throw new NotFoundException(AuthMessage.notFoundAccount);
+    // }
     return user;
   }
 
@@ -29,9 +29,9 @@ export class UserService {
       where: { email: email },
       relations: { profile: true },
     });
-    if (!user) {
-        throw new NotFoundException(AuthMessage.notFoundAccount);
-    }
+    // if (!user) {
+    //     throw new NotFoundException(AuthMessage.notFoundAccount);
+    // }
     return user;
   }
 
@@ -41,9 +41,9 @@ export class UserService {
       where: { user_name: userName },
       relations: { profile: true },
     });
-    if (!user) {
-        throw new NotFoundException(AuthMessage.notFoundAccount);
-    }
+    // if (!user) {
+    //     throw new NotFoundException(AuthMessage.notFoundAccount);
+    // }
     return user;
   }
 }

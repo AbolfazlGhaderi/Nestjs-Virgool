@@ -1,6 +1,6 @@
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { isEmail, isMobilePhone } from 'class-validator';
-import { AuthMethods } from 'src/common/enums';
+import { AuthMethods, BadRequestMesage } from 'src/common/enums';
 
 export function UsernameValidator(username: string, method: AuthMethods) {
 
@@ -8,14 +8,14 @@ export function UsernameValidator(username: string, method: AuthMethods) {
         
         case AuthMethods.Email:
             if(isEmail(username)) return username.toLowerCase()
-            throw new BadRequestException('Email format incorrect')
+            throw new BadRequestException(BadRequestMesage.emailFormatIncorrect)
 
         case AuthMethods.Phone:
             if(isMobilePhone(username,'fa-IR')) return username
-            throw new BadRequestException('mobile number incorrect')
+            throw new BadRequestException(BadRequestMesage.mobileNumberIncorrect)
 
         case AuthMethods.Username: return username.toLowerCase()
         default:
-            throw new UnauthorizedException('username data is not valid')
+            throw new UnauthorizedException(BadRequestMesage.inValidData)
     }
 }
