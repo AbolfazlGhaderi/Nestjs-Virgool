@@ -21,6 +21,8 @@ export class UserEntity {
   phone: string;
   @Column({ nullable: true, unique: true })
   email: string;
+  @Column({ nullable: true, unique: false })
+  password:string
   @CreateDateColumn()
   create_at: Date;
   @UpdateDateColumn()
@@ -28,6 +30,6 @@ export class UserEntity {
   @DeleteDateColumn({ nullable: true, default: null })
   delete_at: Date;
   
-  @OneToOne(() => ProfileEntity, (profile) => profile.user) // specify inverse side as a second parameter
+  @OneToOne(() => ProfileEntity, (profile) => profile.user) 
   profile: ProfileEntity;
 }

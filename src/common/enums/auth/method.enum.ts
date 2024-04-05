@@ -1,5 +1,5 @@
 export enum AuthMethods{
-    Username='username',
     Email='email',
-    Phone='phone'
+    Phone='phone',
+    Username='username',
 }
