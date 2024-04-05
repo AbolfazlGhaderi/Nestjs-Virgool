@@ -5,13 +5,16 @@ import { AuthMethods } from 'src/common/enums';
 export function UsernameValidator(username: string, method: AuthMethods) {
 
     switch(method){
+        
         case AuthMethods.Email:
-            if(isEmail(username)) return username
+            if(isEmail(username)) return username.toLowerCase()
             throw new BadRequestException('Email format incorrect')
+
         case AuthMethods.Phone:
             if(isMobilePhone(username,'fa-IR')) return username
             throw new BadRequestException('mobile number incorrect')
-        case AuthMethods.Username: return username
+
+        case AuthMethods.Username: return username.toLowerCase()
         default:
             throw new UnauthorizedException('username data is not valid')
     }

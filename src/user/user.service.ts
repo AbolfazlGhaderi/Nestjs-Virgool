@@ -5,14 +5,44 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
-    constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>){}
-
-    async findUserByPhone(phone:string){
-        const user = await this.userRepository.findOne({where:{phone:phone},relations:{profile:true}})
-        if(!user){
-            throw new NotFoundException('user not found')
-        }
-        return user
+  // find user By Phone Number
+  async findUserByPhone(phone: string) {
+    const user = await this.userRepository.findOne({
+      where: { phone: phone },
+      relations: { profile: true },
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
     }
+    return user;
+  }
+
+  // find user By Email
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+      relations: { profile: true },
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    return user;
+  }
+
+  // find user By User Name
+  async findUserByUserName(userName: string) {
+    const user = await this.userRepository.findOne({
+      where: { user_name: userName },
+      relations: { profile: true },
+    });
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+    return user;
+  }
 }
