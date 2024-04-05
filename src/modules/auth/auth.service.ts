@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
-import { AuthMethods, AuthType } from 'src/common/enums';
+import { AuthMessage, AuthMethods, AuthType, BadRequestMesage } from 'src/common/enums';
 import { UsernameValidator } from 'src/app/utils/username.validator';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/app/models';
@@ -50,12 +50,9 @@ export class AuthService {
 
         break;
       default:
-        throw new BadRequestException('method is not valid');
+        throw new BadRequestException(BadRequestMesage.inValidData);
     }
 
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
 
     return user
   }

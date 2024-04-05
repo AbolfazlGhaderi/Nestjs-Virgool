@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/app/models';
+import { AuthMessage } from 'src/common/enums';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class UserService {
       relations: { profile: true },
     });
     if (!user) {
-      throw new NotFoundException('user not found');
+      throw new NotFoundException(AuthMessage.notFoundAccount);
     }
     return user;
   }
@@ -29,7 +30,7 @@ export class UserService {
       relations: { profile: true },
     });
     if (!user) {
-      throw new NotFoundException('user not found');
+        throw new NotFoundException(AuthMessage.notFoundAccount);
     }
     return user;
   }
@@ -41,7 +42,7 @@ export class UserService {
       relations: { profile: true },
     });
     if (!user) {
-      throw new NotFoundException('user not found');
+        throw new NotFoundException(AuthMessage.notFoundAccount);
     }
     return user;
   }
