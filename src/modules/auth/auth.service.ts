@@ -12,22 +12,22 @@ import {
   BadRequestMesage,
 } from 'src/common/enums';
 import { UsernameValidator } from 'src/app/utils/username.validator';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/app/models';
-import { Repository } from 'typeorm';
-import { UserService } from 'src/user/user.service';
-import { validateSync } from 'class-validator';
+import { UserService } from 'src/modules/user/user.service';
+import { OtpService } from '../otp/otp.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly otpService: OtpService,
+  ) {}
+
   async userExistenceS(authData: AuthDto) {
     const { method, type, username } = authData;
     const validUserName = UsernameValidator(username, method);
 
-
     switch (type) {
-
       // Login
       case AuthType.Login:
         return this.login(method, validUserName);
@@ -40,17 +40,36 @@ export class AuthService {
         throw new UnauthorizedException(BadRequestMesage.inValidData);
     }
   }
+
   // Login
   async login(method: AuthMethods, username: string) {
+    // check Exist User
     const user: UserEntity = await this.checkExistUser(method, username);
     if (!user) throw new NotFoundException(AuthMessage.notFoundAccount);
 
-    return user;
+    if (method === AuthMethods.Email) {
+      const otp = await this.otpService.generateAndSaveOTP(user.email);
+      return {
+        otp:otp,
+        method:method,
+        username:username
+      }
+
+    } else if (method === AuthMethods.Phone) {
+      const otp = await this.otpService.generateAndSaveOTP(user.phone);
+      return {
+        otp:otp,
+        method:method,
+        username:username
+      }
+
+    } else {
+    }
   }
 
-  // Register 
+  // Register
   async register(method: AuthMethods, username: string) {
-    const user : UserEntity = await this.checkExistUser(method, username);
+    const user: UserEntity = await this.checkExistUser(method, username);
   }
 
   //check Exist User

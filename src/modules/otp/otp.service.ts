@@ -7,27 +7,21 @@ import { randomInt } from 'crypto';
 export class OtpService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async generateAndSaveOTP(phone?: string, email?: string) {
+  async generateAndSaveOTP(key: string) {
+    
     // Generate Code
     const code = randomInt(10000, 99999);
-    let key = '';
-
-    if (phone) {
-      key = `${phone}:Login:otp`;
-    }
-    if (email) {
-      key = `${email}:Login:otp`;
-    }
+    key = `${key}:Login:otp`;
 
     // check If Otp Is Exist In Cache
     let otp = await this.cacheManager.get(key);
     if (otp) {
+      console.log(otp);
       await this.cacheManager.del(key);
     }
 
     // Save Code To Cache
-    otp = await this.cacheManager.set(key, code);
-    console.log(otp);
+     await this.cacheManager.set(key, code);
 
     return code;
   }

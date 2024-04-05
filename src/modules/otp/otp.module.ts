@@ -6,5 +6,6 @@ import { OtpService } from './otp.service';
   imports: [CacheModule.register({ ttl: 60000 })],
   controllers: [],
   providers: [OtpService],
+  exports:[OtpService,CacheModule]
 })
 export class OtpModule {}
