@@ -1,6 +1,6 @@
 
 export enum BadRequestMesage {
-    inValidData = 'اطلاعات وارد شده برای صحیح نمی باشند ',
+    inValidData = 'اطلاعات وارد شده صحیح نمی باشند ',
     emailFormatIncorrect='ایمیل وارد شده معتبر نمی باشد',
     mobileNumberIncorrect='شماره موبایل وارد شده معتبر نمی باشد',
     registerMethodIncorrect='باید از طریق ایمیل یا شماره موبایل ثبت نام کنید'
