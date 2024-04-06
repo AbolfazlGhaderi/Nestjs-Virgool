@@ -1,8 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  Scope,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
@@ -21,11 +23,12 @@ import { OtpService } from '../otp/otp.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TokenService } from './token.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { LoginResponseType } from 'src/common/types';
+import { REQUEST } from '@nestjs/core';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
@@ -33,13 +36,14 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly otpService: OtpService,
     private readonly tokenService: TokenService,
+    @Inject(REQUEST) private request : Request
   ) {}
 
   async userExistenceS(authData: AuthDto, res: Response) {
     const { method, type, username } = authData;
 
     const validUserName = UsernameValidator(username, method);
-    let result: LoginResponseType ;
+    let result: LoginResponseType;
 
     switch (type) {
       // Login
@@ -54,8 +58,10 @@ export class AuthService {
         throw new UnauthorizedException(BadRequestMesage.inValidData);
     }
 
+    // Send Response
     res.cookie(CookieKeys.OTP, result.token, {
       httpOnly: true,
+      expires: new Date(Date.now() + 120000),
     });
     return {
       message: PublicMessage.sendOtpSuccess,
@@ -79,36 +85,31 @@ export class AuthService {
     );
 
     if (method === AuthMethods.Email) {
-      otp = this.otpService.generateOtp()
+      otp = this.otpService.generateOtp();
 
       // send otp
 
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp)
+      otp = await this.otpService.SaveOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
         sub: userNameEncrypted,
       });
-      
-
     } else if (method === AuthMethods.Phone) {
-
-      otp = this.otpService.generateOtp()
+      otp = this.otpService.generateOtp();
 
       // send otp
-      
+
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp)
+      otp = await this.otpService.SaveOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
         sub: userNameEncrypted,
       });
-      
     }
 
-   
     return {
       token: token,
       code: otp.toString(),
@@ -130,6 +131,12 @@ export class AuthService {
     };
   }
 
+  // Chek Otp Service
+  async checkOtpS(code : string){
+    const token = this.request.cookies?.[CookieKeys.OTP]
+    if(!token) throw new  UnauthorizedException(AuthMessage.expiredOtp)
+      return token
+  }
   //check Exist User
   async checkExistUser(method: string, username: string) {
     let user: UserEntity;
