@@ -7,5 +7,6 @@ namespace NodeJS {
     DB_NAME: string;
     DB_HOST: string;
     OTP_TOKEN_SECRET:string
+    COOKIE_SECRET:string
   }
 }
