@@ -77,17 +77,35 @@ export class AuthService {
       process.env.ENCRYPT_SECRET,
       process.env.ENCRYPT_IV,
     );
-    if (method === AuthMethods.Email) {
-      otp = await this.otpService.generateAndSaveOTP(user.email);
 
+    if (method === AuthMethods.Email) {
+      otp = this.otpService.generateOtp()
+
+      // send otp
+
+      // save otp
+      otp = await this.otpService.SaveOTP(username, otp)
+
+      // Generate Token
       token = this.tokenService.createOtpToken({
         sub: userNameEncrypted,
       });
+      
+
     } else if (method === AuthMethods.Phone) {
-      otp = await this.otpService.generateAndSaveOTP(user.phone);
+
+      otp = this.otpService.generateOtp()
+
+      // send otp
+      
+      // save otp
+      otp = await this.otpService.SaveOTP(username, otp)
+
+      // Generate Token
       token = this.tokenService.createOtpToken({
         sub: userNameEncrypted,
       });
+      
     }
 
    
