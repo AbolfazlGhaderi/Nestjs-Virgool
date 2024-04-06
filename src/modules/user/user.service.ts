@@ -38,7 +38,7 @@ export class UserService {
   // find user By User Name
   async findUserByUserName(userName: string) {
     const user = await this.userRepository.findOne({
-      where: { user_name: userName },
+      where: { username: userName },
       relations: { profile: true },
     });
     // if (!user) {
