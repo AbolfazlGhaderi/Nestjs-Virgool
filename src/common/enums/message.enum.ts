@@ -13,3 +13,7 @@ export enum AuthMessage{
     alreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است'
 
 }
+
+export enum PublicMessage {
+    sendOtpSuccess = 'کد ارسال شد',
+}
