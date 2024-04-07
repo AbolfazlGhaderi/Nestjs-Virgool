@@ -12,9 +12,11 @@ export enum AuthMessage{
     notFoundAccount = 'یوزری با این مشخصات یافت نشد ',
     alreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است',
     expiredOtp = 'کد ارسالی منقضی شده است ، لطفا مجددا تلاش کنید',
-    otpCodeIncorrect = 'کد وارد شده اشتباه است'
+    otpCodeIncorrect = 'کد وارد شده اشتباه است ، لطفا مجددا تلاش کنید',
+    tryAgain = 'لطفا مجددا وارد شوید '
 }
 
 export enum PublicMessage {
-    sendOtpSuccess = 'کد ارسال شد',
+    sendOtpSuccess = 'کد با موفقیت ارسال شد',
+    loginSucces='ورود با موفقیت انجام شد',
 }
