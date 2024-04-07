@@ -1,7 +1,8 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { randomInt } from 'crypto';
+import { AuthMessage } from 'src/common/enums';
 
 @Injectable()
 export class OtpService {
@@ -15,7 +16,7 @@ export class OtpService {
   async SaveOTP(key: string, code: number) {
     // Generate Code
 
-    key = `${key}:Login:otp`;
+    key = `${key}:Login-otp`;
 
     console.log(key +'  '+ code);
     // check If Otp Is Exist In Cache
@@ -31,5 +32,14 @@ export class OtpService {
     return code;
   }
 
-  async checkOtp(code: string) {}
+  async checkOtp( key: string ) {
+
+    key = `${key}:Login-otp`;
+    let code: number | undefined = await this.cacheManager.get(key);
+    if(!code)
+      throw new UnauthorizedException(AuthMessage.expiredOtp)
+
+    
+    return code.toString()
+  }
 }
