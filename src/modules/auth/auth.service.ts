@@ -36,7 +36,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly otpService: OtpService,
     private readonly tokenService: TokenService,
-    @Inject(REQUEST) private request : Request
+    @Inject(REQUEST) private request: Request,
   ) {}
 
   async userExistenceS(authData: AuthDto, res: Response) {
@@ -65,7 +65,6 @@ export class AuthService {
     });
     return {
       message: PublicMessage.sendOtpSuccess,
-      code: result.code,
     };
   }
 
@@ -131,12 +130,27 @@ export class AuthService {
     };
   }
 
-  // Chek Otp Service
-  async checkOtpS(code : string){
-    const token = this.request.cookies?.[CookieKeys.OTP]
-    if(!token) throw new  UnauthorizedException(AuthMessage.expiredOtp)
-      return token
+  // Check Otp / Service
+  async checkOtpS(otpCode: string) {
+    const token = this.request.cookies?.[CookieKeys.OTP];
+    if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
+
+    const payload = this.tokenService.verifyOtpToken(token);
+    let key = symmetricCryption.decrypted(
+      payload.sub,
+      process.env.ENCRYPT_SECRET,
+      process.env.ENCRYPT_IV,
+    );
+    const code = await this.otpService.checkOtp(key)
+
+    if(otpCode!==code) throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);
+
+    return {
+      message:PublicMessage.loginSucces
+    };
+
   }
+
   //check Exist User
   async checkExistUser(method: string, username: string) {
     let user: UserEntity;

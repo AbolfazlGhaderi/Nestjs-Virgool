@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthDto } from './dto/auth.dto';
@@ -21,6 +21,7 @@ export class AuthController {
   }
 
   @Post('check-otp')
+  @HttpCode(HttpStatus.OK)
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   async checkOtpC(
     @Body() checkOtpDto: CheckOtpDto,
