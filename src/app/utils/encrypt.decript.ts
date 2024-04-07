@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 export class symmetricCryption {
     
-  static encryption(email: string ,key: string, iv: string) {
+  static encryption(data: string ,key: string, iv: string) {
 
     // convert to Buffer
     const keyBuffer = Buffer.from(key, 'base64');
@@ -12,14 +12,14 @@ export class symmetricCryption {
     // encrypt
     const cipher=crypto.createCipheriv('aes-256-cbc',keyBuffer,ivBuffer)
 
-    let encrypted = cipher.update(email,"utf-8",'base64')
+    let encrypted = cipher.update(data,"utf-8",'base64')
     encrypted += cipher.final('base64');
 
     return encrypted
 
   }
 
-  static decrypted(sub: string, key: string, iv: string) {
+  static decrypted(data: string, key: string, iv: string) {
     // convert to Buffer
     const keyBuffer = Buffer.from(key, 'base64');
 
@@ -32,7 +32,7 @@ export class symmetricCryption {
       ivBuffer,
     );
 
-    let decrypted = decipher.update(sub, 'base64', 'utf-8');
+    let decrypted = decipher.update(data, 'base64', 'utf-8');
     decrypted += decipher.final('utf8');
 
     // return decrypted

@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { OtpService } from './otp.service';
 
 @Module({
-  imports: [CacheModule.register({ ttl: 60000 })],
+  imports: [CacheModule.register({ ttl: 120000 })],
   controllers: [],
   providers: [OtpService],
   exports:[OtpService,CacheModule]

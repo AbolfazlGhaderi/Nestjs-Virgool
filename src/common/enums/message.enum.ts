@@ -10,8 +10,9 @@ export enum AuthMessage{
     loginSuccess = 'ورود با موفقیت انجام شد',
     registerSuccess = 'ثبت نام با موفقیت انجام شد',
     notFoundAccount = 'یوزری با این مشخصات یافت نشد ',
-    alreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است'
-
+    alreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است',
+    expiredOtp = 'کد ارسالی منقضی شده است ، لطفا مجددا تلاش کنید',
+    otpCodeIncorrect = 'کد وارد شده اشتباه است'
 }
 
 export enum PublicMessage {
