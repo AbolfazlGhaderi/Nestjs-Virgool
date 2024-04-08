@@ -13,6 +13,12 @@ export class OtpService {
     return randomInt(10000, 99999);
   }
 
+  async deleteByKey(key:string){
+    await this.cacheManager.del(key)
+    return ;
+
+  }
+
   async SaveOTP(key: string, code: number) {
     // Generate Code
 
@@ -32,14 +38,20 @@ export class OtpService {
     return code;
   }
 
+
+
   async checkOtp( key: string ) {
 
     key = `${key}:Login-otp`;
     let code: number | undefined = await this.cacheManager.get(key);
     if(!code)
-      throw new UnauthorizedException(AuthMessage.expiredOtp)
+      {
+        throw new UnauthorizedException(AuthMessage.expiredOtp)
 
-    
+      }
+
     return code.toString()
   }
+
+
 }
