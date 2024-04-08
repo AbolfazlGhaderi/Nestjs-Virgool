@@ -59,11 +59,9 @@ export class AuthService {
     }
 
     // Send Response
-    res.cookie(CookieKeys.OTP, result.token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + 120000),
-    });
+
     return {
+      token: result.token,
       message: PublicMessage.sendOtpSuccess,
     };
   }
@@ -117,38 +115,90 @@ export class AuthService {
 
   // Register
   async register(method: AuthMethods, username: string) {
-    // if (method === AuthMethods.Username)
-    //   throw new BadRequestException(BadRequestMesage.registerMethodIncorrect);
-    // const user: UserEntity = await this.checkExistUser(method, username);
-    // if (user) throw new ConflictException(AuthMessage.alreadyExistAccount);
-    // const newUser = this.userRepository.create({ [method]: username });
-    // console.log(newUser);
-    // return 'ok';
+
+    if (method === AuthMethods.Username)
+      throw new BadRequestException(BadRequestMesage.registerMethodIncorrect);
+
+    let user: UserEntity = await this.checkExistUser(method, username);
+    if (user) throw new ConflictException(AuthMessage.alreadyExistAccount);
+
+    const newUser = this.userRepository.create({
+      username: `U_${username}`,
+      [method]: username,
+    });
+
+    user = await this.userRepository.save(newUser);
+
+    // ---------------------------------------------
+    const userNameEncrypted = symmetricCryption.encryption(
+      username,
+      process.env.ENCRYPT_SECRET,
+      process.env.ENCRYPT_IV,
+    );
+
+    let otp: number;
+    let token: string;
+    if (method === AuthMethods.Email) {
+      otp = this.otpService.generateOtp();
+
+      // send otp
+
+      // save otp
+      otp = await this.otpService.SaveOTP(username, otp);
+
+      // Generate Token
+      token = this.tokenService.createOtpToken({
+        sub: userNameEncrypted,
+      });
+    } else if (method === AuthMethods.Phone) {
+      otp = this.otpService.generateOtp();
+
+      // send otp
+
+      // save otp
+      otp = await this.otpService.SaveOTP(username, otp);
+
+      // Generate Token
+      token = this.tokenService.createOtpToken({
+        sub: userNameEncrypted,
+      });
+    }
+    // ----------------------
+
     return {
-      token: 'token',
-      code: '35456',
+      token: token,
+      code: otp.toString(),
     };
   }
 
   // Check Otp / Service
   async checkOtpS(otpCode: string) {
+    
+    // get Token from Cookie
     const token = this.request.cookies?.[CookieKeys.OTP];
     if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
 
+    //  username decrypt
     const payload = this.tokenService.verifyOtpToken(token);
     let key = symmetricCryption.decrypted(
       payload.sub,
       process.env.ENCRYPT_SECRET,
       process.env.ENCRYPT_IV,
     );
-    const code = await this.otpService.checkOtp(key)
 
-    if(otpCode!==code) throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);
+    // get code from Cach and check
+    const code = await this.otpService.checkOtp(key);
 
+    if (otpCode !== code)
+      throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);
+
+    // delete otp from cache
+    await this.otpService.deleteByKey(`${key}:Login-otp`)
+
+    // return 
     return {
-      message:PublicMessage.loginSucces
+      message: PublicMessage.loginSucces,
     };
-
   }
 
   //check Exist User
