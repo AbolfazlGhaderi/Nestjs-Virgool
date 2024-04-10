@@ -13,7 +13,7 @@ export enum AuthMessage{
     alreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است',
     expiredOtp = 'کد ارسالی منقضی شده است ، لطفا مجددا تلاش کنید',
     otpCodeIncorrect = 'کد وارد شده اشتباه است ، لطفا مجددا تلاش کنید',
-    tryAgain = 'لطفا مجددا وارد شوید '
+    loginAgain = 'لطفا مجددا وارد شوید '
 }
 
 export enum PublicMessage {

@@ -115,7 +115,6 @@ export class AuthService {
 
   // Register
   async register(method: AuthMethods, username: string) {
-
     if (method === AuthMethods.Username)
       throw new BadRequestException(BadRequestMesage.registerMethodIncorrect);
 
@@ -173,7 +172,6 @@ export class AuthService {
 
   // Check Otp / Service
   async checkOtpS(otpCode: string) {
-    
     // get Token from Cookie
     const token = this.request.cookies?.[CookieKeys.OTP];
     if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
@@ -193,10 +191,16 @@ export class AuthService {
       throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);
 
     // delete otp from cache
-    await this.otpService.deleteByKey(`${key}:Login-otp`)
+    await this.otpService.deleteByKey(`${key}:Login-otp`);
 
-    // return 
+    // Create Access Tonken
+    const accessToken = this.tokenService.createAccessToken({
+      sub: payload.sub,
+    });
+
+    // return
     return {
+      accessToken: accessToken,
       message: PublicMessage.loginSucces,
     };
   }
