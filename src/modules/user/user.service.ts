@@ -46,4 +46,15 @@ export class UserService {
     // }
     return user;
   }
+
+  async findUserByUserId(ID: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: +ID },
+      relations: { profile: true },
+    });
+    // if (!user) {
+    //     throw new NotFoundException(AuthMessage.notFoundAccount);
+    // }
+    return user;
+  }
 }

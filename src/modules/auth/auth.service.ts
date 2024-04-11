@@ -27,6 +27,7 @@ import { Request, Response } from 'express';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { LoginResponseType } from 'src/common/types';
 import { REQUEST } from '@nestjs/core';
+import { isMobilePhone } from 'class-validator';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {
@@ -172,6 +173,7 @@ export class AuthService {
 
   // Check Otp / Service
   async checkOtpS(otpCode: string) {
+    
     // get Token from Cookie
     const token = this.request.cookies?.[CookieKeys.OTP];
     if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
@@ -193,9 +195,25 @@ export class AuthService {
     // delete otp from cache
     await this.otpService.deleteByKey(`${key}:Login-otp`);
 
+    
+    // check username is phone or email
+    let user : UserEntity
+    if (isMobilePhone(key, 'fa-IR')) {
+      user = await this.userRepository.findOne({ where: { phone: key } });
+    } else {
+      user = await this.userRepository.findOne({ where: { email: key } });
+    }
+
+    // encrypt userID
+    const sub = symmetricCryption.encryption(
+      user.id.toString(),
+      process.env.ENCRYPT_SECRET,
+      process.env.ENCRYPT_IV,
+    );
+
     // Create Access Tonken
     const accessToken = this.tokenService.createAccessToken({
-      sub: payload.sub,
+      sub : sub,
     });
 
     // return
