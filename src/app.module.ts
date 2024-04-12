@@ -5,6 +5,7 @@ import { typeOrmConfig } from './configs';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { OtpModule } from './modules/otp/otp.module';
     }),
     TypeOrmModule.forRoot(typeOrmConfig()),
     AuthModule,
-    UserModule,OtpModule
+    UserModule,OtpModule, CategoryModule
   ],
   controllers: [],
   providers: [AuthModule],
