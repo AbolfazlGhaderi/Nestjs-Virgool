@@ -17,7 +17,8 @@ export enum AuthMessage{
 }
 
 export enum NotFoundMessages {
-    categoryNotFound = 'دسته بندی مورد نظر پیدا نشد'
+    categoryNotFound = 'دسته بندی مورد نظر پیدا نشد',
+    categoriesNotFound = 'دسته بندی ای موجود نمیباشد'
 }
 
 export enum ConflictMessages {
