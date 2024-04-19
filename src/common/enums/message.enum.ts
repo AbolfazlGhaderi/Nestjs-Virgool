@@ -16,7 +16,18 @@ export enum AuthMessage{
     loginAgain = 'لطفا مجددا وارد شوید '
 }
 
+export enum NotFoundMessages {
+    categoryNotFound = 'دسته بندی مورد نظر پیدا نشد'
+}
+
+export enum ConflictMessages {
+    categoryConflict = 'دسته بندی مورد نظر قبلا ثبت شده است'
+}
+
+
 export enum PublicMessage {
     sendOtpSuccess = 'کد با موفقیت ارسال شد',
     loginSucces='ورود با موفقیت انجام شد',
+    
+
 }

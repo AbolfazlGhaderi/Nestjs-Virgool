@@ -15,7 +15,9 @@ import { CategoryModule } from './modules/category/category.module';
     }),
     TypeOrmModule.forRoot(typeOrmConfig()),
     AuthModule,
-    UserModule,OtpModule, CategoryModule
+    UserModule,
+    OtpModule,
+    CategoryModule
   ],
   controllers: [],
   providers: [AuthModule],
