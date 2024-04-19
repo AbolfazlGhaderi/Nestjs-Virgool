@@ -11,5 +11,7 @@ export class CategoryController {
 
   @Post('new-category')
   @ApiConsumes(SwaggerConsumes.UrlEncoded,SwaggerConsumes.Json)
-  async createCategory(@Body() categoryDto: CreateCatetegoryDto) {}
+  async createCategoryC(@Body() categoryDto: CreateCatetegoryDto) {
+    return await this.categoryService.CreateCategoryS(categoryDto)
+  }
 }
