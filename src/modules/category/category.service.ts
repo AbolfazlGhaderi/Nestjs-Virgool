@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { ConflictMessages } from 'src/common/enums';
 import { NotFoundMessages } from '../../common/enums/message.enum';
 import { PaginationDto } from 'src/common/dtos';
+import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
 
 @Injectable()
 export class CategoryService {
@@ -39,15 +40,25 @@ export class CategoryService {
     return newCategory
   }
 
-  async GetAllCategoriesS (paginationData : PaginationDto) : Promise<Array<CategoryEntity>> {
+  async GetAllCategoriesS (paginationData : PaginationDto) {
 
     console.log(paginationData);
-    const categories : CategoryEntity[] =  await this.categoryRepository.find()
+    const { limit, page, skip } = PaginationConfig(paginationData);
+
+    const [categories , count] =  await this.categoryRepository.findAndCount({
+      skip,
+      take : limit
+    })
     if(categories.length === 0){
       throw new NotFoundException(NotFoundMessages.categoriesNotFound)
 
     } 
-    return categories
+    return {
+      psginstion : paginationGenerator(count,page,limit),
+      categories
+    }
+
+    // const {} = await this.categoryRepository.
 
   }
 
