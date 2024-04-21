@@ -29,6 +29,7 @@ export enum ConflictMessages {
 export enum PublicMessage {
     sendOtpSuccess = 'کد با موفقیت ارسال شد',
     loginSucces='ورود با موفقیت انجام شد',
-    
+    deleteSuccess = ' با موفقیت پاک شد',
+    updateSuccess = 'با موفقیت آپدیت شد'
 
 }

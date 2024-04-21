@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCatetegoryDto } from './dto/create.category.dto';
@@ -24,13 +34,18 @@ export class CategoryController {
   async GetAllCategoriesC(@Query() paginationDto: PaginationDto) {
     return this.categoryService.GetAllCategoriesS(paginationDto);
   }
-  
+
   @Put('/:id')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-
-  async UpdateC(@Param('id',ParseIntPipe) id : number , @Body() updateDto : UpdateCategoryDTO){
-    return await this.categoryService.UpdateCategoryC(id,updateDto)
-    
+  async UpdateC(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateCategoryDTO,
+  ) {
+    return await this.categoryService.UpdateCategoryC(id, updateDto);
   }
 
+  @Delete('/:id')
+  async DeleteCategoryC(@Param('id', ParseIntPipe) id: number) {
+    return await this.categoryService.DeleteCategoryS(id);
+  }
 }
