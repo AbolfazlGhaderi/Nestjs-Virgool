@@ -6,8 +6,9 @@ import { Repository } from 'typeorm';
 import { ProfileDto } from './dto/profile.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { isDate } from 'class-validator';
+import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
+import { ImageType } from 'src/common/types';
 
 @Injectable({scope : Scope.REQUEST})
 export class UserService {
@@ -66,10 +67,22 @@ export class UserService {
     return user;
   }
 
-  async UpdateProfileS(file : any , profileData: ProfileDto) {
-    const {id,profile} = this.request.user
-    // console.log(this.request.user);
+  async UpdateProfileS(files:any , profileData: ProfileDto) {
 
+    const {id} = this.request.user
+    
+    // Get images from Multer
+    let imageProfile : ImageType = files.image_profile[0]
+    let bgImage : ImageType = files.bg_image[0]
+
+    if(imageProfile.path){
+      profileData.image_profile = imageProfile.path
+    }
+    if(bgImage.path){
+      profileData.bg_image = bgImage.path
+    }
+    
+    // search profile
     let profilee = await this.profileRepository.findOne({
       where: {
         user: {
@@ -78,6 +91,7 @@ export class UserService {
       },
     });
 
+    // get data from Profile Data
     const {
       bio,
       birth_day,
@@ -85,7 +99,10 @@ export class UserService {
       linkedin_profile,
       nick_name,
       x_profile,
+      bg_image,
+      image_profile
     } = profileData;
+
 
     if (profilee) {
 
@@ -95,11 +112,24 @@ export class UserService {
       if(linkedin_profile) profilee.linkedin_profile = linkedin_profile
       if(nick_name) profilee.nick_name = nick_name
       if(x_profile) profilee.x_profile = x_profile
+      if(image_profile) profilee.image_profile = image_profile
+      if(bg_image) profilee.bg_image = bg_image
     
     } else {
-      profilee = this.profileRepository.create({bio,birth_day,gender,linkedin_profile,nick_name,x_profile,user:{id:id}});
+      profilee = this.profileRepository.create({
+        bio,
+        birth_day,
+        gender,
+        linkedin_profile,
+        nick_name,
+        x_profile,
+        bg_image,
+        image_profile,
+        user: { id: id },
+      });
     }
 
+    // save profile
     profilee = await this.profileRepository.save(profilee)
 
     

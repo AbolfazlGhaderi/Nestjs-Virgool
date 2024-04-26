@@ -42,7 +42,7 @@ export class UserController {
     file: any,
     @Body() profileDto: ProfileDto,
   ) {
-    console.log(file);
+    // console.log(file);
     return this.userService.UpdateProfileS(file, profileDto);
   }
 }
