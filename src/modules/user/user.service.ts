@@ -1,7 +1,7 @@
-import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/app/models';
-import { AuthMessage } from 'src/common/enums';
+import { AuthMessage, PublicMessage } from 'src/common/enums';
 import { Repository } from 'typeorm';
 import { ProfileDto } from './dto/profile.dto';
 import { REQUEST } from '@nestjs/core';
@@ -66,9 +66,9 @@ export class UserService {
     return user;
   }
 
-  async UpdateProfileS(profileData: ProfileDto) {
+  async UpdateProfileS(file : any , profileData: ProfileDto) {
     const {id,profile} = this.request.user
-    console.log(this.request.user);
+    // console.log(this.request.user);
 
     let profilee = await this.profileRepository.findOne({
       where: {
@@ -77,6 +77,7 @@ export class UserService {
         },
       },
     });
+
     const {
       bio,
       birth_day,
@@ -86,20 +87,25 @@ export class UserService {
       x_profile,
     } = profileData;
 
-    if (profile) {
+    if (profilee) {
+
       if(bio)  profilee.bio = bio 
       if(birth_day && isDate(new Date(birth_day))) profilee.birth_day = new Date(birth_day)
       if(gender && Object.values(GenderEnum as any).includes(gender)) profilee.gender = gender
       if(linkedin_profile) profilee.linkedin_profile = linkedin_profile
       if(nick_name) profilee.nick_name = nick_name
       if(x_profile) profilee.x_profile = x_profile
+    
     } else {
       profilee = this.profileRepository.create({bio,birth_day,gender,linkedin_profile,nick_name,x_profile,user:{id:id}});
-
     }
-    console.log(profilee);
-    profilee = await this.profileRepository.save(profile)
 
+    profilee = await this.profileRepository.save(profilee)
 
+    
+    return {
+      message : PublicMessage.updateSuccess,
+      data : profilee
+    }
   }
 }
