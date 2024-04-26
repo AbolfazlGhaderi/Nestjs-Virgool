@@ -33,3 +33,7 @@ export enum PublicMessage {
     updateSuccess = 'با موفقیت آپدیت شد'
 
 }
+
+export enum ValidationMessage {
+ invalidImageFormat ='فرمت تصاویر باید .png یا .jpg یا .jpeg باشد .'
+}
