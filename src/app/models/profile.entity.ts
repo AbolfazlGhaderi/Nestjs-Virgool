@@ -25,6 +25,8 @@ export class ProfileEntity {
   @Column({ nullable: true, default: null })
   birth_day: Date;
   @Column({ nullable: true, default: null })
+  x_profile: string;
+  @Column({ nullable: true, default: null })
   linkedin_profile: string;
 
   @OneToOne(() => UserEntity, (user) => user.profile, { nullable: false })
