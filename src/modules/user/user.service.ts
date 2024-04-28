@@ -8,16 +8,17 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
-import { ImageType } from 'src/common/types';
+import { ProfileImage } from 'src/common/types';
+import { profile } from 'console';
 
-@Injectable({scope : Scope.REQUEST})
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ProfileEntity)
     private readonly profileRepository: Repository<ProfileEntity>,
-    @Inject(REQUEST) private readonly request : Request
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   // find user By Phone Number
@@ -67,21 +68,20 @@ export class UserService {
     return user;
   }
 
-  async UpdateProfileS(files:any , profileData: ProfileDto) {
+  async UpdateProfileS(files: ProfileImage, profileData: ProfileDto) {
+    const { id } = this.request.user;
 
-    const {id} = this.request.user
-    
     // Get images from Multer
-    let imageProfile : ImageType = files.image_profile[0]
-    let bgImage : ImageType = files.bg_image[0]
+    let imageProfile = files.image_profile[0];
+    let bgImage = files.bg_image[0];
 
-    if(imageProfile.path){
-      profileData.image_profile = imageProfile.path
+    if (imageProfile.path) {
+      profileData.image_profile = imageProfile.path;
     }
-    if(bgImage.path){
-      profileData.bg_image = bgImage.path
+    if (bgImage.path) {
+      profileData.bg_image = bgImage.path;
     }
-    
+
     // search profile
     let profilee = await this.profileRepository.findOne({
       where: {
@@ -100,22 +100,22 @@ export class UserService {
       nick_name,
       x_profile,
       bg_image,
-      image_profile
+      image_profile,
     } = profileData;
 
-
     if (profilee) {
-
-      if(bio)  profilee.bio = bio 
-      if(birth_day && isDate(new Date(birth_day))) profilee.birth_day = new Date(birth_day)
-      if(gender && Object.values(GenderEnum as any).includes(gender)) profilee.gender = gender
-      if(linkedin_profile) profilee.linkedin_profile = linkedin_profile
-      if(nick_name) profilee.nick_name = nick_name
-      if(x_profile) profilee.x_profile = x_profile
-      if(image_profile) profilee.image_profile = image_profile
-      if(bg_image) profilee.bg_image = bg_image
-    
+      if (bio) profilee.bio = bio;
+      if (birth_day && isDate(new Date(birth_day)))
+        profilee.birth_day = new Date(birth_day);
+      if (gender && Object.values(GenderEnum as any).includes(gender))
+        profilee.gender = gender;
+      if (linkedin_profile) profilee.linkedin_profile = linkedin_profile;
+      if (nick_name) profilee.nick_name = nick_name;
+      if (x_profile) profilee.x_profile = x_profile;
+      if (image_profile) profilee.image_profile = image_profile;
+      if (bg_image) profilee.bg_image = bg_image;
     } else {
+
       profilee = this.profileRepository.create({
         bio,
         birth_day,
@@ -128,14 +128,16 @@ export class UserService {
         user: { id: id },
       });
     }
+    if(profilee.nick_name === null || profilee.nick_name === undefined){
+      profilee.nick_name = 'UNKNOWN'
+    }
 
     // save profile
-    profilee = await this.profileRepository.save(profilee)
+    profilee = await this.profileRepository.save(profilee);
 
-    
     return {
-      message : PublicMessage.updateSuccess,
-      data : profilee
-    }
+      message: PublicMessage.updateSuccess,
+      data: profilee,
+    };
   }
 }

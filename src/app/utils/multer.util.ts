@@ -7,7 +7,7 @@ import { ValidationMessage } from "src/common/enums"
 type DestinationCallback =  (error: Error | null, destination: string) => void
 type FileNameCallback =  (error: Error | null, filename: string) => void
 
-type MulterFile = Express.Multer.File
+export type MulterFile = Express.Multer.File
 
 
 export function MulterDestination(FolderName : string){

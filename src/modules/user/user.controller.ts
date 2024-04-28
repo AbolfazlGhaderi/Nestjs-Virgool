@@ -7,6 +7,7 @@ import { SwaggerConsumes } from 'src/common/enums';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { MulterDestination, MulterFileName } from 'src/app/utils/multer.util';
+import { ProfileImage } from 'src/common/types';
 
 @Controller('user')
 @ApiTags('user')
@@ -39,7 +40,7 @@ export class UserController {
         fileIsRequired: false,
       }),
     )
-    file: any,
+    file: ProfileImage,
     @Body() profileDto: ProfileDto,
   ) {
     // console.log(file);
