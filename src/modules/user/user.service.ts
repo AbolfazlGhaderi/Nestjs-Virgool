@@ -10,6 +10,7 @@ import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
 import { ProfileImage } from 'src/common/types';
 import { profile } from 'console';
+import { NotFoundMessages } from 'src/common/enums/message.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -139,5 +140,17 @@ export class UserService {
       message: PublicMessage.updateSuccess,
       data: profilee,
     };
+  }
+
+  async GetProfileS(){
+
+    const { id } = this.request.user;
+
+    const user = await this.userRepository.findOne({
+      where: { id },relations:['profile']
+    });
+    if (!user) throw new NotFoundException(NotFoundMessages.userNotFound);
+
+    return user;
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, ParseFilePipe, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ProfileDto } from './dto/profile.dto';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -40,7 +40,15 @@ export class UserController {
     file: ProfileImage,
     @Body() profileDto: ProfileDto,
   ) {
-    // console.log(file);
+
     return this.userService.UpdateProfileS(file, profileDto);
+  }
+
+  @Get('profile')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  async GetProfileC(): Promise<any> {
+    return await this.userService.GetProfileS();
   }
 }
