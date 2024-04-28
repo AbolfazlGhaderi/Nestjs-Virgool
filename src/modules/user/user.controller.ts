@@ -6,7 +6,7 @@ import { AuthGuard } from 'src/app/guards/auth.guard';
 import { SwaggerConsumes } from 'src/common/enums';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { MulterDestination, MulterFileName } from 'src/app/utils/multer.util';
+import { MulterDestination, MulterFileName, MulterStorage } from 'src/app/utils/multer.util';
 import { ProfileImage } from 'src/common/types';
 
 @Controller('user')
@@ -26,10 +26,7 @@ export class UserController {
         { name: 'bg_image', maxCount: 1 },
       ],
       {
-        storage: diskStorage({
-          destination: MulterDestination('user-profile'),
-          filename: MulterFileName,
-        }),
+        storage: MulterStorage('user-profile'),
       },
     ),
   )

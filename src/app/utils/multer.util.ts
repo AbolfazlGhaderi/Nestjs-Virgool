@@ -1,6 +1,7 @@
 import { BadRequestException } from "@nestjs/common"
 import { Request } from "express"
 import { mkdirSync } from "fs"
+import { diskStorage } from "multer"
 import { extname, join } from "path"
 import { ValidationMessage } from "src/common/enums"
 
@@ -40,5 +41,13 @@ function checkImageFormat(ext : string , Formats : string[] ){
 
     return Formats.includes(ext)
 
+}
+
+
+export function MulterStorage(folderName: string) {
+  return diskStorage({
+    destination: MulterDestination(folderName),
+    filename: MulterFileName,
+  });
 }
 
