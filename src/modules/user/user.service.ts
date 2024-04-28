@@ -77,10 +77,10 @@ export class UserService {
     let bgImage = files.bg_image[0];
 
     if (imageProfile.path) {
-      profileData.image_profile = imageProfile.path;
+      profileData.image_profile = imageProfile.path.slice(7);
     }
     if (bgImage.path) {
-      profileData.bg_image = bgImage.path;
+      profileData.bg_image = bgImage.path.slice(7);
     }
 
     // search profile
