@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ProfileDto } from './dto/profile.dto';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -8,6 +8,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { MulterDestination, MulterFileName, MulterStorage } from 'src/app/utils/multer.util';
 import { ProfileImage } from 'src/common/types';
+import { ChangeEmailDTO } from './dto/change.email.dto';
 
 @Controller('user')
 @ApiTags('user')
@@ -50,5 +51,13 @@ export class UserController {
   @UseGuards(AuthGuard)
   async GetProfileC(): Promise<any> {
     return await this.userService.GetProfileS();
+  }
+
+  @Post('change-email')
+  @ApiConsumes(SwaggerConsumes.Json,SwaggerConsumes.UrlEncoded)
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  async ChangeEmailC(@Body() changeDTO: ChangeEmailDTO): Promise<any> {
+    return await  this.userService.ChangeEmailS(changeDTO)
   }
 }

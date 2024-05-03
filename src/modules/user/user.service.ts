@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/app/models';
 import { AuthMessage, PublicMessage } from 'src/common/enums';
@@ -10,15 +10,20 @@ import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
 import { ProfileImage } from 'src/common/types';
 import { profile } from 'console';
-import { NotFoundMessages } from 'src/common/enums/message.enum';
+import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
+import { ChangeEmailDTO } from './dto/change.email.dto';
+import { OtpService } from '../otp/otp.service';
+import { TokenService } from '../token/token.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
    constructor(
+       private  tokenServce: TokenService,
       @InjectRepository(UserEntity)
       private readonly userRepository: Repository<UserEntity>,
       @InjectRepository(ProfileEntity)
       private readonly profileRepository: Repository<ProfileEntity>,
+      private readonly otpService : OtpService,
       @Inject(REQUEST) private readonly request: Request
    ) {}
 
@@ -58,6 +63,7 @@ export class UserService {
       return user;
    }
 
+   // find user By User Name
    async findUserByUserId(ID: string) {
       const user = await this.userRepository.findOne({
          where: { id: +ID },
@@ -75,13 +81,13 @@ export class UserService {
       // Get images from Multer
 
       if (files.bg_image) {
-        let bgImage = files.bg_image[0];
-        if (bgImage.path) {
-           profileData.bg_image = bgImage.path.slice(7);
-        }
+         let bgImage = files.bg_image[0];
+         if (bgImage.path) {
+            profileData.bg_image = bgImage.path.slice(7);
+         }
       }
 
-      if ( files.image_profile) {
+      if (files.image_profile) {
          let imageProfile = files.image_profile[0];
          if (imageProfile.path) {
             profileData.image_profile = imageProfile.path.slice(7);
@@ -145,5 +151,32 @@ export class UserService {
       if (!user) throw new NotFoundException(NotFoundMessages.userNotFound);
 
       return user;
+   }
+
+   async ChangeEmailS(data: ChangeEmailDTO) {
+
+      const { id , email} = this.request.user;
+      const newEmail = data.email
+
+
+      if(email === newEmail){
+         return {
+            message: PublicMessage.emailUpdated
+         }
+      }
+      const user = await this.findUserByEmail(newEmail);
+      if (user) throw new ConflictException(ConflictMessages.emailConflict);
+
+      // send and save Otp Code
+      
+      const code = await this.otpService.sendAndSaveEmailOTP(email)     
+      const token = this.tokenServce.createTokenChangeEmail({sub:newEmail})
+      
+      return {
+         code,
+         token ,
+         message: PublicMessage.sendEmailSuccess
+      }
+
    }
 }
