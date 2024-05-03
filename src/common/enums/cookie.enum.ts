@@ -1,5 +1,6 @@
 export enum CookieKeys{
     RefreshToken = 'refreshToken',
     AccessToken = 'uidact',
-    OTP='ortepc'
+    OTP='ortepc',
+    ChangeEmailOTP='otpcodeEmail'
 }

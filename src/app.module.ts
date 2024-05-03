@@ -7,6 +7,7 @@ import { UserModule } from './modules/user/user.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { CategoryModule } from './modules/category/category.module';
 import { loggerMiddleware } from './app/middlewares';
+import { TokenModule } from './modules/token/token.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { loggerMiddleware } from './app/middlewares';
     AuthModule,
     UserModule,
     OtpModule,
+    TokenModule,
     CategoryModule
   ],
   controllers: [],

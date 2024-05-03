@@ -3,7 +3,8 @@ export enum BadRequestMesage {
     inValidData = 'اطلاعات وارد شده صحیح نمی باشند ',
     emailFormatIncorrect='ایمیل وارد شده معتبر نمی باشد',
     mobileNumberIncorrect='شماره موبایل وارد شده معتبر نمی باشد',
-    registerMethodIncorrect='باید از طریق ایمیل یا شماره موبایل ثبت نام کنید'
+    registerMethodIncorrect='باید از طریق ایمیل یا شماره موبایل ثبت نام کنید',
+    saveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید '
 }
 
 export enum AuthMessage{
@@ -23,7 +24,8 @@ export enum NotFoundMessages {
 }
 
 export enum ConflictMessages {
-    categoryConflict = 'دسته بندی مورد نظر قبلا ثبت شده است'
+    categoryConflict = 'دسته بندی مورد نظر قبلا ثبت شده است',
+    emailConflict = 'این ایمیل قبلا ثبت شده است',
 }
 
 
@@ -31,8 +33,9 @@ export enum PublicMessage {
     sendOtpSuccess = 'کد با موفقیت ارسال شد',
     loginSucces='ورود با موفقیت انجام شد',
     deleteSuccess = ' با موفقیت پاک شد',
-    updateSuccess = 'با موفقیت آپدیت شد'
-
+    updateSuccess = 'با موفقیت آپدیت شد',
+    emailUpdated = 'ایمیل با موفقیت تغییر یافت',
+    sendEmailSuccess='کد تایید با موفقیت به ایمیل شما ارسال شد'
 }
 
 export enum ValidationMessage {
