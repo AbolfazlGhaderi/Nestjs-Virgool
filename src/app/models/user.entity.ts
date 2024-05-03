@@ -21,6 +21,10 @@ export class UserEntity {
   phone: string;
   @Column({ nullable: true, unique: true })
   email: string;
+  @Column({ nullable: false, default:false })
+  verify_email: boolean;
+  @Column({ nullable: false, default:false })
+  verify_phone: boolean;
   @Column({ nullable: true, unique: false })
   password:string
   @CreateDateColumn()

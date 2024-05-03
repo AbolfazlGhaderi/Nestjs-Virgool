@@ -23,7 +23,7 @@ import { UpdateCategoryDTO } from './dto/update.category.dsto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Post('new-category')
+  @Post('new')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   async createCategoryC(@Body() categoryDto: CreateCatetegoryDto) {
     return await this.categoryService.CreateCategoryS(categoryDto);
