@@ -22,7 +22,7 @@ import { UserService } from 'src/modules/user/user.service';
 import { OtpService } from '../otp/otp.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TokenService } from './token.service';
+import { TokenService } from '../token/token.service';
 import { Request, Response } from 'express';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { LoginResponseType } from 'src/common/types';
@@ -88,7 +88,7 @@ export class AuthService {
       // send otp
 
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp);
+      otp = await this.otpService.SaveLoginOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
@@ -100,7 +100,7 @@ export class AuthService {
       // send otp
 
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp);
+      otp = await this.otpService.SaveLoginOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
@@ -144,7 +144,7 @@ export class AuthService {
       // send otp
 
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp);
+      otp = await this.otpService.SaveLoginOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
@@ -156,7 +156,7 @@ export class AuthService {
       // send otp
 
       // save otp
-      otp = await this.otpService.SaveOTP(username, otp);
+      otp = await this.otpService.SaveLoginOTP(username, otp);
 
       // Generate Token
       token = this.tokenService.createOtpToken({
