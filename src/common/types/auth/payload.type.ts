@@ -1,9 +1,14 @@
 // OTP Payload
 export type OtpCookiePayload = {
-  sub: string;
+   sub: string;
 };
 
 // Access Token
 export type AccessTokenPayload = {
-  sub: string;
+   sub: string;
+};
+
+export type ChangeTokenPayload = {
+   sub: string;
+   sub2: string;
 };

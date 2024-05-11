@@ -14,6 +14,7 @@ import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enu
 import { ChangeEmailDTO } from './dto/change.email.dto';
 import { OtpService } from '../otp/otp.service';
 import { TokenService } from '../token/token.service';
+import { CheckOtpDto } from '../auth/dto/otp.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -170,7 +171,7 @@ export class UserService {
       // send and save Otp Code
       
       const code = await this.otpService.sendAndSaveEmailOTP(email)     
-      const token = this.tokenServce.createTokenChangeEmail({sub:newEmail})
+      const token = this.tokenServce.createTokenChangeEmail({sub:email , sub2:newEmail})
       
       return {
          code,
@@ -178,5 +179,10 @@ export class UserService {
          message: PublicMessage.sendEmailSuccess
       }
 
+   }
+
+   async checkOtpS(code : CheckOtpDto){
+      console.log(code);
+      return "check otp change"
    }
 }

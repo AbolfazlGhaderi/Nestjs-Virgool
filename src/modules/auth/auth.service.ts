@@ -187,7 +187,7 @@ export class AuthService {
     );
 
     // get code from Cach and check
-    const code = await this.otpService.checkOtp(key);
+    const code = await this.otpService.checkOtp(`${key}:Login-otp`);
 
     if (otpCode !== code)
       throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);

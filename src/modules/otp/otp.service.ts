@@ -37,7 +37,7 @@ export class OtpService {
    }
 
    async checkOtp(key: string) {
-      key = `${key}:Login-otp`;
+
       let code: number | undefined = await this.cacheManager.get(key);
       if (!code) {
          throw new UnauthorizedException(AuthMessage.expiredOtp);
@@ -64,4 +64,5 @@ export class OtpService {
 
       return code;
    }
+
 }

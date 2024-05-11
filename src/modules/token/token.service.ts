@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthMessage } from 'src/common/enums';
-import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
+import { AccessTokenPayload, ChangeTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
 import { UserService } from '../user/user.service';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,7 +37,7 @@ export class TokenService {
       }
    }
 
-   createTokenChangeEmail(payload: OtpCookiePayload) {
+   createTokenChangeEmail(payload: ChangeTokenPayload) {
       return this.jwtService.sign(payload, {
          secret: process.env.EMAIL_TOKEN_SECRET,
          expiresIn: '2m'

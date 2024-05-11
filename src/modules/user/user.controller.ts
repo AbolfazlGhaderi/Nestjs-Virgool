@@ -9,6 +9,7 @@ import { diskStorage } from 'multer';
 import { MulterDestination, MulterFileName, MulterStorage } from 'src/app/utils/multer.util';
 import { ProfileImage } from 'src/common/types';
 import { ChangeEmailDTO } from './dto/change.email.dto';
+import { CheckOtpDto } from '../auth/dto/otp.dto';
 
 @Controller('user')
 @ApiTags('user')
@@ -52,12 +53,22 @@ export class UserController {
   async GetProfileC(): Promise<any> {
     return await this.userService.GetProfileS();
   }
-
+  
   @Post('change-email')
+  @HttpCode(HttpStatus.OK)
   @ApiConsumes(SwaggerConsumes.Json,SwaggerConsumes.UrlEncoded)
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard)
   async ChangeEmailC(@Body() changeDTO: ChangeEmailDTO): Promise<any> {
     return await  this.userService.ChangeEmailS(changeDTO)
+  }
+
+  @Post('check-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiConsumes(SwaggerConsumes.Json,SwaggerConsumes.UrlEncoded)
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
+  async checkOtpC(@Body() cehckDTO: CheckOtpDto): Promise<any> {
+    return await  this.userService.checkOtpS(cehckDTO)
   }
 }
