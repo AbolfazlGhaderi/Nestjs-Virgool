@@ -15,6 +15,7 @@ import {
   BadRequestMesage,
   CookieKeys,
   PublicMessage,
+  TokenType,
 } from 'src/common/enums';
 import { UsernameValidator } from 'src/app/utils/username.validator';
 import { UserEntity } from 'src/app/models';
@@ -179,7 +180,7 @@ export class AuthService {
     if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
 
     //  username decrypt
-    const payload = this.tokenService.verifyOtpToken(token);
+    const payload = this.tokenService.verifyOtpToken(token , TokenType.Login);
     let key = symmetricCryption.decrypted(
       payload.sub,
       process.env.ENCRYPT_SECRET,
@@ -187,7 +188,7 @@ export class AuthService {
     );
 
     // get code from Cach and check
-    const code = await this.otpService.checkOtp(`${key}:Login-otp`);
+    const code = await this.otpService.checkOtp(`${key}:Login-otp` ,  TokenType.Login);
 
     if (otpCode !== code)
       throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);

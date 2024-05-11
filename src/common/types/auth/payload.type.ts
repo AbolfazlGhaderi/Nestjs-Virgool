@@ -8,7 +8,4 @@ export type AccessTokenPayload = {
    sub: string;
 };
 
-export type ChangeTokenPayload = {
-   sub: string;
-   sub2: string;
-};
+
