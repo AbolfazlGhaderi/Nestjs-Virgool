@@ -1,7 +1,7 @@
-import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, Scope, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/app/models';
-import { AuthMessage, PublicMessage } from 'src/common/enums';
+import { AuthMessage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
 import { Repository } from 'typeorm';
 import { ProfileDto } from './dto/profile.dto';
 import { REQUEST } from '@nestjs/core';
@@ -9,8 +9,7 @@ import { Request } from 'express';
 import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
 import { ProfileImage } from 'src/common/types';
-import { profile } from 'console';
-import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
+import { BadRequestMesage, ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
 import { ChangeEmailDTO } from './dto/change.email.dto';
 import { OtpService } from '../otp/otp.service';
 import { TokenService } from '../token/token.service';
@@ -19,7 +18,7 @@ import { CheckOtpDto } from '../auth/dto/otp.dto';
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
    constructor(
-       private  tokenServce: TokenService,
+       private  tokenService: TokenService,
       @InjectRepository(UserEntity)
       private readonly userRepository: Repository<UserEntity>,
       @InjectRepository(ProfileEntity)
@@ -171,7 +170,7 @@ export class UserService {
       // send and save Otp Code
       
       const code = await this.otpService.sendAndSaveEmailOTP(email)     
-      const token = this.tokenServce.createTokenChangeEmail({sub:email , sub2:newEmail})
+      const token = this.tokenService.createChanegToken({sub:newEmail })
       
       return {
          code,
@@ -181,8 +180,32 @@ export class UserService {
 
    }
 
-   async checkOtpS(code : CheckOtpDto){
-      console.log(code);
-      return "check otp change"
+   async checkOtpS(data : CheckOtpDto){
+      const token = this.request.cookies?.[CookieKeys.ChangeOTP];
+      if (!token) throw new ForbiddenException(AuthMessage.expiredOtp);
+
+      const {id,email} = this.request.user;
+      const {code}=data
+      const payload = this.tokenService.verifyOtpToken(token,TokenType.ChangeOtp)
+      const newEmail = payload.sub
+
+      const savedCode =  await this.otpService.checkOtp(`${email}:Change-otp`,TokenType.ChangeOtp)
+      if(savedCode !== code){
+         throw new ForbiddenException(AuthMessage.otpCodeIncorrect)
+      }
+
+      await this.otpService.deleteByKey(`${email}:Change-otp`);
+
+      // update email
+      try{
+          await this.userRepository.update(id,{email: newEmail})
+         
+      }
+      catch(err){
+         throw new BadRequestException(PublicMessage.Error)
+      }
+      return {
+         message : PublicMessage.emailUpdated
+      }
    }
 }

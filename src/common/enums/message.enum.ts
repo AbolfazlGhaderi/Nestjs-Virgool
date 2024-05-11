@@ -35,7 +35,8 @@ export enum PublicMessage {
     deleteSuccess = ' با موفقیت پاک شد',
     updateSuccess = 'با موفقیت آپدیت شد',
     emailUpdated = 'ایمیل با موفقیت تغییر یافت',
-    sendEmailSuccess='کد تایید با موفقیت به ایمیل شما ارسال شد'
+    sendEmailSuccess='کد تایید با موفقیت به ایمیل شما ارسال شد',
+    Error = 'لطفا مجددا امتحان کنید '
 }
 
 export enum ValidationMessage {

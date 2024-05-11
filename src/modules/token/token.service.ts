@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthMessage } from 'src/common/enums';
-import { AccessTokenPayload, ChangeTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
+import { AuthMessage, TokenType } from 'src/common/enums';
+import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
 import { UserService } from '../user/user.service';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,17 +27,8 @@ export class TokenService {
       return token;
    }
 
-   verifyOtpToken(token: string): OtpCookiePayload {
-      try {
-         return this.jwtService.verify(token, {
-            secret: process.env.OTP_TOKEN_SECRET
-         });
-      } catch (error) {
-         throw new UnauthorizedException(AuthMessage.loginAgain);
-      }
-   }
 
-   createTokenChangeEmail(payload: ChangeTokenPayload) {
+   createChanegToken(payload: OtpCookiePayload) {
       return this.jwtService.sign(payload, {
          secret: process.env.EMAIL_TOKEN_SECRET,
          expiresIn: '2m'
@@ -77,4 +68,34 @@ export class TokenService {
          throw new UnauthorizedException(AuthMessage.loginAgain);
       }
    }
+
+   verifyOtpToken(token: string , type : string):{sub: string}  {
+      try {
+         if(type === TokenType.Login){
+
+            return this.jwtService.verify(token, {
+               secret: process.env.OTP_TOKEN_SECRET
+            });
+         }else if(type === TokenType.ChangeOtp){
+            
+            return this.jwtService.verify(token, {
+               secret: process.env.EMAIL_TOKEN_SECRET
+            });
+
+         }
+      } catch (error) {
+         if(type === TokenType.Login){
+
+            throw new UnauthorizedException(AuthMessage.loginAgain);
+
+         }else if(type === TokenType.ChangeOtp){
+
+            
+            throw new ForbiddenException(AuthMessage.expiredOtp);
+
+
+         }
+      }
+   }
+
 }
