@@ -26,6 +26,7 @@ export enum NotFoundMessages {
 export enum ConflictMessages {
     categoryConflict = 'دسته بندی مورد نظر قبلا ثبت شده است',
     emailConflict = 'این ایمیل قبلا ثبت شده است',
+    userConflict = 'این نام کاربری قبلا ثبت شده است',
 }
 
 

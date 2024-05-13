@@ -14,6 +14,7 @@ import { ChangeEmailDTO } from './dto/change.email.dto';
 import { OtpService } from '../otp/otp.service';
 import { TokenService } from '../token/token.service';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
+import { ChangeUserNameDTO } from './dto/change.username.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -206,6 +207,18 @@ export class UserService {
       }
       return {
          message : PublicMessage.emailUpdated
+      }
+   }
+   
+   async changeUserNameS(data : ChangeUserNameDTO){
+      const { id } = this.request.user;
+      const {username} = data
+      const user = await this.findUserByUserName(username);
+      if (user) throw new ConflictException(ConflictMessages.userConflict);
+      await this.userRepository.update({id},{username})
+
+      return {
+         message: PublicMessage.updateSuccess
       }
    }
 }
