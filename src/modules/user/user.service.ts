@@ -157,8 +157,9 @@ export class UserService {
    async ChangeEmailS(data: ChangeEmailDTO) {
 
       const { id , email} = this.request.user;
-      const newEmail = data.email
+      let newEmail = data.email
 
+      newEmail = newEmail.trim().toLowerCase()
 
       if(email === newEmail){
          return {
@@ -212,7 +213,8 @@ export class UserService {
    
    async changeUserNameS(data : ChangeUserNameDTO){
       const { id } = this.request.user;
-      const {username} = data
+      let {username} = data
+      username = username.trim().toLowerCase()
       const user = await this.findUserByUserName(username);
       if (user) throw new ConflictException(ConflictMessages.userConflict);
       await this.userRepository.update({id},{username})

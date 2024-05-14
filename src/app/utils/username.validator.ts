@@ -7,14 +7,14 @@ export function UsernameValidator(username: string, method: AuthMethods) {
     switch(method){
         
         case AuthMethods.Email:
-            if(isEmail(username)) return username.toLowerCase()
+            if(isEmail(username)) return username.trim().toLowerCase()
             throw new BadRequestException(BadRequestMesage.emailFormatIncorrect)
 
         case AuthMethods.Phone:
             if(isMobilePhone(username,'fa-IR')) return username
             throw new BadRequestException(BadRequestMesage.mobileNumberIncorrect)
 
-        case AuthMethods.Username: return username.toLowerCase()
+        case AuthMethods.Username: return username.trim().toLowerCase()
         default:
             throw new UnauthorizedException(BadRequestMesage.inValidData)
     }

@@ -1,6 +1,11 @@
 export enum EntityEnum {
     User = 'users',
-    Profile = 'profiles'
+    Profile = 'profiles',
     // Post = 'post',
-    // Comment = 'comment'
+    Comment = 'comment',
+    Blog='blogs',
+    Category='categories',
+    BlogCategory='blog_categories',
+    BlogLike='blog_like',
+    
 }

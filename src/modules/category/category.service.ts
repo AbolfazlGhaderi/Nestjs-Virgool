@@ -72,7 +72,7 @@ export class CategoryService {
     if (!category)
       throw new NotFoundException(NotFoundMessages.categoryNotFound);
 
-    category.title = data.title ?? category.title;
+    category.title = data.title.trim().toLowerCase() ?? category.title;
     category.description = data.description ?? category.description;
     category.parentId = data.parentId ?? category.parentId;
 

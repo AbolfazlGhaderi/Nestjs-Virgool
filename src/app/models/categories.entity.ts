@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { EntityEnum } from 'src/common/enums';
 
-@Entity('categories')
+@Entity(EntityEnum.Category)
 export class CategoryEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
