@@ -2,6 +2,8 @@ import { EntityEnum } from 'src/common/enums/entity.enum';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ProfileEntity } from './profile.entity';
 import { BlogEntity } from './blog.model';
+import { BlogLikesEntity } from './like.model';
+import { BlogBookmarkEntity } from './bookmark.model';
 
 @Entity({ name: EntityEnum.User })
 export class UserEntity {
@@ -30,4 +32,9 @@ export class UserEntity {
    profile: ProfileEntity;
    @OneToMany(() => BlogEntity, (blog) => blog.author)
    blog: BlogEntity[];
+   @OneToMany(() => BlogLikesEntity, (like) => like.user)
+   likes: BlogLikesEntity[];
+   @OneToMany(() => BlogBookmarkEntity, (bookmark) => bookmark.user)
+   bookmarks: BlogBookmarkEntity[];
+
 }
