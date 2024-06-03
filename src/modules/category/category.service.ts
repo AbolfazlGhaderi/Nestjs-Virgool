@@ -65,7 +65,7 @@ export class CategoryService {
   }
 
   // Update Category
-  async UpdateCategoryC(id: number, data: UpdateCategoryDTO) {
+  async UpdateCategoryC(id: string, data: UpdateCategoryDTO) {
     const category = await this.categoryRepository.findOne({
       where: { id: id },
     });
@@ -84,7 +84,7 @@ export class CategoryService {
   }
 
   // Delete Category
-  async DeleteCategoryS(id: number) {
+  async DeleteCategoryS(id: string) {
 
     const category = await this.categoryRepository.findOne({
       where: { id: id },

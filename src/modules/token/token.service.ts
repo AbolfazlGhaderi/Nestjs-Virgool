@@ -53,7 +53,7 @@ export class TokenService {
       let userId = symmetricCryption.decrypted(sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
       // check exist user
-      const user = this.userRepository.findOne({ where: { id: +userId } });
+      const user = this.userRepository.findOne({ where: { id: userId } });
       if (!user) throw new UnauthorizedException(AuthMessage.loginAgain);
 
       return user;

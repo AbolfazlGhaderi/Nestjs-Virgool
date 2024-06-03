@@ -38,14 +38,14 @@ export class CategoryController {
   @Put('/:id')
   @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
   async UpdateC(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateDto: UpdateCategoryDTO,
   ) {
     return await this.categoryService.UpdateCategoryC(id, updateDto);
   }
 
   @Delete('/:id')
-  async DeleteCategoryC(@Param('id', ParseIntPipe) id: number) {
+  async DeleteCategoryC(@Param('id') id: string) {
     return await this.categoryService.DeleteCategoryS(id);
   }
 }
