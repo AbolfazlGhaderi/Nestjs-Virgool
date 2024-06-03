@@ -1,14 +1,15 @@
 import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
-import { EntityEnum } from 'src/common/enums';
-import { BlogLikesEntity } from './like.model';
-import { BlogBookmarkEntity } from './bookmark.model';
+import { UserEntity } from './user.model';
+import { modelEnum } from 'src/common/enums';
+import { BlogLikesEntity } from './blog.like.model';
+import { BlogBookmarkEntity } from './blog.bookmark.model';
+import { CommentEntity } from './comment.model';
 
-@Entity(EntityEnum.Blog)
+@Entity(modelEnum.Blog)
 export class BlogEntity {
-   @PrimaryGeneratedColumn()
-   id: number;
+   @PrimaryGeneratedColumn('uuid')
+   id: string;
    @Column()
    title: string;
    @Column()
@@ -19,13 +20,15 @@ export class BlogEntity {
    image: string;
    @Column({ enum: BlogStatus, default: BlogStatus.Draft })
    status: string;
-   @ManyToOne(() => UserEntity, (user) => user.blog, { onDelete: 'CASCADE' })
+   @ManyToOne(() => UserEntity, (user) => user.blog)
    @JoinColumn({ name: 'author_id' })
-   author: UserEntity;
+   user: UserEntity;
    @OneToMany(() => BlogLikesEntity, (likes) => likes.blog)
    likes: BlogLikesEntity[];
    @OneToMany(() => BlogBookmarkEntity, (bookmark) => bookmark.blog)
    bookmarks: BlogBookmarkEntity[];
+   @OneToMany(() => CommentEntity, (comment) => comment.blog)
+   comments: CommentEntity[];
    @CreateDateColumn()
    create_at: Date;
    @UpdateDateColumn()

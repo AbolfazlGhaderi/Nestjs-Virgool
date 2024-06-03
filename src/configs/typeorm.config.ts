@@ -1,5 +1,4 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { UserEntity } from 'src/app/models/user.entity';
 
 export function typeOrmConfig(): TypeOrmModuleOptions {
   // variables...
@@ -13,7 +12,7 @@ export function typeOrmConfig(): TypeOrmModuleOptions {
     password: DB_PASSWORD,
     username: DB_USERNAME,
     autoLoadEntities:false,
-    entities: ['dist/**/**/**.entity{.ts,.js}'],
+    entities: ['dist/**/**.model{.ts,.js}'],
     synchronize:true
   };
 }

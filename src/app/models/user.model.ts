@@ -1,14 +1,15 @@
-import { EntityEnum } from 'src/common/enums/entity.enum';
+import { modelEnum } from 'src/common/enums/model.enum';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { ProfileEntity } from './profile.entity';
+import { ProfileEntity } from './profile.model';
 import { BlogEntity } from './blog.model';
-import { BlogLikesEntity } from './like.model';
-import { BlogBookmarkEntity } from './bookmark.model';
+import { BlogLikesEntity } from './blog.like.model';
+import { BlogBookmarkEntity } from './blog.bookmark.model';
+import { CommentEntity } from './comment.model';
 
-@Entity({ name: EntityEnum.User })
+@Entity({ name: modelEnum.User })
 export class UserEntity {
-   @PrimaryGeneratedColumn('increment')
-   id: number;
+   @PrimaryGeneratedColumn('uuid')
+   id: string;
    @Column({ nullable: false, unique: true })
    username: string;
    @Column({ nullable: true, unique: true })
@@ -30,11 +31,13 @@ export class UserEntity {
 
    @OneToOne(() => ProfileEntity, (profile) => profile.user)
    profile: ProfileEntity;
-   @OneToMany(() => BlogEntity, (blog) => blog.author)
+   @OneToMany(() => BlogEntity, (blog) => blog.user)
    blog: BlogEntity[];
    @OneToMany(() => BlogLikesEntity, (like) => like.user)
    likes: BlogLikesEntity[];
    @OneToMany(() => BlogBookmarkEntity, (bookmark) => bookmark.user)
    bookmarks: BlogBookmarkEntity[];
+   @OneToMany(() => CommentEntity, (comment) => comment.user)
+   comments: CommentEntity[];
 
 }

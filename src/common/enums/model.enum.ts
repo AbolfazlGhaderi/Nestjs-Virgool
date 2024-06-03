@@ -1,8 +1,8 @@
-export enum EntityEnum {
+export enum modelEnum {
     User = 'users',
     Profile = 'profiles',
     // Post = 'post',
-    Comment = 'comment',
+    Comment = 'comments',
     Blog='blogs',
     Category='categories',
     BlogCategory='blog_categories',
