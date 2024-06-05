@@ -16,7 +16,11 @@ export class BlogEntity {
    description: string;
    @Column()
    content: string;
-   @Column()
+   @Column({nullable:false,unique:true})
+   slug: string;
+   @Column({nullable:false})
+   time_for_study: string;
+   @Column({nullable:true})
    image: string;
    @Column({ enum: BlogStatus, default: BlogStatus.Draft })
    status: string;
