@@ -19,12 +19,12 @@ import { ChangeUserNameDTO } from './dto/change.username.dto';
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
    constructor(
-       private  tokenService: TokenService,
+      private tokenService: TokenService,
       @InjectRepository(UserEntity)
       private readonly userRepository: Repository<UserEntity>,
       @InjectRepository(ProfileEntity)
       private readonly profileRepository: Repository<ProfileEntity>,
-      private readonly otpService : OtpService,
+      private readonly otpService: OtpService,
       @Inject(REQUEST) private readonly request: Request
    ) {}
 
@@ -77,7 +77,7 @@ export class UserService {
    }
 
    async UpdateProfileS(files: ProfileImage, profileData: ProfileDto) {
-      const { id } = this.request.user;
+      const { id } = this.request.user as UserEntity;
 
       // Get images from Multer
 
@@ -143,7 +143,7 @@ export class UserService {
    }
 
    async GetProfileS() {
-      const { id } = this.request.user;
+      const { id } = this.request.user as UserEntity;
 
       const user = await this.userRepository.findOne({
          where: { id },
@@ -155,72 +155,71 @@ export class UserService {
    }
 
    async ChangeEmailS(data: ChangeEmailDTO) {
+      const { id, email } = this.request.user as UserEntity;
+      let newEmail = data.email;
 
-      const { id , email} = this.request.user;
-      let newEmail = data.email
+      newEmail = newEmail.trim().toLowerCase();
 
-      newEmail = newEmail.trim().toLowerCase()
-
-      if(email === newEmail){
+      if (email === newEmail) {
          return {
             message: PublicMessage.emailUpdated
-         }
+         };
       }
       const user = await this.findUserByEmail(newEmail);
       if (user) throw new ConflictException(ConflictMessages.emailConflict);
 
       // send and save Otp Code
-      
-      const code = await this.otpService.sendAndSaveEmailOTP(email)     
-      const token = this.tokenService.createChanegToken({sub:newEmail })
-      
+
+      const code = await this.otpService.sendAndSaveEmailOTP(email);
+      const token = this.tokenService.createChanegToken({ sub: newEmail });
+
       return {
          code,
-         token ,
+         token,
          message: PublicMessage.sendEmailSuccess
-      }
-
+      };
    }
 
-   async checkOtpS(data : CheckOtpDto){
+   async checkOtpS(data: CheckOtpDto) {
       const token = this.request.cookies?.[CookieKeys.ChangeOTP];
       if (!token) throw new ForbiddenException(AuthMessage.expiredOtp);
 
-      const {id,email} = this.request.user;
-      const {code}=data
-      const payload = this.tokenService.verifyOtpToken(token,TokenType.ChangeOtp)
-      const newEmail = payload.sub
+      // if (!this.request.user?.email || !this.request.user.id) {
+      //    throw new UnauthorizedException('');
+      // }
+      const { id, email } = this.request.user as UserEntity;
+      const { code } = data;
+      const payload = this.tokenService.verifyOtpToken(token, TokenType.ChangeOtp);
+      const newEmail = payload.sub;
 
-      const savedCode =  await this.otpService.checkOtp(`${email}:Change-otp`,TokenType.ChangeOtp)
-      if(savedCode !== code){
-         throw new ForbiddenException(AuthMessage.otpCodeIncorrect)
+      const savedCode = await this.otpService.checkOtp(`${email}:Change-otp`, TokenType.ChangeOtp);
+      if (savedCode !== code) {
+         throw new ForbiddenException(AuthMessage.otpCodeIncorrect);
       }
 
       await this.otpService.deleteByKey(`${email}:Change-otp`);
 
       // update email
-      try{
-          await this.userRepository.update(id,{email: newEmail})
-         
-      }
-      catch(err){
-         throw new BadRequestException(PublicMessage.Error)
+      try {
+         await this.userRepository.update(id, { email: newEmail });
+      } catch (err) {
+         throw new BadRequestException(PublicMessage.Error);
       }
       return {
-         message : PublicMessage.emailUpdated
-      }
+         message: PublicMessage.emailUpdated
+      };
    }
-   
-   async changeUserNameS(data : ChangeUserNameDTO){
-      const { id } = this.request.user;
-      let {username} = data
-      username = username.trim().toLowerCase()
+
+   async changeUserNameS(data: ChangeUserNameDTO) {
+      const { id } = this.request.user as UserEntity;
+      let { username } = data;
+      username = username.trim().toLowerCase();
       const user = await this.findUserByUserName(username);
       if (user) throw new ConflictException(ConflictMessages.userConflict);
-      await this.userRepository.update({id},{username})
+      await this.userRepository.update({ id }, { username });
 
       return {
          message: PublicMessage.updateSuccess
-      }
+      };
    }
 }

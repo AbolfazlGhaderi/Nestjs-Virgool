@@ -46,9 +46,11 @@ export class OtpService {
          throw new ForbiddenException(AuthMessage.expiredOtp);
 
       }
+      }else{
+         
+         return code.toString();
       }
 
-      return code.toString();
    }
 
    // change email ------===>

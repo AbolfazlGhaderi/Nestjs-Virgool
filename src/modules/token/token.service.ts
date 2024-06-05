@@ -27,7 +27,6 @@ export class TokenService {
       return token;
    }
 
-
    createChanegToken(payload: OtpCookiePayload) {
       return this.jwtService.sign(payload, {
          secret: process.env.EMAIL_TOKEN_SECRET,
@@ -69,33 +68,24 @@ export class TokenService {
       }
    }
 
-   verifyOtpToken(token: string , type : string):{sub: string}  {
+   verifyOtpToken(token: string, type: string): { sub: string } {
       try {
-         if(type === TokenType.Login){
-
+         if (type === TokenType.Login) {
             return this.jwtService.verify(token, {
                secret: process.env.OTP_TOKEN_SECRET
             });
-         }else if(type === TokenType.ChangeOtp){
-            
+         } else if (type === TokenType.ChangeOtp) {
             return this.jwtService.verify(token, {
                secret: process.env.EMAIL_TOKEN_SECRET
             });
-
          }
       } catch (error) {
-         if(type === TokenType.Login){
-
+         if (type === TokenType.Login) {
             throw new UnauthorizedException(AuthMessage.loginAgain);
-
-         }else if(type === TokenType.ChangeOtp){
-
-            
+         } else if (type === TokenType.ChangeOtp) {
             throw new ForbiddenException(AuthMessage.expiredOtp);
-
-
          }
       }
+      return { sub: '' };
    }
-
 }

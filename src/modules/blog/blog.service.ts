@@ -1,6 +1,6 @@
 import { ConflictException, Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogEntity } from 'src/app/models';
+import { BlogEntity, UserEntity } from 'src/app/models';
 import { Repository } from 'typeorm';
 import { CreateBlogDto } from './dto/create.blog.dto';
 import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
@@ -17,7 +17,7 @@ export class BlogService {
    ) {}
 
    async CreateBlogS(blogData: CreateBlogDto): Promise<{ message: PublicMessage.CreateSuccess }> {
-      const user = this.request.user;
+      const user = this.request.user as UserEntity;
       // create Or set slug
       let { title, slug, content, description, time_for_study, image } = blogData;
       let slugData = slug ?? title;

@@ -8,6 +8,7 @@ import { isJWT } from 'class-validator';
 import { Request } from 'express';
 import { AuthMessage } from 'src/common/enums';
 import { TokenService } from 'src/modules/token/token.service';
+import { UserEntity } from '../models';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -19,7 +20,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractToken(request);
     
     // save user in Request.user
-    request.user = await this.tokenService.validateAccessToken(token);
+    request.user  = await this.tokenService.validateAccessToken(token) as UserEntity;
 
     // return true;
     return true;

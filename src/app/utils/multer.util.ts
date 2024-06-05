@@ -24,13 +24,13 @@ export function MulterDestination(FolderName : string){
 
 export function MulterFileName(request : Request , file : MulterFile , cb : FileNameCallback) : void{
     const formats = ['.png', '.jpg', '.jpeg'];
-
+  const user = request.user
     const ext = extname(file.originalname).toLowerCase();
 
     if (!checkImageFormat(ext, formats))
-      cb(new BadRequestException(ValidationMessage.invalidImageFormat), null);
+      cb(new BadRequestException(ValidationMessage.invalidImageFormat), '');
     else {
-      const userId = request.user.id ?? 'UNKNOWN';
+      const userId = user?.id ?? 'UNKNOWN';
       const filename = `${userId}_${Date.now()}${ext}`;
       cb(null, filename);
     }
