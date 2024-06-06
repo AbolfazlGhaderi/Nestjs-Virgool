@@ -28,6 +28,7 @@ export class AuthController {
     @Body() auhtDto: AuthDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log("object");
     return await this.authService.userExistenceS(auhtDto, response);
   }
 

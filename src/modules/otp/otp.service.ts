@@ -1,5 +1,5 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { BadRequestException, ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { randomInt } from 'crypto';
 import { AuthMessage, BadRequestMesage, TokenType } from 'src/common/enums';
@@ -36,21 +36,16 @@ export class OtpService {
       return code;
    }
 
-   async checkOtp(key: string , type :  string) {
-
+   async checkOtp(key: string, type: string) {
       let code: number | undefined = await this.cacheManager.get(key);
       if (!code) {
-         if(type === TokenType.Login)
-         throw new UnauthorizedException(AuthMessage.expiredOtp);
-      else if(type === TokenType.ChangeOtp){
-         throw new ForbiddenException(AuthMessage.expiredOtp);
-
-      }
-      }else{
-         
+         if (type === TokenType.Login) throw new UnauthorizedException(AuthMessage.expiredOtp);
+         else if (type === TokenType.ChangeOtp) {
+            throw new HttpException(AuthMessage.expiredOtp, HttpStatus.FORBIDDEN);
+         }
+      } else {
          return code.toString();
       }
-
    }
 
    // change email ------===>
@@ -60,7 +55,7 @@ export class OtpService {
       // check If Otp Is Exist In Cache
       let otp = await this.cacheManager.get(key);
       if (otp) {
-         throw new BadRequestException(BadRequestMesage.saveEmailOtp);
+         throw new HttpException(BadRequestMesage.saveEmailOtp, HttpStatus.BAD_REQUEST);
       }
 
       // send code to email
@@ -71,5 +66,4 @@ export class OtpService {
 
       return code;
    }
-
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, Scope, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
 import { UsernameValidator } from 'src/app/utils/username.validator';
@@ -41,7 +41,7 @@ export class AuthService {
             result = await this.register(method, validUserName);
             break;
          default:
-            throw new UnauthorizedException(BadRequestMesage.inValidData);
+            throw new HttpException(BadRequestMesage.inValidData, HttpStatus.UNAUTHORIZED);
       }
 
       // Send Response
@@ -56,7 +56,7 @@ export class AuthService {
    async login(method: AuthMethods, username: string) {
       // check Exist User
       const user: UserEntity = await this.checkExistUser(method, username);
-      if (!user) throw new NotFoundException(AuthMessage.notFoundAccount);
+      if (!user) throw new HttpException(AuthMessage.notFoundAccount, HttpStatus.NOT_FOUND);
 
       let otp: number;
       let token: string;
@@ -88,7 +88,7 @@ export class AuthService {
             sub: userNameEncrypted
          });
       } else {
-         throw new BadRequestException('Please select a valid method');
+         throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST);
       }
 
       return {
@@ -99,10 +99,10 @@ export class AuthService {
 
    // Register
    async register(method: AuthMethods, username: string) {
-      if (method === AuthMethods.Username) throw new BadRequestException(BadRequestMesage.registerMethodIncorrect);
+      if (method === AuthMethods.Username) throw new HttpException(BadRequestMesage.registerMethodIncorrect, HttpStatus.BAD_REQUEST);
 
       let user: UserEntity = await this.checkExistUser(method, username);
-      if (user) throw new ConflictException(AuthMessage.alreadyExistAccount);
+      if (user) throw new HttpException(AuthMessage.alreadyExistAccount, HttpStatus.CONFLICT);
 
       const newUser = this.userRepository.create({
          username: `U_${username}`,
@@ -141,7 +141,7 @@ export class AuthService {
             sub: userNameEncrypted
          });
       } else {
-         throw new BadRequestException('Please select a valid method');
+         throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST);
       }
       // ----------------------
 
@@ -155,7 +155,7 @@ export class AuthService {
    async checkOtpS(otpCode: string) {
       // get Token from Cookie
       const token = this.request.cookies?.[CookieKeys.OTP];
-      if (!token) throw new UnauthorizedException(AuthMessage.expiredOtp);
+      if (!token) throw new HttpException(AuthMessage.expiredOtp, HttpStatus.UNAUTHORIZED);
 
       //  username decrypt
       const payload = this.tokenService.verifyOtpToken(token, TokenType.Login);
@@ -164,7 +164,7 @@ export class AuthService {
       // get code from Cach and check
       const code = await this.otpService.checkOtp(`${key}:Login-otp`, TokenType.Login);
 
-      if (otpCode !== code) throw new UnauthorizedException(AuthMessage.otpCodeIncorrect);
+      if (otpCode !== code) throw new HttpException(AuthMessage.otpCodeIncorrect, HttpStatus.UNAUTHORIZED);
 
       // delete otp from cache
       await this.otpService.deleteByKey(`${key}:Login-otp`);
@@ -208,7 +208,7 @@ export class AuthService {
 
             break;
          default:
-            throw new BadRequestException(BadRequestMesage.inValidData);
+            throw new HttpException(BadRequestMesage.inValidData, HttpStatus.BAD_REQUEST);
       }
 
       user = user as UserEntity;

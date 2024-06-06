@@ -1,8 +1,7 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthMessage, TokenType } from 'src/common/enums';
 import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
-import { UserService } from '../user/user.service';
 import { symmetricCryption } from 'src/app/utils/encrypt.decript';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/app/models';
@@ -53,7 +52,7 @@ export class TokenService {
 
       // check exist user
       const user = this.userRepository.findOne({ where: { id: userId } });
-      if (!user) throw new UnauthorizedException(AuthMessage.loginAgain);
+      if (!user) throw new HttpException(AuthMessage.loginAgain, HttpStatus.UNAUTHORIZED);
 
       return user;
    }
@@ -64,7 +63,7 @@ export class TokenService {
             secret: process.env.ACCESS_TOKEN_SECRET
          });
       } catch (error) {
-         throw new UnauthorizedException(AuthMessage.loginAgain);
+         throw new HttpException(AuthMessage.loginAgain, HttpStatus.UNAUTHORIZED);
       }
    }
 
@@ -81,9 +80,9 @@ export class TokenService {
          }
       } catch (error) {
          if (type === TokenType.Login) {
-            throw new UnauthorizedException(AuthMessage.loginAgain);
+            throw new HttpException(AuthMessage.loginAgain, HttpStatus.UNAUTHORIZED);
          } else if (type === TokenType.ChangeOtp) {
-            throw new ForbiddenException(AuthMessage.expiredOtp);
+            throw new HttpException(AuthMessage.expiredOtp,HttpStatus.FORBIDDEN);
          }
       }
       return { sub: '' };

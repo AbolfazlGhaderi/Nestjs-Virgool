@@ -1,13 +1,13 @@
-import { ConflictException, Inject, Injectable, Scope } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Request } from 'express';
 import { BlogEntity, UserEntity } from 'src/app/models';
+import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
+import { PublicMessage } from 'src/common/enums';
+import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { Repository } from 'typeorm';
 import { CreateBlogDto } from './dto/create.blog.dto';
-import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
-import { Request } from 'express';
-import { REQUEST } from '@nestjs/core';
-import { BlogStatus } from 'src/common/enums/blog/status.enum';
-import { ConflictMessages, PublicMessage } from 'src/common/enums';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -48,6 +48,7 @@ export class BlogService {
    }
 
    async getAllBlogs() {
-      return await this.BlogRepository.find();
+      // return await this.BlogRepository.find();
+      throw new HttpException("this is test for test handle",HttpStatus.BAD_REQUEST)
    }
 }

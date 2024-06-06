@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { isJWT } from 'class-validator';
 import { Request } from 'express';
 import { AuthMessage } from 'src/common/enums';
@@ -12,34 +7,34 @@ import { UserEntity } from '../models';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly tokenService: TokenService) {}
-  async canActivate(context: ExecutionContext) {
-    const httpContex = context.switchToHttp();
-    const request: Request = httpContex.getRequest();
+   constructor(private readonly tokenService: TokenService) {}
+   async canActivate(context: ExecutionContext) {
+      const httpContex = context.switchToHttp();
+      const request: Request = httpContex.getRequest();
 
-    const token = this.extractToken(request);
-    
-    // save user in Request.user
-    request.user  = await this.tokenService.validateAccessToken(token) as UserEntity;
+      const token = this.extractToken(request);
 
-    // return true;
-    return true;
-  }
+      // save user in Request.user
+      request.user = (await this.tokenService.validateAccessToken(token)) as UserEntity;
 
-  // Extract Token from Request
-  protected extractToken(request: Request) {
-    const authorization = request.headers.authorization;
-    
-    if (!authorization || authorization?.trim() == '') {
-      throw new UnauthorizedException(AuthMessage.loginAgain);
-    }
+      // return true;
+      return true;
+   }
 
-    const [bearer, token] = authorization?.split(' ');
+   // Extract Token from Request
+   protected extractToken(request: Request) {
+      const authorization = request.headers.authorization;
 
-    if (bearer?.toLowerCase() !== 'bearer' || !token || !isJWT(token)) {
-      throw new UnauthorizedException(AuthMessage.loginAgain);
-    }
+      if (!authorization || authorization?.trim() == '') {
+         throw new HttpException(AuthMessage.loginAgain, HttpStatus.UNAUTHORIZED);
+      }
 
-    return token;
-  }
+      const [bearer, token] = authorization?.split(' ');
+
+      if (bearer?.toLowerCase() !== 'bearer' || !token || !isJWT(token)) {
+         throw new HttpException(AuthMessage.loginAgain, HttpStatus.UNAUTHORIZED);
+      }
+
+      return token;
+   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, Scope, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileEntity, UserEntity } from 'src/app/models';
 import { AuthMessage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { isDate, Length } from 'class-validator';
 import { GenderEnum } from 'src/common/enums/profile';
 import { ProfileImage } from 'src/common/types';
-import { BadRequestMesage, ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
+import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
 import { ChangeEmailDTO } from './dto/change.email.dto';
 import { OtpService } from '../otp/otp.service';
 import { TokenService } from '../token/token.service';
@@ -149,7 +149,7 @@ export class UserService {
          where: { id },
          relations: ['profile']
       });
-      if (!user) throw new NotFoundException(NotFoundMessages.userNotFound);
+      if (!user) throw new HttpException(NotFoundMessages.userNotFound, HttpStatus.NOT_FOUND);
 
       return user;
    }
@@ -166,7 +166,7 @@ export class UserService {
          };
       }
       const user = await this.findUserByEmail(newEmail);
-      if (user) throw new ConflictException(ConflictMessages.emailConflict);
+      if (user) throw new HttpException(ConflictMessages.emailConflict, HttpStatus.CONFLICT);
 
       // send and save Otp Code
 
@@ -182,7 +182,7 @@ export class UserService {
 
    async checkOtpS(data: CheckOtpDto) {
       const token = this.request.cookies?.[CookieKeys.ChangeOTP];
-      if (!token) throw new ForbiddenException(AuthMessage.expiredOtp);
+      if (!token) throw new HttpException(AuthMessage.expiredOtp, HttpStatus.FORBIDDEN);
 
       // if (!this.request.user?.email || !this.request.user.id) {
       //    throw new UnauthorizedException('');
@@ -194,7 +194,7 @@ export class UserService {
 
       const savedCode = await this.otpService.checkOtp(`${email}:Change-otp`, TokenType.ChangeOtp);
       if (savedCode !== code) {
-         throw new ForbiddenException(AuthMessage.otpCodeIncorrect);
+         throw new HttpException(AuthMessage.otpCodeIncorrect, HttpStatus.FORBIDDEN);
       }
 
       await this.otpService.deleteByKey(`${email}:Change-otp`);
@@ -203,7 +203,7 @@ export class UserService {
       try {
          await this.userRepository.update(id, { email: newEmail });
       } catch (err) {
-         throw new BadRequestException(PublicMessage.Error);
+         throw new HttpException(PublicMessage.Error, HttpStatus.BAD_REQUEST);
       }
       return {
          message: PublicMessage.emailUpdated
@@ -215,7 +215,7 @@ export class UserService {
       let { username } = data;
       username = username.trim().toLowerCase();
       const user = await this.findUserByUserName(username);
-      if (user) throw new ConflictException(ConflictMessages.userConflict);
+      if (user) throw new HttpException(ConflictMessages.userConflict, HttpStatus.CONFLICT);
       await this.userRepository.update({ id }, { username });
 
       return {

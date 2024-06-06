@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, HttpStatus, HttpCode, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, HttpStatus, HttpCode, Get, UseInterceptors, HttpException } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create.blog.dto';
 import { ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -6,8 +6,10 @@ import { SwaggerConfig } from 'src/configs';
 import { PublicMessage, SwaggerConsumes } from 'src/common/enums';
 import { AuthGuard } from 'src/app/guards/auth.guard';
 import { get } from 'node:http';
+import { ResponseControllerInterceptor } from 'src/app/interceptors/response.controller.interceptor';
 
 @Controller('blog')
+@UseInterceptors(ResponseControllerInterceptor)
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
@@ -25,5 +27,6 @@ export class BlogController {
   @Get('/all')
   async getAllBlogs(){
     return await this.blogService.getAllBlogs()
+    // throw new HttpException("this is test",HttpStatus.NOT_FOUND)
   }
 }
