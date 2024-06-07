@@ -12,7 +12,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       const responseData = exception.getResponse();
       let message: string | string[];
-      
+
       if (typeof responseData === 'object' && Reflect.has(responseData, 'message')) {
          message = Reflect.get(responseData, 'message');
       } else if (typeof responseData === 'string') {
@@ -27,8 +27,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
          timestamp: date.unix(),
          error: {
             message: message
-         },
-         path: request.url
+         }
       });
    }
 }

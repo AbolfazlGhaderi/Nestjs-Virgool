@@ -48,7 +48,8 @@ export class BlogService {
    }
 
    async getAllBlogs() {
-      // return await this.BlogRepository.find();
-      throw new HttpException("this is test for test handle",HttpStatus.BAD_REQUEST)
+      return await this.BlogRepository.find();
+      // throw new HttpException("this is test for test handle",HttpStatus.BAD_REQUEST)
+      // return {message:'this is test for interceptor'}
    }
 }
