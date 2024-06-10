@@ -8,6 +8,7 @@ import { PublicMessage } from 'src/common/enums';
 import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { Repository } from 'typeorm';
 import { CreateBlogDto } from './dto/create.blog.dto';
+import { NotFoundMessages } from '../../common/enums/message.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -42,14 +43,19 @@ export class BlogService {
       };
    }
 
-   async checkExistBlogBySlug(slug: string) {
+   async checkExistBlogBySlug(slug: string): Promise<boolean> {
       const blog = await this.BlogRepository.findOne({ where: { slug: slug } });
       return !!blog;
    }
 
-   async getAllBlogs() {
-      return await this.BlogRepository.find();
-      // throw new HttpException("this is test for test handle",HttpStatus.BAD_REQUEST)
-      // return {message:'this is test for interceptor'}
+   async myBlog(): Promise<BlogEntity[]> {
+      const user = this.request.user as UserEntity;
+
+      const blogs = await this.BlogRepository.find({ where: { user: { id: user.id } }, order: { id: 'DESC' } });
+      if (blogs.length <= 0) {
+         throw new HttpException(NotFoundMessages.blogNotFound, HttpStatus.NOT_FOUND);
+      }
+
+      return blogs;
    }
 }

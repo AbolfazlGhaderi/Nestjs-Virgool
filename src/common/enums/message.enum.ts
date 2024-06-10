@@ -19,7 +19,8 @@ export enum AuthMessage {
 export enum NotFoundMessages {
    categoryNotFound = 'دسته بندی مورد نظر پیدا نشد',
    categoriesNotFound = 'دسته بندی ای موجود نمیباشد',
-   userNotFound = 'کاربر مورد نظر پیدا نشد'
+   userNotFound = 'کاربر مورد نظر پیدا نشد',
+   blogNotFound = 'مقاله ای پیدا نشد',
 }
 
 export enum ConflictMessages {

@@ -24,9 +24,12 @@ export class BlogController {
     return await this.blogService.CreateBlogS(blogData)
   }
 
-  @Get('/all')
-  async getAllBlogs(){
-    return await this.blogService.getAllBlogs()
+  @Get('/myblogs')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('Authorization')
+  @HttpCode(HttpStatus.OK)
+  async myBlogs(){
+    return await this.blogService.myBlog()
     // throw new HttpException("this is test",HttpStatus.NOT_FOUND)
   }
 }
