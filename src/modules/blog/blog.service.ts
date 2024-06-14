@@ -9,6 +9,8 @@ import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { Repository } from 'typeorm';
 import { CreateBlogDto } from './dto/create.blog.dto';
 import { NotFoundMessages } from '../../common/enums/message.enum';
+import { PaginationDto } from 'src/common/dtos';
+import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -23,7 +25,7 @@ export class BlogService {
       let { title, slug, content, description, time_for_study, image } = blogData;
       let slugData = slug ?? title;
       slugData = createSlug(slugData);
-      const existBlog = await this.checkExistBlogBySlug(slugData);
+      const existBlog = await this.CheckExistBlogBySlug(slugData);
       if (existBlog) {
          slugData += `-${ceateRandomByte(8)}`;
       }
@@ -43,12 +45,12 @@ export class BlogService {
       };
    }
 
-   async checkExistBlogBySlug(slug: string): Promise<boolean> {
+   async CheckExistBlogBySlug(slug: string): Promise<boolean> {
       const blog = await this.BlogRepository.findOne({ where: { slug: slug } });
       return !!blog;
    }
 
-   async myBlog(): Promise<BlogEntity[]> {
+   async MyBlogs(): Promise<BlogEntity[]> {
       const user = this.request.user as UserEntity;
 
       const blogs = await this.BlogRepository.find({ where: { user: { id: user.id } }, order: { id: 'DESC' } });
@@ -57,5 +59,23 @@ export class BlogService {
       }
 
       return blogs;
+   }
+
+   async BlogList(paginationData: PaginationDto) {
+      const { limit, page, skip } = PaginationConfig(paginationData);
+      const [blogs, count] = await this.BlogRepository.findAndCount({
+         order: { id: 'DESC' },
+         skip,
+         take:limit
+      });
+
+      if (blogs.length <= 0) {
+         throw new HttpException(NotFoundMessages.blogNotFound, HttpStatus.NOT_FOUND);
+      }
+
+      return {
+         pagination : paginationGenerator(count, page, limit),
+         blogs
+      }
    }
 }
