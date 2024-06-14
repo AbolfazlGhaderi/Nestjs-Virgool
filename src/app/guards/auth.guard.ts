@@ -4,11 +4,18 @@ import { Request } from 'express';
 import { AuthMessage } from 'src/common/enums';
 import { TokenService } from 'src/modules/token/token.service';
 import { UserEntity } from '../models';
+import { Reflector } from '@nestjs/core';
+import { SKIP_AUTH } from 'src/common/decorators/skipAuth.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-   constructor(private readonly tokenService: TokenService) {}
+   constructor(private readonly tokenService: TokenService , private readonly reflector : Reflector) {}
    async canActivate(context: ExecutionContext) {
+
+      // Skip Auth
+      const isSkipedAuth = this.reflector.get<boolean>(SKIP_AUTH, context.getHandler());
+      if(isSkipedAuth) return true
+
       const httpContex = context.switchToHttp();
       const request: Request = httpContex.getRequest();
 
