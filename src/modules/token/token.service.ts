@@ -1,11 +1,11 @@
-import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { AuthMessage, TokenType } from 'src/common/enums';
-import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
-import { symmetricCryption } from 'src/app/utils/encrypt.decript';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/app/models';
 import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { UserEntity } from 'src/app/models';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AuthMessage, TokenType } from 'src/common/enums';
+import { symmetricCryption } from 'src/app/utils/encrypt.decript';
+import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
 
 @Injectable()
 export class TokenService {

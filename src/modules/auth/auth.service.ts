@@ -1,18 +1,18 @@
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
-import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
-import { UsernameValidator } from 'src/app/utils/username.validator';
-import { UserEntity } from 'src/app/models';
-import { UserService } from 'src/modules/user/user.service';
-import { OtpService } from '../otp/otp.service';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TokenService } from '../token/token.service';
-import { Request, Response } from 'express';
-import { symmetricCryption } from 'src/app/utils/encrypt.decript';
-import { LoginResponseType } from 'src/common/types';
 import { REQUEST } from '@nestjs/core';
+import { AuthDto } from './dto/auth.dto';
+import { UserEntity } from 'src/app/models';
+import { Request, Response } from 'express';
+import { OtpService } from '../otp/otp.service';
 import { isMobilePhone } from 'class-validator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { LoginResponseType } from 'src/common/types';
+import { TokenService } from '../token/token.service';
+import { UserService } from 'src/modules/user/user.service';
+import { symmetricCryption } from 'src/app/utils/encrypt.decript';
+import { UsernameValidator } from 'src/app/utils/username.validator';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {

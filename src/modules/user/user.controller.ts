@@ -1,16 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Patch, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ProfileDto } from './dto/profile.dto';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/app/guards/auth.guard';
-import { SwaggerConsumes } from 'src/common/enums';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { MulterDestination, MulterFileName, MulterStorage } from 'src/app/utils/multer.util';
 import { ProfileImage } from 'src/common/types';
-import { ChangeEmailDTO } from './dto/change.email.dto';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
+import { SwaggerConsumes } from 'src/common/enums';
+import { AuthGuard } from 'src/app/guards/auth.guard';
+import { ChangeEmailDTO } from './dto/change.email.dto';
+import {  MulterStorage } from 'src/app/utils/multer.util';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Patch, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 
 @Controller('user')
 @ApiTags('user')

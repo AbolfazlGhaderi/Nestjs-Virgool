@@ -1,20 +1,20 @@
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ProfileEntity, UserEntity } from 'src/app/models';
-import { AuthMessage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
-import { Repository } from 'typeorm';
-import { ProfileDto } from './dto/profile.dto';
-import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { isDate, Length } from 'class-validator';
-import { GenderEnum } from 'src/common/enums/profile';
-import { ProfileImage } from 'src/common/types';
-import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
-import { ChangeEmailDTO } from './dto/change.email.dto';
+import { Repository } from 'typeorm';
+import { REQUEST } from '@nestjs/core';
+import { ProfileDto } from './dto/profile.dto';
 import { OtpService } from '../otp/otp.service';
-import { TokenService } from '../token/token.service';
+import { ProfileImage } from 'src/common/types';
+import { isDate, Length } from 'class-validator';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { GenderEnum } from 'src/common/enums/profile';
+import { TokenService } from '../token/token.service';
+import { ChangeEmailDTO } from './dto/change.email.dto';
+import { ProfileEntity, UserEntity } from 'src/app/models';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
+import { AuthMessage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
+import { ConflictMessages, NotFoundMessages } from 'src/common/enums/message.enum';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {

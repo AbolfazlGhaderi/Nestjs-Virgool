@@ -1,16 +1,16 @@
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { BlogEntity, UserEntity } from 'src/app/models';
-import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
-import { PublicMessage } from 'src/common/enums';
-import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { Repository } from 'typeorm';
-import { CreateBlogDto } from './dto/create.blog.dto';
-import { NotFoundMessages } from '../../common/enums/message.enum';
+import { REQUEST } from '@nestjs/core';
 import { PaginationDto } from 'src/common/dtos';
+import { PublicMessage } from 'src/common/enums';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateBlogDto } from './dto/create.blog.dto';
+import { BlogEntity, UserEntity } from 'src/app/models';
+import { BlogStatus } from 'src/common/enums/blog/status.enum';
+import { NotFoundMessages } from '../../common/enums/message.enum';
+import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
 import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService {
@@ -66,7 +66,7 @@ export class BlogService {
       const [blogs, count] = await this.BlogRepository.findAndCount({
          order: { id: 'DESC' },
          skip,
-         take:limit
+         take: limit
       });
 
       if (blogs.length <= 0) {
@@ -74,8 +74,8 @@ export class BlogService {
       }
 
       return {
-         pagination : paginationGenerator(count, page, limit),
+         pagination: paginationGenerator(count, page, limit),
          blogs
-      }
+      };
    }
 }

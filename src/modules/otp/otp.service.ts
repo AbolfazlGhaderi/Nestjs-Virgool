@@ -1,8 +1,8 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Cache } from 'cache-manager';
 import { randomInt } from 'crypto';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { AuthMessage, BadRequestMesage, TokenType } from 'src/common/enums';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class OtpService {

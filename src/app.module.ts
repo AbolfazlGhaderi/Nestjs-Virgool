@@ -1,14 +1,14 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { typeOrmConfig } from './configs';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './configs';
-import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
 import { OtpModule } from './modules/otp/otp.module';
-import { CategoryModule } from './modules/category/category.module';
 import { loggerMiddleware } from './app/middlewares';
-import { TokenModule } from './modules/token/token.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { BlogModule } from './modules/blog/blog.module';
+import { UserModule } from './modules/user/user.module';
+import { TokenModule } from './modules/token/token.module';
+import { CategoryModule } from './modules/category/category.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 @Module({
   imports: [

@@ -1,13 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CategoryEntity } from 'src/app/models';
-import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
-import { PaginationDto } from 'src/common/dtos';
-import { ConflictMessages } from 'src/common/enums';
 import { Repository } from 'typeorm';
-import { NotFoundMessages, PublicMessage } from '../../common/enums/message.enum';
-import { CreateCatetegoryDto } from './dto/create.category.dto';
+import { CategoryEntity } from 'src/app/models';
+import { PaginationDto } from 'src/common/dtos';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ConflictMessages } from 'src/common/enums';
 import { UpdateCategoryDTO } from './dto/update.category.dsto';
+import { CreateCatetegoryDto } from './dto/create.category.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundMessages, PublicMessage } from '../../common/enums/message.enum';
+import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
 
 @Injectable()
 export class CategoryService {
