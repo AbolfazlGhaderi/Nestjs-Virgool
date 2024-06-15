@@ -20,6 +20,6 @@ export class CreateCatetegoryDto {
   @IsOptional()
   @ApiProperty({ required: false })
   @IsNotEmpty()
-  @IsNumberString()
+  @IsString()
   parentId?: string;
 }
