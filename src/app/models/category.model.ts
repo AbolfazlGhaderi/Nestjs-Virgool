@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { modelEnum } from 'src/common/enums';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity(modelEnum.Category)
 export class CategoryEntity {
