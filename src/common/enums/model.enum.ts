@@ -5,7 +5,7 @@ export enum modelEnum {
     Comment = 'comments',
     Blog='blogs',
     Category='categories',
-    BlogCategory='blog_categories',
+    BlogCategory='blog_category',
     BlogLike='blog_like',
     BlogBookmark='blog_bookmark',
     

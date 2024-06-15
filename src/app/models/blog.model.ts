@@ -1,10 +1,11 @@
-import { BlogStatus } from 'src/common/enums/blog/status.enum';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { UserEntity } from './user.model';
 import { modelEnum } from 'src/common/enums';
-import { BlogLikesEntity } from './blog.like.model';
-import { BlogBookmarkEntity } from './blog.bookmark.model';
 import { CommentEntity } from './comment.model';
+import { BlogLikesEntity } from './blog.like.model';
+import { BlogCategoryEntity } from './blog.category.model';
+import { BlogBookmarkEntity } from './blog.bookmark.model';
+import { BlogStatus } from 'src/common/enums/blog/status.enum';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity(modelEnum.Blog)
 export class BlogEntity {
@@ -16,11 +17,11 @@ export class BlogEntity {
    description: string;
    @Column()
    content: string;
-   @Column({nullable:false,unique:true})
+   @Column({ nullable: false, unique: true })
    slug: string;
-   @Column({nullable:false})
+   @Column({ nullable: false })
    time_for_study: string;
-   @Column({nullable:true})
+   @Column({ nullable: true })
    image: string;
    @Column({ enum: BlogStatus, default: BlogStatus.Draft })
    status: string;
@@ -33,6 +34,8 @@ export class BlogEntity {
    bookmarks: BlogBookmarkEntity[];
    @OneToMany(() => CommentEntity, (comment) => comment.blog)
    comments: CommentEntity[];
+   @OneToMany(() => BlogCategoryEntity, (blogCategory) => blogCategory.blog)
+   blog_category: BlogCategoryEntity[];
    @CreateDateColumn()
    create_at: Date;
    @UpdateDateColumn()
