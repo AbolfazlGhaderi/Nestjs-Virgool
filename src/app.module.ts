@@ -9,6 +9,7 @@ import { UserModule } from './modules/user/user.module';
 import { TokenModule } from './modules/token/token.module';
 import { CategoryModule } from './modules/category/category.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ImagesModule } from './modules/image/images.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
     OtpModule,
     TokenModule,
     CategoryModule,
-    BlogModule
+    BlogModule,
+    ImagesModule
   ],
   controllers: [],
   providers: [AuthModule],

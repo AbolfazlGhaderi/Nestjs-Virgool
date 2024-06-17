@@ -3,7 +3,9 @@ export enum BadRequestMesage {
    emailFormatIncorrect = 'ایمیل وارد شده معتبر نمی باشد',
    mobileNumberIncorrect = 'شماره موبایل وارد شده معتبر نمی باشد',
    registerMethodIncorrect = 'باید از طریق ایمیل یا شماره موبایل ثبت نام کنید',
-   saveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید '
+   saveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
+   categoryIncorrect =  'دسته بندی مورد نظر ثبت نشده است .  لطفا آن را ثبت کنید'
+
 }
 
 export enum AuthMessage {
