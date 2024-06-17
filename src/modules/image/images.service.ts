@@ -3,9 +3,9 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { ImageDTO } from './dto/image.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MulterFile } from 'src/app/utils/multer.util';
 import { ImageEntity } from 'src/app/models/image.model';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ImagesService {
@@ -14,7 +14,7 @@ export class ImagesService {
       @Inject(REQUEST) private readonly request: Request
    ) {}
 
-   async create(imageData: ImageDTO) {
-      return { message: 'ok' };
+   async Save(imageData: ImageDTO , file:MulterFile) {
+      return file
    }
 }
