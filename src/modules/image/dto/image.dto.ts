@@ -1,6 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ImageDTO {
-   @ApiPropertyOptional({ format: 'binary' })
+   @ApiProperty({ format: 'binary' })
    image: string;
 }

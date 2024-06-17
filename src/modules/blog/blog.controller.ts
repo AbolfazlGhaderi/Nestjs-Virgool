@@ -1,18 +1,17 @@
 import { BlogService } from './blog.service';
 import { PaginationDto } from 'src/common/dtos';
-import { Pagination } from 'src/common/decorators';
-import { AuthGuard } from 'src/app/guards/auth.guard';
 import { CreateBlogDto } from './dto/create.blog.dto';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { PublicMessage, SwaggerConsumes } from 'src/common/enums';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { AuthDecorator } from 'src/common/decorators/auth.decorator';
+import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { SkipAuthDecorator } from 'src/common/decorators/skipAuth.decorator';
 import { ResponseControllerInterceptor } from 'src/app/interceptors/response.controller.interceptor';
-import { Body, Controller, Post, UseGuards, HttpStatus, HttpCode, Get, UseInterceptors, Query } from '@nestjs/common';
+import { Body, Controller, Post, HttpStatus, HttpCode, Get, UseInterceptors, Query } from '@nestjs/common';
 
 @Controller('blog')
 @ApiTags(`Blog`)
-@UseGuards(AuthGuard)
-@ApiBearerAuth('Authorization')
+@AuthDecorator()
 @UseInterceptors(ResponseControllerInterceptor)
 export class BlogController {
    constructor(private readonly blogService: BlogService) {}
@@ -27,7 +26,7 @@ export class BlogController {
    @Get('/')
    @HttpCode(HttpStatus.OK)
    @Pagination()
-   @SkipAuthDecorator()
+   @SkipAuthDecorator() // Skip Authentication
    async BlogList(@Query() paginationData: PaginationDto) {
       return await this.blogService.BlogList(paginationData);
    }

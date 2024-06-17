@@ -1,10 +1,10 @@
 import { PaginationDto } from 'src/common/dtos';
-import { Pagination } from 'src/common/decorators';
 import { SwaggerConsumes } from 'src/common/enums';
 import { CategoryService } from './category.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UpdateCategoryDTO } from './dto/update.category.dsto';
 import { CreateCatetegoryDto } from './dto/create.category.dto';
+import { Pagination } from 'src/common/decorators/pagination.decorator';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 
 @Controller('category')

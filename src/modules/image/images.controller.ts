@@ -1,14 +1,13 @@
-import { Controller, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ImagesService } from './images.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/app/guards/auth.guard';
-import { ResponseControllerInterceptor } from 'src/app/interceptors/response.controller.interceptor';
+import { ApiTags } from '@nestjs/swagger';
 import { ImageDTO } from './dto/image.dto';
+import { ImagesService } from './images.service';
+import { Controller, UseInterceptors } from '@nestjs/common';
+import { AuthDecorator } from 'src/common/decorators/auth.decorator';
+import { ResponseControllerInterceptor } from 'src/app/interceptors/response.controller.interceptor';
 
 @Controller('images')
 @ApiTags('Image')
-@UseGuards(AuthGuard)
-@ApiBearerAuth('Authorization')
+@AuthDecorator()
 @UseInterceptors(ResponseControllerInterceptor)
 export class ImagesController {
    constructor(private readonly imagesService: ImagesService) {}
