@@ -5,6 +5,7 @@ import { BlogEntity } from './blog.model';
 import { BlogLikesEntity } from './blog.like.model';
 import { BlogBookmarkEntity } from './blog.bookmark.model';
 import { CommentEntity } from './comment.model';
+import { ImageEntity } from './image.model';
 
 @Entity({ name: modelEnum.User })
 export class UserEntity {
@@ -39,5 +40,6 @@ export class UserEntity {
    bookmarks: BlogBookmarkEntity[];
    @OneToMany(() => CommentEntity, (comment) => comment.user)
    comments: CommentEntity[];
-
+   @OneToMany(() => ImageEntity, (image) => image.user)
+   image: ImageEntity[];
 }
