@@ -23,6 +23,7 @@ export enum NotFoundMessages {
    categoriesNotFound = 'دسته بندی ای موجود نمیباشد',
    userNotFound = 'کاربر مورد نظر پیدا نشد',
    blogNotFound = 'مقاله ای پیدا نشد',
+   imageNotFound = 'در دریافت تصویر مشکلی پیش آمده است ٬ لطفا به پشتیبانی پیام دهید',
 }
 
 export enum ConflictMessages {
