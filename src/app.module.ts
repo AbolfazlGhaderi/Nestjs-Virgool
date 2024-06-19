@@ -7,9 +7,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { UserModule } from './modules/user/user.module';
 import { TokenModule } from './modules/token/token.module';
+import { UploadeModule } from './modules/uploade/uploade.module';
 import { CategoryModule } from './modules/category/category.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ImagesModule } from './modules/image/images.module';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { ImagesModule } from './modules/image/images.module';
     TokenModule,
     CategoryModule,
     BlogModule,
-    ImagesModule
+    UploadeModule
   ],
   controllers: [],
   providers: [AuthModule],

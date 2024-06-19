@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { S3Service } from './s3.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ImagesService } from './images.service';
+import { UploadeService } from './uploade.service';
 import { AuthModule } from '../auth/auth.module';
-import { ImagesController } from './images.controller';
+import { UploadeController } from './uploade.controller';
 import { ImageEntity } from 'src/app/models/image.model';
 
 @Module({
    imports: [TypeOrmModule.forFeature([ImageEntity]), AuthModule],
-   controllers: [ImagesController],
-   providers: [ImagesService,S3Service]
+   controllers: [UploadeController],
+   providers: [UploadeService,S3Service]
 })
-export class ImagesModule {}
+export class UploadeModule {}

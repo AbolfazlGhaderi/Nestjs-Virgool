@@ -41,7 +41,8 @@ export enum PublicMessage {
    emailUpdated = 'ایمیل با موفقیت تغییر یافت',
    sendEmailSuccess = 'کد تایید با موفقیت به ایمیل شما ارسال شد',
    Error = 'لطفا مجددا امتحان کنید ',
-   CreateSuccess = 'با موفقیت ایجاد شد'
+   CreateSuccess = 'با موفقیت ایجاد شد',
+   SystemError = 'سیستم به مشکل خورده است . لطفا بعدا تلاش کنید',
 }
 
 export enum ValidationMessage {
