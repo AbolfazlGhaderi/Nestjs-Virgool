@@ -16,5 +16,6 @@ namespace NodeJS {
       LIARA_BUCKET_OBJS_NAME: string;
       LIARA_SECRET_OBJS_KEY: string;
       LIARA_ACCESS_OBJS_KEY: string;
+      OBJS_LOCATION_ENDPOINT: string;
    }
 }

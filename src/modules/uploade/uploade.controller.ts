@@ -25,7 +25,7 @@ export class UploadeController {
    // @UseInterceptors(UploadeImageInterceptor('image', ImageFolderNameEnum.Blogs))
    @UseInterceptors(FileInterceptor('image', { storage: storage }))
    async SaveImageBlog(@Body() imageDto: ImageDTO, @UploadedFile() file: Express.Multer.File) {
-      return await this.uploadeService.SaveImage(imageDto, file);
+      return await this.uploadeService.UploadeImage(imageDto, file);
    }
 
    // @Get('/')
