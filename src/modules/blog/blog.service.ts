@@ -8,7 +8,7 @@ import { CreateBlogDto } from './dto/create.blog.dto';
 import { BlogEntity, UserEntity } from 'src/app/models';
 import { BlogStatus } from 'src/common/enums/blog/status.enum';
 import { NotFoundMessages } from '../../common/enums/message.enum';
-import { ceateRandomByte, createSlug } from 'src/app/utils/functions.utils';
+import { GenerateRandomByte, createSlug } from 'src/app/utils/functions.utils';
 import { PaginationConfig, paginationGenerator } from 'src/app/utils/pagination.util';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 
@@ -27,7 +27,7 @@ export class BlogService {
       slugData = createSlug(slugData);
       const existBlog = await this.CheckExistBlogBySlug(slugData);
       if (existBlog) {
-         slugData += `-${ceateRandomByte(8)}`;
+         slugData += `-${GenerateRandomByte(8)}`;
       }
       const blog = this.BlogRepository.create({
          title: title.toString(),

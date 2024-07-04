@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from 'src/app/models';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthMessage, TokenType } from 'src/common/enums';
-import { symmetricCryption } from 'src/app/utils/encrypt.decript';
+import { symmetricCryption } from 'src/app/utils/encrypt.decrypt';
 import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AccessTokenPayload, OtpCookiePayload } from 'src/common/types/auth/payload.type';
 

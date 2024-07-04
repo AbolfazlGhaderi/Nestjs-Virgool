@@ -31,7 +31,7 @@ export class UploadeService {
       file.originalname = GenerateImageName(file.originalname);
 
       // Uploade image to OBJS
-      const res = await this.S3.UploadFile(file);
+      await this.S3.UploadFile(file);
       const location = `${this.OBJSLocationServer}/${file.originalname}`;
 
       // Save Image

@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoginResponseType } from 'src/common/types';
 import { TokenService } from '../token/token.service';
 import { UserService } from 'src/modules/user/user.service';
-import { symmetricCryption } from 'src/app/utils/encrypt.decript';
+import { symmetricCryption } from 'src/app/utils/encrypt.decrypt';
 import { UsernameValidator } from 'src/app/utils/username.validator';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, TokenType } from 'src/common/enums';
