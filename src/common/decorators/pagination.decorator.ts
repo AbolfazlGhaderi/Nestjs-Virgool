@@ -1,9 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 
-export function Pagination() {
-  return applyDecorators(
-    ApiQuery({ name: 'page', example: 1, required: false, type: 'integer' }),
-    ApiQuery({ name: 'limit', example: 5, required: false , type: 'integer'  }),
-  );
+export function Pagination()
+{
+    return applyDecorators(
+        ApiQuery({ name: 'page', example: 1, required: false, type: 'integer' }),
+        ApiQuery({ name: 'limit', example: 5, required: false, type: 'integer'  }),
+    );
 }

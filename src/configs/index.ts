@@ -1,8 +1,2 @@
-import { SwaggerConfig } from "./swagger.config";
-import { typeOrmConfig } from "./typeorm.config";
-
-
-export {
-    SwaggerConfig,
-    typeOrmConfig
-}
+export { SwaggerConfig } from './swagger.config';
+export { typeOrmConfig } from './typeorm.config';

@@ -1,4 +1,4 @@
-import { UserEntity } from "src/app/models";
+import { UserEntity } from '../../app/models';
 
 declare global {
     namespace Express {

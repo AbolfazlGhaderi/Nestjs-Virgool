@@ -1,4 +1,3 @@
-import { GenderEnum } from './gender.enum';
-export {
-    GenderEnum
-}
+
+
+export { GenderEnum } from './gender.enum';

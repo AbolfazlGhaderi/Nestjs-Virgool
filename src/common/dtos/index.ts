@@ -1,4 +1,1 @@
-import { PaginationDto } from './pagination.dto';
-export {
-    PaginationDto
-}
+export { PaginationDto } from './pagination.dto';

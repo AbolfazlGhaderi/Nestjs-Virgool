@@ -1,10 +1,4 @@
-import { LoginResponseType } from 'src/common/types/response.type';
-import { OtpCookiePayload } from 'src/common/types/auth/payload.type';
-import { AccessTokenPayload } from './auth/payload.type';
-import { ProfileImage } from './multer/profile.Image.type';
-
-
-export {
-   LoginResponseType,OtpCookiePayload,AccessTokenPayload,ProfileImage,
-
-}
+export { LoginResponseType } from '../../common/types/response.type';
+export { OtpCookiePayload } from '../../common/types/auth/payload.type';
+export { AccessTokenPayload } from './auth/payload.type';
+export { ProfileImage } from './multer/profile.image.type';

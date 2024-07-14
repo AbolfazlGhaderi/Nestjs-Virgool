@@ -1,4 +1,4 @@
-export enum modelEnum {
+export enum ModelEnum {
     User = 'users',
     Profile = 'profiles',
     // Post = 'post',
