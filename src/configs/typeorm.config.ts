@@ -4,7 +4,7 @@ export function typeOrmConfig(): TypeOrmModuleOptions
 {
     // variables...
     const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT = 5432, DB_USERNAME } = process.env;
-
+    // console.log({ DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME });
     return {
         type: 'postgres',
         port: +DB_PORT,

@@ -1,8 +1,6 @@
-import { BlogEntity } from './blog.model';
-import { UserEntity } from './user.model';
-import { ProfileEntity } from './profile.model';
-import { CategoryEntity } from './category.model';
-import { BlogLikesEntity } from './blog.like.model';
-import { BlogBookmarkEntity } from './blog.bookmark.model';
-
-export { UserEntity, ProfileEntity, CategoryEntity, BlogEntity, BlogBookmarkEntity, BlogLikesEntity };
+export { BlogEntity } from './blog.model';
+export { UserEntity } from './user.model';
+export { ProfileEntity } from './profile.model';
+export { CategoryEntity } from './category.model';
+export { BlogLikesEntity } from './blog.like.model';
+export { BlogBookmarkEntity } from './blog.bookmark.model';

@@ -1,14 +1,15 @@
 import { UserEntity } from './user.model';
-import { modelEnum } from 'src/common/enums';
+import { ModelEnum } from '../../common/enums';
 import { CommentEntity } from './comment.model';
 import { BlogLikesEntity } from './blog.like.model';
 import { BlogCategoryEntity } from './blog.category.model';
 import { BlogBookmarkEntity } from './blog.bookmark.model';
-import { BlogStatus } from 'src/common/enums/blog/status.enum';
+import { BlogStatus } from '../../common/enums/blog/status.enum';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity(modelEnum.Blog)
-export class BlogEntity {
+@Entity(ModelEnum.Blog)
+export class BlogEntity
+{
    @PrimaryGeneratedColumn('uuid')
    id: string;
    @Column()

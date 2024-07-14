@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsNumberString,
-  IsOptional,
-  IsString,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
 } from 'class-validator';
 
-export class CreateCatetegoryDto {
+export class CreateCatetegoryDto
+{
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

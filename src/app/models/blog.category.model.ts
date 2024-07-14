@@ -1,10 +1,11 @@
 import { BlogEntity } from './blog.model';
-import { modelEnum } from 'src/common/enums';
+import { ModelEnum } from '../../common/enums';
 import { CategoryEntity } from './category.model';
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: modelEnum.BlogCategory })
-export class BlogCategoryEntity {
+@Entity({ name: ModelEnum.BlogCategory })
+export class BlogCategoryEntity
+{
    @PrimaryGeneratedColumn('uuid')
    id: string;
 

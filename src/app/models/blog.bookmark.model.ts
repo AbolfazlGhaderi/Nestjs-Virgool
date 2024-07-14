@@ -1,10 +1,11 @@
-import { modelEnum } from 'src/common/enums';
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ModelEnum } from '../../common/enums';
 import { BlogEntity } from './blog.model';
 import { UserEntity } from './user.model';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: modelEnum.BlogBookmark })
-export class BlogBookmarkEntity {
+@Entity({ name: ModelEnum.BlogBookmark })
+export class BlogBookmarkEntity
+{
    @PrimaryGeneratedColumn('uuid')
    id: string;
 

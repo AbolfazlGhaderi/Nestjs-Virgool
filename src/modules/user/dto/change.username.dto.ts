@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
-export class ChangeUserNameDTO {
+export class ChangeUserNameDTO
+{
    @IsNotEmpty()
    @IsString()
    @Length(3, 100)

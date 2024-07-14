@@ -1,44 +1,49 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Request } from 'express';
-import { mkdirSync } from 'fs';
+import { mkdirSync } from 'node:fs';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { ValidationMessage } from 'src/common/enums';
+import { extname, join } from 'node:path';
+import { ValidationMessage } from '../../common/enums';
 
 type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, filename: string) => void;
 
 export type MulterFile = Express.Multer.File;
 
-export function MulterDestination(FolderName: string) {
-   return function (request: Request, file: MulterFile, callback: DestinationCallback): void {
-      const path = join('Public', 'Uploads', FolderName);
-      mkdirSync(path, { recursive: true });
-      callback(null, path);
-   };
+export function MulterDestination(folderName: string)
+{
+    return function (request: Request, file: MulterFile, callback: DestinationCallback): void
+    {
+        const path = join('Public', 'Uploads', folderName);
+        mkdirSync(path, { recursive: true });
+        callback(null, path);
+    };
 }
 
-export function MulterFileName(request: Request, file: MulterFile, cb: FileNameCallback): void {
-   const formats = ['.png', '.jpg', '.jpeg'];
-   const user = request.user;
-   const ext = extname(file.originalname).toLowerCase();
+export function MulterFileName(request: Request, file: MulterFile, callback: FileNameCallback): void
+{
+    const formats = [ '.png', '.jpg', '.jpeg' ];
+    const user = request.user;
+    const extension = extname(file.originalname).toLowerCase();
 
-   if (!checkImageFormat(ext, formats))
-     cb(new HttpException(ValidationMessage.invalidImageFormat, HttpStatus.BAD_REQUEST), '');
-   else {
-      const userId = user?.id ?? 'UNKNOWN';
-      const filename = `${userId}_${Date.now()}${ext}`;
-      cb(null, filename);
-   }
+    if (checkImageFormat(extension, formats))
+    {
+        const userId = user?.id ?? 'UNKNOWN';
+        const filename = `${userId}_${Date.now()}${extension}`;
+        callback(null, filename);
+    }
+    else { callback(new HttpException(ValidationMessage.InvalidImageFormat, HttpStatus.BAD_REQUEST), ''); }
 }
 
-function checkImageFormat(ext: string, Formats: string[]) {
-   return Formats.includes(ext);
+function checkImageFormat(extension: string, formats: string[])
+{
+    return formats.includes(extension);
 }
 
-export function MulterStorage(folderName: string) {
-   return diskStorage({
-      destination: MulterDestination(folderName),
-      filename: MulterFileName
-   });
+export function MulterStorage(folderName: string)
+{
+    return diskStorage({
+        destination: MulterDestination(folderName),
+        filename: MulterFileName,
+    });
 }

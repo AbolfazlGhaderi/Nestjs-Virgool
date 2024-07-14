@@ -5,14 +5,14 @@ import { OtpModule } from '../otp/otp.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
 import { TokenModule } from '../token/token.module';
-import { ProfileEntity, UserEntity } from 'src/app/models';
+import { ProfileEntity, UserEntity } from '../../app/models';
 
 
 
 @Module({
-   imports: [TypeOrmModule.forFeature([UserEntity, ProfileEntity]), OtpModule ,TokenModule  ],
-   controllers: [UserController ],
-   providers: [UserService , JwtService ],
-   exports: [UserService, TypeOrmModule ,JwtService ]
+    imports: [ TypeOrmModule.forFeature([ UserEntity, ProfileEntity ]), OtpModule, TokenModule  ],
+    controllers: [ UserController ],
+    providers: [ UserService, JwtService ],
+    exports: [ UserService, TypeOrmModule, JwtService ],
 })
 export class UserModule {}

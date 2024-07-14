@@ -15,7 +15,7 @@ export enum AuthMessage {
    AlreadyExistAccount = 'یوزری با این مشخصات قبلا ثبت شده است',
    ExpiredOtp = 'کد ارسالی منقضی شده است ، لطفا مجددا تلاش کنید',
    OtpCodeIncorrect = 'کد وارد شده اشتباه است ، لطفا مجددا تلاش کنید',
-   IoginAgain = 'لطفا مجددا وارد شوید '
+   LoginAgain = 'لطفا مجددا وارد شوید '
 }
 
 export enum NotFoundMessages {

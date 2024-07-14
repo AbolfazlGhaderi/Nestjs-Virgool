@@ -20,6 +20,7 @@ module.exports = {
         'import/extensions': ['.js', '.cjs', '.mjs', '.ts', '.cts', '.mts'],
     },
     rules: {
+        'no-misleading-character-class':['warn'],
         'array-bracket-spacing': ['error', 'always'],
         'brace-style': ['error', 'allman', { allowSingleLine: true }],
         'comma-dangle': ['error', 'always-multiline'],
@@ -155,6 +156,7 @@ module.exports = {
                 '@typescript-eslint/no-unsafe-return': 'off',
                 '@typescript-eslint/no-unsafe-call': 'off',
                 '@typescript-eslint/no-unsafe-assignment': 'off',
+                "@typescript-eslint/no-unsafe-enum-comparison": "off", //TODO: add this back in
                 '@typescript-eslint/no-unused-vars': 'off',
                 '@typescript-eslint/no-floating-promises': [
                     'error',

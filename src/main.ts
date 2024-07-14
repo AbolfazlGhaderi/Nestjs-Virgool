@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { HttpExceptionFilter } from './app/exception_filters/http.exceptionFilter';
+import { HttpExceptionFilter } from './app/exceptionFilters/http.exceptionFilter';
 import { ResponseControllerInterceptor } from './app/interceptors/response.controller.interceptor';
 
 async function bootstrap()
@@ -21,7 +21,7 @@ async function bootstrap()
     app.useGlobalFilters(new HttpExceptionFilter());
 
     // App Listen
-    const PORT = process.env.PORT;
+    const PORT = process.env.PORT || 3000;
     await app.listen(PORT);
 
     // logs
