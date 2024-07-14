@@ -12,26 +12,28 @@ import { CategoryModule } from './modules/category/category.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: (process.cwd(), '.env'),
-    }),
-    TypeOrmModule.forRoot(typeOrmConfig()),
-    AuthModule,
-    UserModule,
-    OtpModule,
-    TokenModule,
-    CategoryModule,
-    BlogModule,
-    UploadeModule
-  ],
-  controllers: [],
-  providers: [AuthModule],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            envFilePath: (process.cwd(), '.env'),
+        }),
+        TypeOrmModule.forRoot(typeOrmConfig()),
+        AuthModule,
+        UserModule,
+        OtpModule,
+        TokenModule,
+        CategoryModule,
+        BlogModule,
+        UploadeModule,
+    ],
+    controllers: [],
+    providers: [ AuthModule ],
 })
 
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(loggerMiddleware).forRoutes('*');
-  }
+export class AppModule implements NestModule
+{
+    configure(consumer: MiddlewareConsumer)
+    {
+        consumer.apply(loggerMiddleware).forRoutes('*');
+    }
 }
