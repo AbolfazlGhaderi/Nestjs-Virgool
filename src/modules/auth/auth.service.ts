@@ -100,7 +100,7 @@ export class AuthService
         }
         else
         {
-            throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST); // TODO: user should can login with username
         }
 
         return {
@@ -114,17 +114,11 @@ export class AuthService
     {
         if (method === AuthMethods.Username) throw new HttpException(BadRequestMesage.RegisterMethodIncorrect, HttpStatus.BAD_REQUEST);
 
-        let user: UserEntity = await this.checkExistUser(method, username);
+        const user: UserEntity = await this.checkExistUser(method, username);
         if (user) throw new HttpException(AuthMessage.AlreadyExistAccount, HttpStatus.CONFLICT);
 
-        const newUser = this.userRepository.create({
-            username: `U_${username}`,
-            [method]: username,
-        });
 
-        user = await this.userRepository.save(newUser);
-
-        // ---------------------------------------------
+        // encrypt username{phone/email} - Optional !!!!!
         const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         let otp: number;
@@ -147,7 +141,13 @@ export class AuthService
         {
             otp = this.otpService.generateOtp();
 
-            // send otp
+            // TODO: send otp {
+
+
+
+
+
+            // }
 
             // save otp
             otp = await this.otpService.SaveLoginOTP(username, otp);
@@ -188,17 +188,35 @@ export class AuthService
         // delete otp from cache
         await this.otpService.deleteByKey(`${key}:Login-otp`);
 
-        // check username is phone or email
-        let user;
+        //  find user
+        let user : UserEntity | null;
         if (isMobilePhone(key, 'fa-IR'))
         {
             user = await this.userRepository.findOne({ where: { phone: key } });
+            if (!user)
+            {
+                user = this.userRepository.create({
+                    username: `U_${key}`,
+                    phone: key,
+                });
+                user = await this.userRepository.save(user);
+            }
+
+
         }
         else
         {
             user = await this.userRepository.findOne({ where: { email: key } });
+            if (!user)
+            {
+                user = this.userRepository.create({
+                    username: `U_${key}`,
+                    email: key,
+                });
+                user = await this.userRepository.save(user);
+            }
         }
-        user = user as UserEntity;
+
 
         // encrypt userID
         const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);

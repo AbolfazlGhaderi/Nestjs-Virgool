@@ -5,7 +5,7 @@ import { SwaggerConsumes } from '../../common/enums';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -14,6 +14,7 @@ export class AuthController
     constructor(private readonly authService: AuthService) {}
 
    @Post('user-existence')
+   @HttpCode(HttpStatus.OK)
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
     async userExistenceC(@Body() auhtDto: AuthDto, @Res({ passthrough: true }) response: Response)
     {
@@ -37,6 +38,8 @@ export class AuthController
    }
 
    @Post('/refresh-token')
+      @HttpCode(HttpStatus.OK)
+
    checkRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto)
    {
        return  this.authService.checkRefreahTokenS(refreshTokenData);
