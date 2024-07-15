@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { UserEntity } from '../../app/models';
 import { Request } from 'express';
 import { OtpService } from '../otp/otp.service';
@@ -244,5 +244,11 @@ export class AuthService
 
         user = user as UserEntity;
         return user;
+    }
+
+    // Check Refresh Token
+    checkRefreahTokenS( tokenData : CheckRefreshTokenDto )
+    {
+        return  this.tokenService.validateRefreshoken(tokenData.token);
     }
 }

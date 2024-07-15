@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate
         const token = this.extractToken(request);
 
         // save user in Request.user
-        request.user = (await this.tokenService.validateAccessToken(token));
+        request.user = await this.tokenService.validateAccessToken(token);
 
         // return true;
         return true;

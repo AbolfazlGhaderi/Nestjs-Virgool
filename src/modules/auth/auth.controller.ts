@@ -1,9 +1,9 @@
-import { AuthDto } from './dto/auth.dto';
 import { Request, Response } from 'express';
 import { CheckOtpDto } from './dto/otp.dto';
 import { AuthService } from './auth.service';
 import { SwaggerConsumes } from '../../common/enums';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 
@@ -34,5 +34,11 @@ export class AuthController
    checkLoginC(@Req() request: Request)
    {
        return  request.user;
+   }
+
+   @Post('/refresh-token')
+   checkRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto)
+   {
+       return  this.authService.checkRefreahTokenS(refreshTokenData);
    }
 }

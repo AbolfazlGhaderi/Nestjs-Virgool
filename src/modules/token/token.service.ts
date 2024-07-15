@@ -28,7 +28,7 @@ export class TokenService
         return token;
     }
 
-    createChanegToken(payload: OtpCookiePayload)
+    createChanegToken(payload: OtpCookiePayload) // TODO: change class name
     {
         return this.jwtService.sign(payload, {
             secret: process.env.CHANGE_TOKEN_SECRET,
@@ -50,15 +50,16 @@ export class TokenService
         });
 
         return {
-            accessToken : { token : accessToken, expire : Date.now() + 1000 * 60 * 60 },
-            refreshToken : { token : refreshToken, expire : Date.now() + 1000 * 60 * 60 * 24 * 3 },
+            tokenType : 'Bearer',
+            accessToken : { token : accessToken, expire : Date.now() + 1000 * 60 * 60 }, // 1 hour
+            refreshToken : { token : refreshToken, expire : Date.now() + 1000 * 60 * 60 * 24 * 3 }, // 3 day
         };
     }
 
     // ------------------ Verify ------------------------------------- ===>
     async validateAccessToken(token: string)
     {
-        const { sub } = this.verifyAccessToken(token);
+        const { sub } = this.verifyToken(token, 'access');
 
         // userId decrypted
         const userId = symmetricCryption.decrypted(sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
@@ -69,14 +70,32 @@ export class TokenService
 
         return user;
     }
+    validateRefreshoken(token: string)
+    {
+        const { sub } =  this.verifyToken(token, 'refresh');
+        return this.generateAccessAndRefreshToken({ sub: sub });
+    }
 
-    verifyAccessToken(token: string): AccessTokenPayload
+    verifyToken(token: string, type: 'access' | 'refresh'): AccessTokenPayload
     {
         try
         {
-            return this.jwtService.verify(token, {
-                secret: process.env.ACCESS_TOKEN_SECRET,
-            });
+            if (type === 'access')
+            {
+                return this.jwtService.verify(token, {
+                    secret: process.env.ACCESS_TOKEN_SECRET,
+                    ignoreExpiration: false,
+                });
+            }
+            else if (type === 'refresh')
+            {
+                return this.jwtService.verify(token, {
+                    secret: process.env.REFRESH_TOKEN_SECRET,
+                    ignoreExpiration: false,
+                });
+            }
+            else throw new Error('Invalid token type => access / refresh');
+
         }
         catch
         {
@@ -114,4 +133,5 @@ export class TokenService
         }
         return { sub: '' };
     }
+
 }
