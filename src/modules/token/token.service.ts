@@ -28,7 +28,7 @@ export class TokenService
         return token;
     }
 
-    createChanegToken(payload: OtpCookiePayload) // TODO: change class name
+    createChangeToken(payload: OtpCookiePayload)
     {
         return this.jwtService.sign(payload, {
             secret: process.env.CHANGE_TOKEN_SECRET,

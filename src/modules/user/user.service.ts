@@ -188,7 +188,7 @@ export class UserService
         // send and save Otp Code
 
         const code = await this.otpService.sendAndSaveEmailOTP(email);
-        const token = this.tokenService.createChanegToken({ sub: newEmail });
+        const token = this.tokenService.createChangeToken({ sub: newEmail });
 
         return {
             code,
