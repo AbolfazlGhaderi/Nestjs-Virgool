@@ -3,8 +3,8 @@ import { Request, Response } from 'express';
 import { CheckOtpDto } from './dto/otp.dto';
 import { AuthService } from './auth.service';
 import { SwaggerConsumes } from '../../common/enums';
-import { AuthGuard } from '../../app/guards/auth.guard';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 @Controller('auth')
@@ -30,8 +30,7 @@ export class AuthController
 
    @Get('check-login')
    @HttpCode(HttpStatus.OK)
-   @ApiBearerAuth('Authorization')
-   @UseGuards(AuthGuard)
+   @AuthDecorator()
    checkLoginC(@Req() request: Request)
    {
        return  request.user;

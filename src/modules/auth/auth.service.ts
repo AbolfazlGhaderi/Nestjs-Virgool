@@ -199,17 +199,20 @@ export class AuthService
             user = await this.userRepository.findOne({ where: { email: key } });
         }
         user = user as UserEntity;
+
         // encrypt userID
         const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         // Create Access Tonken
-        const accessToken = this.tokenService.createAccessToken({
+        const tokens = this.tokenService.generateAccessAndRefreshToken({
             sub: sub,
         });
 
         // return
         return {
-            accessToken: accessToken,
+            tokenType:'Bearer',
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             message: PublicMessage.LoginSucces,
         };
     }

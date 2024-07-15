@@ -31,20 +31,28 @@ export class TokenService
     createChanegToken(payload: OtpCookiePayload)
     {
         return this.jwtService.sign(payload, {
-            secret: process.env.EMAIL_TOKEN_SECRET,
+            secret: process.env.CHANGE_TOKEN_SECRET,
             expiresIn: '2m',
         });
     }
     // -------------------- Access Token ----------------------------- ===>
 
-    createAccessToken(payload: AccessTokenPayload)
+    generateAccessAndRefreshToken(payload: AccessTokenPayload)
     {
-        const token = this.jwtService.sign(payload, {
+        const accessToken = this.jwtService.sign(payload, {
             secret: process.env.ACCESS_TOKEN_SECRET,
-            expiresIn: '10d',
+            expiresIn: '1h',
         });
 
-        return token;
+        const refreshToken =  this.jwtService.sign(payload, {
+            secret: process.env.REFRESH_TOKEN_SECRET,
+            expiresIn: '3d',
+        });
+
+        return {
+            accessToken : { token : accessToken, expire : Date.now() + 1000 * 60 * 60 },
+            refreshToken : { token : refreshToken, expire : Date.now() + 1000 * 60 * 60 * 24 * 3 },
+        };
     }
 
     // ------------------ Verify ------------------------------------- ===>
@@ -89,7 +97,7 @@ export class TokenService
             else if (type === TokenType.ChangeOtp)
             {
                 return this.jwtService.verify(token, {
-                    secret: process.env.EMAIL_TOKEN_SECRET,
+                    secret: process.env.CHANGE_TOKEN_SECRET,
                 });
             }
         }
