@@ -18,7 +18,7 @@ export class ProfileEntity
     @Column({ nullable: true, default: null })
     gender: string;
     @Column({ nullable: true, default: null })
-    birth_day: Date;
+    birth_day: string;
     @Column({ nullable: true, default: null })
     x_profile: string;
     @Column({ nullable: true, default: null })

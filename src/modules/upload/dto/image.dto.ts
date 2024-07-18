@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ImageDTO
 {
-   @ApiProperty({ nullable:true })
+   @ApiProperty({ nullable:true, required:false })
    @IsOptional()
    alt:string;
    @ApiProperty({ format: 'binary', required:true })

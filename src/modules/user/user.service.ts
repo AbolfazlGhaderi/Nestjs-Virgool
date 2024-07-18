@@ -81,32 +81,38 @@ export class UserService
         return user;
     }
 
-    async UpdateProfileS(files: ProfileImage, profileData: ProfileDto)
+    async UpdateProfileS( profileData: ProfileDto)
     {
         const { id } = this.request.user as UserEntity;
 
         // Get images from Multer
 
-        if (files.bg_image)
-        {
-            const bgImage = files.bg_image[0];
-            if (bgImage.path)
-            {
-                profileData.bgImage = bgImage.path.slice(7);
-            }
-        }
+        // files: ProfileImage = 
+        // {
+        // bg_image: MulterFile[];
+        //  image_profile: MulterFile[];
+        // }
 
-        if (files.image_profile)
-        {
-            const imageProfile = files.image_profile[0];
-            if (imageProfile.path)
-            {
-                profileData.imageProfile = imageProfile.path.slice(7);
-            }
-        }
+        // if (files.bg_image)
+        // {
+        //     const bgImage = files.bg_image[0];
+        //     if (bgImage.path)
+        //     {
+        //         profileData.bgImage = bgImage.path.slice(7);
+        //     }
+        // }
+
+        // if (files.image_profile)
+        // {
+        //     const imageProfile = files.image_profile[0];
+        //     if (imageProfile.path)
+        //     {
+        //         profileData.imageProfile = imageProfile.path.slice(7);
+        //     }
+        // }
 
         // search profile
-        let profilee = await this.profileRepository.findOne({
+        let userProfile = await this.profileRepository.findOne({
             where: {
                 user: {
                     id: id,
@@ -117,20 +123,20 @@ export class UserService
         // get data from Profile Data
         const { bio, birthDay, gender, linkedinProfile, nickName, xProfile, bgImage, imageProfile } = profileData;
 
-        if (profilee)
+        if (userProfile)
         {
-            if (bio) profilee.bio = bio;
-            if (birthDay && isDate(new Date(birthDay))) profilee.birth_day = new Date(birthDay);
-            if (gender && gender in GenderEnum) profilee.gender = gender;
-            if (linkedinProfile) profilee.linkedin_profile = linkedinProfile;
-            if (nickName) profilee.nick_name = nickName;
-            if (xProfile) profilee.x_profile = xProfile;
-            if (imageProfile) profilee.image_profile = imageProfile;
-            if (bgImage) profilee.bg_image = bgImage;
+            if (bio) userProfile.bio = bio;
+            userProfile.birth_day = birthDay || userProfile.birth_day;
+            if (gender && gender in GenderEnum) userProfile.gender = gender;
+            if (linkedinProfile) userProfile.linkedin_profile = linkedinProfile;
+            if (nickName) userProfile.nick_name = nickName;
+            if (xProfile) userProfile.x_profile = xProfile;
+            if (imageProfile) userProfile.image_profile = imageProfile;
+            if (bgImage) userProfile.bg_image = bgImage;
         }
         else
         {
-            profilee = this.profileRepository.create({
+            userProfile = this.profileRepository.create({
                 bio,
                 birth_day: birthDay,
                 gender,
@@ -142,17 +148,17 @@ export class UserService
                 user: { id: id },
             });
         }
-        if (profilee.nick_name === null || profilee.nick_name === undefined)
+        if (userProfile.nick_name === null || userProfile.nick_name === undefined)
         {
-            profilee.nick_name = 'UNKNOWN';
+            userProfile.nick_name = 'UNKNOWN';
         }
 
         // save profile
-        profilee = await this.profileRepository.save(profilee);
+        userProfile = await this.profileRepository.save(userProfile);
 
         return {
             message: PublicMessage.UpdateSuccess,
-            data: profilee,
+            data: userProfile,
         };
     }
 
