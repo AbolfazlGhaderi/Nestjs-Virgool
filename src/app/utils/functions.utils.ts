@@ -11,9 +11,9 @@ export function GenerateRandomByte(size: number)
     return randomBytes(size).toString('hex');
 }
 
-export function GenerateImageName(origialName: string)
+export function GenerateImageName(origialName: string, section:string)
 {
     const name = origialName.split(extname(origialName))[0];
     const time = Date.now();
-    return `${name}_${GenerateRandomByte(6)}_${time}${extname(origialName)}`;
+    return `${name}_${section}_${GenerateRandomByte(6)}_${time}${extname(origialName)}`;
 }

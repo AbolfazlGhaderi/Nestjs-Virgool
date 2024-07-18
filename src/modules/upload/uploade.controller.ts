@@ -13,8 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SKIP_AUTH, SkipAuthDecorator } from '../../common/decorators/skipAuth.decorator';
 
 const storage = memoryStorage();
-@Controller('uploade')
-@ApiTags('Uploade')
+@Controller('upload')
+@ApiTags('Upload')
 @AuthDecorator()
 @UseInterceptors(ResponseControllerInterceptor)
 export class UploadeController
@@ -27,12 +27,16 @@ export class UploadeController
    @UseInterceptors(FileInterceptor('image', { storage: storage }))
     async SaveImageBlog(@Body() imageDto: ImageDTO, @UploadedFile() file: Express.Multer.File)
     {
-        return await this.uploadeService.UploadeImage(imageDto, file);
+        return await this.uploadeService.uploadeImageBlog(imageDto, file); // TODO: Uploade => upload
     }
 
-    // @Get('/')
-    // @SkipAuthDecorator()
-    // async ShowFiles(){
-    //    return await this.imagesService.ShowFiles();
-    // }
+   @Post('/profile')
+   @ApiConsumes(SwaggerConsumes.MultipartData)
+   // @UseInterceptors(UploadeImageInterceptor('image', ImageFolderNameEnum.Blogs))
+   @UseInterceptors(FileInterceptor('image', { storage: storage }))
+   async SaveImageProfile(@Body() imageDto: ImageDTO, @UploadedFile() file: Express.Multer.File)
+   {
+       console.log(file);
+       return await this.uploadeService.uploadImageProfile(file);
+   }
 }
