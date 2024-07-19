@@ -1,13 +1,16 @@
 import { Request } from 'express';
-import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
+import { isArray } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { PublicMessage } from '../../common/enums';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBlogDto } from './dto/create.blog.dto';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { BlogEntity, UserEntity } from '../../app/models';
+import { CreateBlogDto, FilterBlogDto } from './dto/blog.dto';
+import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
 import { NotFoundMessages } from '../../common/enums/message.enum';
+import { BlogCategoryEntity } from '../../app/models/blog.category.model';
 import { GenerateRandomByte, createSlug } from '../../app/utils/functions.utils';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
@@ -16,15 +19,21 @@ import { PaginationConfig, paginationGenerator } from '../../app/utils/paginatio
 export class BlogService
 {
     constructor(
-      @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
-      @Inject(REQUEST) private readonly request: Request,
+        @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
+        @InjectRepository(BlogCategoryEntity) private readonly blogCategoryRepository: Repository<BlogCategoryEntity>,
+        private readonly categoryService: CategoryService,
+        @Inject(REQUEST) private readonly request: Request,
     ) {}
 
     async CreateBlogS(blogData: CreateBlogDto): Promise<{ message: PublicMessage.CreateSuccess }>
     {
+        // variables
         const user = this.request.user as UserEntity;
-        // create Or set slug
-        const { title, slug, content, description, time_for_study : time, image } = blogData;
+        const { title, slug, content, description, time_for_study: time, image } = blogData;
+        let { categories } = blogData;
+        console.log(categories);
+
+        // Ckeck Slug
         let slugData = slug ?? title;
         slugData = createSlug(slugData);
         const hasBlog = await this.CheckExistBlogBySlug(slugData);
@@ -32,17 +41,46 @@ export class BlogService
         {
             slugData += `-${GenerateRandomByte(8)}`;
         }
-        const blog = this.blogRepository.create({
+
+        // Check Category
+        if (!isArray(categories) && typeof categories === 'string')  // TODO: Fix this / Should be Array
+        {
+
+            categories = categories.split(',');
+        }
+        else if (!categories || categories.length <= 0)
+        {
+            throw new HttpException(NotFoundMessages.CategoryNotFound, HttpStatus.NOT_FOUND);
+        }
+
+        // TODO: Use Transaction
+
+        // Save Blog
+        let blog = this.blogRepository.create({
             title: title.toString(),
             slug: slugData,
             content: content.toString(),
-            description: description.toString(),
+            description: description,
             time_for_study: time,
             status: BlogStatus.Draft,
             image,
             user: { id: user.id },
         });
-        await this.blogRepository.save(blog);
+        blog = await this.blogRepository.save(blog);
+
+        // implement Blog Category
+        for (const category of categories)
+        {
+            let _category = await this.categoryService.FindCategoryByTitle(category);
+            if (!_category)
+            {
+                _category = await this.categoryService.InsertCategory(category);
+            }
+
+            await this.blogCategoryRepository.insert({ blog: { id: blog.id }, category: { id: _category.id } });
+        }
+
+
         return {
             message: PublicMessage.CreateSuccess,
         };
@@ -67,23 +105,5 @@ export class BlogService
         return blogs;
     }
 
-    async BlogList(paginationData: PaginationDto)
-    {
-        const { limit, page, skip } = PaginationConfig(paginationData);
-        const [ blogs, count ] = await this.blogRepository.findAndCount({
-            order: { id: 'DESC' },
-            skip,
-            take: limit,
-        });
 
-        if (blogs.length <= 0)
-        {
-            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
-        }
-
-        return {
-            pagination: paginationGenerator(count, page, limit),
-            blogs,
-        };
-    }
 }
