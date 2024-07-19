@@ -4,6 +4,7 @@ import { CategoryService } from './category.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UpdateCategoryDTO } from './dto/update.category.dsto';
 import { CreateCatetegoryDto } from './dto/create.category.dto';
+import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 
@@ -14,6 +15,7 @@ export class CategoryController
     constructor(private readonly categoryService: CategoryService) {}
 
    @Post('new')
+   @AuthDecorator()
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
     async createCategoryC(@Body() categoryDto: CreateCatetegoryDto)
     {
@@ -28,6 +30,7 @@ export class CategoryController
    }
 
    @Put('/:id')
+   @AuthDecorator()
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
    async UpdateC(@Param('id') id: string, @Body() updateDto: UpdateCategoryDTO)
    {
@@ -35,6 +38,7 @@ export class CategoryController
    }
 
    @Delete('/:id')
+   @AuthDecorator()
    async DeleteCategoryC(@Param('id') id: string)
    {
        return await this.categoryService.DeleteCategoryS(id);
