@@ -9,7 +9,7 @@ export class BlogCategoryEntity
    @PrimaryGeneratedColumn('uuid')
    id: string;
 
-   @ManyToOne(() => BlogEntity, (blog) => blog.blog_category, { onDelete: 'CASCADE' })
+   @ManyToOne(() => BlogEntity, (blog) => blog.blog_categories, { onDelete: 'CASCADE' })
    @JoinColumn({ name: 'blog_id' })
    blog: BlogEntity;
 

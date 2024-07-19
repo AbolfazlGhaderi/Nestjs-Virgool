@@ -31,7 +31,6 @@ export class BlogService
         const user = this.request.user as UserEntity;
         const { title, slug, content, description, time_for_study: time, image } = blogData;
         let { categories } = blogData;
-        console.log(categories);
 
         // Ckeck Slug
         let slugData = slug ?? title;
@@ -86,6 +85,39 @@ export class BlogService
         };
     }
 
+
+    async BlogList(paginationData: PaginationDto, filterBlogDto: FilterBlogDto)
+    {
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const { category } = filterBlogDto;
+
+        const where: FindOptionsWhere<BlogEntity> = {};
+        if (category)
+        {
+            where['blog_categories'] = {
+                category: { title: category },
+            };
+        }
+
+        const [ blogs, count ] = await this.blogRepository.findAndCount({
+            relations: { blog_categories: { category: true } },
+            where,
+            select: { blog_categories: { id: true, category: { title: true } } },
+            order: { id: 'DESC' },
+            skip,
+            take: limit,
+        });
+
+        if (blogs.length <= 0)
+        {
+            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+        }
+
+        return {
+            pagination: paginationGenerator(count, page, limit),
+            blogs,
+        };
+    }
     async CheckExistBlogBySlug(slug: string): Promise<boolean>
     {
         const blog = await this.blogRepository.findOne({ where: { slug: slug } });

@@ -26,6 +26,16 @@ export class BlogController
         return await this.blogService.CreateBlogS(blogData);
     }
 
+   @Get('/')
+   @HttpCode(HttpStatus.OK)
+   @Pagination()
+   @SkipAuthDecorator() // Skip Authentication
+   @FilterBlog()
+   async BlogList(@Query() paginationData: PaginationDto, @Query() filterBlogDto : FilterBlogDto )
+   {
+       return await this.blogService.BlogList(paginationData, filterBlogDto);
+   }
+
    @Get('/myblogs')
    @HttpCode(HttpStatus.OK)
    async myBlogs()

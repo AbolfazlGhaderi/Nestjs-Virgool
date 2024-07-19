@@ -36,7 +36,7 @@ export class BlogEntity
    @OneToMany(() => CommentEntity, (comment) => comment.blog)
    comments: CommentEntity[];
    @OneToMany(() => BlogCategoryEntity, (blogCategory) => blogCategory.blog)
-   blog_category: BlogCategoryEntity[];
+   blog_categories: BlogCategoryEntity[];
    @CreateDateColumn()
    create_at: Date;
    @UpdateDateColumn()
