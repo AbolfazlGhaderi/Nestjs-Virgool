@@ -50,6 +50,17 @@ export class CategoryService
         return { message: PublicMessage.CreateSuccess };
     }
 
+    async FindCategoryByTitle(title:string)
+    {
+        return await this.categoryRepository.findOne({ where:{ title:title } });
+    }
+
+    async InsertCategory(title:string)
+    {
+        title = title.trim().toLowerCase();
+        return await this.categoryRepository.save({ title:title });
+    }
+
     async GetAllCategoriesS(paginationData: PaginationDto)
     {
         const { limit, page, skip } = PaginationConfig(paginationData);
