@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
-import { isArray } from 'class-validator';
+import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
@@ -153,6 +153,12 @@ export class BlogService
         const blog = await this.blogRepository.findOne({ where: { slug: slug } });
         return !!blog;
     }
+    async CheckExistMyBlogById(id: string): Promise<boolean>
+    {
+        const user = this.request.user as UserEntity;
+        const blog = await this.blogRepository.findOne({ where: { id: id, user: { id:user.id } } });
+        return !!blog;
+    }
 
     async MyBlogs(): Promise<BlogEntity[]>
     {
@@ -167,5 +173,20 @@ export class BlogService
         return blogs;
     }
 
+    async DeleteBlog(id :string)
+    {
+        if (!isUUID(id))
+        {
+            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+        }
+        if (!await this.CheckExistMyBlogById(id))
+        {
+            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
 
+        }
+        await this.blogRepository.delete({ id:id });
+        return {
+            message : PublicMessage.DeleteSuccess,
+        };
+    }
 }

@@ -8,7 +8,7 @@ import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { SkipAuthDecorator } from '../../common/decorators/skipAuth.decorator';
 import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor';
-import { Body, Controller, Post, HttpStatus, HttpCode, Get, UseInterceptors, Query } from '@nestjs/common';
+import { Body, Controller, Post, HttpStatus, HttpCode, Get, UseInterceptors, Query, Param, Delete } from '@nestjs/common';
 
 @Controller('blog')
 @ApiTags('Blog')
@@ -41,6 +41,12 @@ export class BlogController
    async myBlogs()
    {
        return await this.blogService.MyBlogs();
-       // throw new HttpException("this is test",HttpStatus.NOT_FOUND)
+   }
+
+   @Delete('/:id')
+   @HttpCode(HttpStatus.OK)
+   async DeleteBlog(@Param('id') id: string)
+   {
+       return await this.blogService.DeleteBlog(id);
    }
 }
