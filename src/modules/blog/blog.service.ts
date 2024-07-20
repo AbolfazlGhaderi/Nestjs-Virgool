@@ -2,10 +2,10 @@ import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { isArray } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
-import { PublicMessage } from '../../common/enums';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { BlogEntity, UserEntity } from '../../app/models';
+import { ModelEnum, PublicMessage } from '../../common/enums';
 import { CreateBlogDto, FilterBlogDto } from './dto/blog.dto';
 import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
@@ -89,24 +89,36 @@ export class BlogService
     async BlogList(paginationData: PaginationDto, filterBlogDto: FilterBlogDto)
     {
         const { limit, page, skip } = PaginationConfig(paginationData);
-        const { category } = filterBlogDto;
+        let { category, search } = filterBlogDto;
 
-        const where: FindOptionsWhere<BlogEntity> = {};
+
+        let where = '';
         if (category)
         {
-            where['blog_categories'] = {
-                category: { title: category },
-            };
+            category = category.toString().toLocaleLowerCase();
+            if (where.length > 0) where += ' AND ';
+            where += 'category.title = :category';
         }
 
-        const [ blogs, count ] = await this.blogRepository.findAndCount({
-            relations: { blog_categories: { category: true } },
-            where,
-            select: { blog_categories: { id: true, category: { title: true } } },
-            order: { id: 'DESC' },
-            skip,
-            take: limit,
-        });
+        if (search)
+        {
+            if (where.length > 0) where += ' AND ';
+            search = search.toString().toLocaleLowerCase();
+            search = `%${search}%`;
+            where += 'CONCAT(blogs.title, blogs.description, blogs.content) ILIKE :search';
+
+        }
+
+        const [ blogs, count ] = await this.blogRepository
+            .createQueryBuilder(ModelEnum.Blog)
+            .leftJoin('blogs.blog_categories', 'categories')
+            .leftJoin('categories.category', 'category')
+            .addSelect([ 'categories.id', 'category.title' ])
+            .where(where, { category, search })
+            .orderBy('blogs.create_at', 'DESC')
+            .skip(skip)
+            .take(limit)
+            .getManyAndCount();
 
         if (blogs.length <= 0)
         {
@@ -117,6 +129,24 @@ export class BlogService
             pagination: paginationGenerator(count, page, limit),
             blogs,
         };
+
+
+        // const where: FindOptionsWhere<BlogEntity> = {};
+        // if (category)
+        // {
+        //     where['blog_categories'] = {
+        //         category: { title: category },
+        //     };
+        // }
+        // const [ blogs, count ] = await this.blogRepository.findAndCount({
+        //     relations: { blog_categories: { category: true } },
+        //     where,
+        //     select: { blog_categories: { id: true, category: { title: true } } },
+        //     order: { id: 'DESC' },
+        //     skip,
+        //     take: limit,
+        // });
+
     }
     async CheckExistBlogBySlug(slug: string): Promise<boolean>
     {

@@ -40,8 +40,10 @@ export class CreateBlogDto
 
 export class FilterBlogDto
 {
-
     @ApiPropertyOptional()
     @IsOptional()
     category: string;
+    @ApiPropertyOptional()
+    @IsOptional()
+    search: string;
 }
