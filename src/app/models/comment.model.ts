@@ -12,8 +12,6 @@ export class CommentEntity
     text: string;
     @Column({ default: false })
     acceoted: boolean;
-    @Column({ nullable: true })
-    parentId: number;
     @ManyToOne(() => BlogEntity, (blog) => blog.comments, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'blog_id' })
     blog: BlogEntity;
@@ -22,7 +20,7 @@ export class CommentEntity
     user: UserEntity;
     @ManyToOne(() => CommentEntity, (comment) => comment.children, { onDelete: 'CASCADE' })
     parent: CommentEntity;
-    @OneToMany(() => CommentEntity, (comment) => comment.parent)
+    @OneToMany(() => CommentEntity, (comment) => comment.parent, { nullable:true })
     @JoinColumn({ name: 'parent_id' })
     children: CommentEntity[];
     @CreateDateColumn()

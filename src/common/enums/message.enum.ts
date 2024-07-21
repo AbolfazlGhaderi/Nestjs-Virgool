@@ -19,11 +19,12 @@ export enum AuthMessage {
 }
 
 export enum NotFoundMessages {
-   CategoriesNotFound = 'دسته بندی ای موجود نمیباشد',
-   CategoryNotFound = 'دسته بندی مورد نظر پیدا نشد',
-   UserNotFound = 'کاربر مورد نظر پیدا نشد',
-   BlogNotFound = 'مقاله ای پیدا نشد',
-   ImageNotFound = 'در دریافت تصویر مشکلی پیش آمده است ٬ لطفا به پشتیبانی پیام دهید',
+    CategoriesNotFound = 'دسته بندی ای موجود نمیباشد',
+    CategoryNotFound = 'دسته بندی مورد نظر یافت نشد',
+    UserNotFound = 'کاربر مورد نظر یافت نشد',
+    BlogNotFound = 'مقاله ای یافت نشد',
+    ImageNotFound = 'در دریافت تصویر مشکلی پیش آمده است ٬ لطفا به پشتیبانی پیام دهید',
+    CommentNotFound='کامنت مورد نظر یافت نشد'
 }
 
 export enum ConflictMessages {

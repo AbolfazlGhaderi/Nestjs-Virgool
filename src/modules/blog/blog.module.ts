@@ -11,5 +11,6 @@ import { BlogBookmarkEntity, BlogEntity, BlogLikesEntity, CategoryEntity } from 
     imports:[ AuthModule, TypeOrmModule.forFeature([ BlogEntity, BlogCategoryEntity, CategoryEntity, BlogLikesEntity, BlogBookmarkEntity ]) ],
     controllers: [ BlogController ],
     providers: [ BlogService, CategoryService ],
+    exports:[ TypeOrmModule.forFeature([ BlogEntity, BlogCategoryEntity, CategoryEntity, BlogLikesEntity, BlogBookmarkEntity ]), CategoryService ],
 })
 export class BlogModule {}

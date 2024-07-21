@@ -164,6 +164,11 @@ export class BlogService
         const blog = await this.blogRepository.findOne({ where: { id: id, user: { id:user.id } } });
         return { status: !!blog, blog:blog };
     }
+    async CheckExistBlogById(id: string)
+    {
+        const blog = await this.blogRepository.findOne({ where: { id: id } });
+        return { status: !!blog, blog:blog };
+    }
 
     async MyBlogs(): Promise<BlogEntity[]>
     {
