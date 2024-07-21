@@ -10,6 +10,7 @@ import { TokenModule } from './modules/token/token.module';
 import { UploadeModule } from './modules/upload/uploade.module';
 import { CategoryModule } from './modules/category/category.module';
 import { MiddlewareConsumer, Module, NestModule, Type } from '@nestjs/common';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { MiddlewareConsumer, Module, NestModule, Type } from '@nestjs/common';
         CategoryModule,
         BlogModule,
         UploadeModule,
+        CommentModule,
     ],
     controllers: [],
     providers: [ AuthModule ],
