@@ -65,4 +65,11 @@ export class BlogController
     {
         return await this.blogService.LikeToggle(id);
     }
+
+    @Get('/bookmark/:id')
+    @HttpCode(HttpStatus.OK)
+    async BookmarkToggle(@Param('id') id: string)
+    {
+        return await this.blogService.BookmarkToggle(id);
+    }
 }

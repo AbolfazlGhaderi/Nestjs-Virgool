@@ -4,7 +4,6 @@ import { REQUEST } from '@nestjs/core';
 import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogEntity, BlogLikesEntity, UserEntity } from '../../app/models';
 import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
 import { BlogCategoryEntity } from '../../app/models/blog.category.model';
@@ -13,6 +12,7 @@ import { GenerateRandomByte, createSlug } from '../../app/utils/functions.utils'
 import { ModelEnum, PublicMessage,  NotFoundMessages } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
+import { BlogBookmarkEntity, BlogEntity, BlogLikesEntity, UserEntity } from '../../app/models';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService
@@ -21,6 +21,7 @@ export class BlogService
         @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
         @InjectRepository(BlogCategoryEntity) private readonly blogCategoryRepository: Repository<BlogCategoryEntity>,
         @InjectRepository(BlogLikesEntity) private readonly blogLikeRepository: Repository<BlogLikesEntity>,
+        @InjectRepository(BlogBookmarkEntity) private readonly blogBookmarkRepository: Repository<BlogBookmarkEntity>,
         private readonly categoryService: CategoryService,
         @Inject(REQUEST) private readonly request: Request,
     ) {}
@@ -118,6 +119,7 @@ export class BlogService
             .addSelect([ 'categories.id', 'category.title', 'author.username', 'author.id', 'profile.nick_name', 'profile.image_profile' ])
             .where(where, { category, search })
             .loadRelationCountAndMap('blogs.likes', 'blogs.likes')
+            .loadRelationCountAndMap('blogs.bookmarks', 'blogs.bookmarks')
             .orderBy('blogs.create_at', 'DESC')
             .skip(skip)
             .take(limit)
@@ -284,4 +286,28 @@ export class BlogService
             message,
         };
     }
+    async BookmarkToggle(id:string)
+    {
+        let message = PublicMessage.Bookmark;
+        const user = this.request.user as UserEntity;
+
+        // Check Blog 
+        const { blog } = await this.CheckExistMyBlogById(id);
+        if (!blog) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+
+        // Check Like
+        const isBookmarked = await this.blogBookmarkRepository.findOne({ where: { blog: { id: blog.id }, user: { id: user.id } } });
+        if (isBookmarked)
+        {
+            await this.blogBookmarkRepository.delete({ blog: { id: blog.id }, user: { id: user.id } });
+            message = PublicMessage.UnBookmark;
+        }
+        else  await this.blogBookmarkRepository.insert({ blog: { id: blog.id }, user: { id: user.id } });
+
+        return {
+            message,
+        };
+    }
+
+
 }

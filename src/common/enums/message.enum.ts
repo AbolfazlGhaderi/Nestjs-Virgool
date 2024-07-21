@@ -44,7 +44,9 @@ export enum PublicMessage {
    CreateSuccess = 'با موفقیت ایجاد شد',
    SystemError = 'سیستم به مشکل خورده است . لطفا بعدا تلاش کنید',
    Like = 'با موفقیت لایک شد',
-   DisLike = 'لایک با موفقیت برداشته شد'
+   DisLike = 'لایک با موفقیت برداشته شد',
+   Bookmark = 'با موفقیت ذخیره شد',
+   UnBookmark = ' مثاله با موفقیت از لیست ذخیره ها برداشته شد'
 }
 
 export enum ValidationMessage {
