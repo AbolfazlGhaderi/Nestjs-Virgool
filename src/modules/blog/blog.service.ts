@@ -4,7 +4,7 @@ import { REQUEST } from '@nestjs/core';
 import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogEntity, UserEntity } from '../../app/models';
+import { BlogEntity, BlogLikesEntity, UserEntity } from '../../app/models';
 import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
 import { BlogCategoryEntity } from '../../app/models/blog.category.model';
@@ -20,6 +20,7 @@ export class BlogService
     constructor(
         @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
         @InjectRepository(BlogCategoryEntity) private readonly blogCategoryRepository: Repository<BlogCategoryEntity>,
+        @InjectRepository(BlogLikesEntity) private readonly blogLikeRepository: Repository<BlogLikesEntity>,
         private readonly categoryService: CategoryService,
         @Inject(REQUEST) private readonly request: Request,
     ) {}
@@ -201,8 +202,7 @@ export class BlogService
         }
         // Check Blug
         // TODO: Check it
-        // eslint-disable-next-line unicorn/no-await-expression-member 
-        const blog = (await this.CheckExistMyBlogById(id)).blog;
+        const { blog } = await this.CheckExistMyBlogById(id);
         if (!blog)
         {
             throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
@@ -257,5 +257,28 @@ export class BlogService
             message:PublicMessage.UpdateSuccess,
         };
 
+    }
+
+    async LikeToggle(id:string)
+    {
+        let message = PublicMessage.Like;
+        const user = this.request.user as UserEntity;
+
+        // Check Blog 
+        const { blog } = await this.CheckExistMyBlogById(id);
+        if (!blog) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+
+        // Check Like
+        const isLiked = await this.blogLikeRepository.findOne({ where: { blog: { id: blog.id }, user: { id: user.id } } });
+        if (isLiked)
+        {
+            await this.blogLikeRepository.delete({ blog: { id: blog.id }, user: { id: user.id } });
+            message = PublicMessage.DisLike;
+        }
+        else  await this.blogLikeRepository.insert({ blog: { id: blog.id }, user: { id: user.id } });
+
+        return {
+            message,
+        };
     }
 }

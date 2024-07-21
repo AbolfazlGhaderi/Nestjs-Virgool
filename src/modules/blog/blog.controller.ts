@@ -58,4 +58,11 @@ export class BlogController
     {
         return await this.blogService.UpdateBlog(id, updateBlogDto);
     }
+
+    @Get('/like/:id')
+    @HttpCode(HttpStatus.OK)
+    async LikeToggle(@Param('id') id: string)
+    {
+        return await this.blogService.LikeToggle(id);
+    }
 }

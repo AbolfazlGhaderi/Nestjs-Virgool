@@ -43,6 +43,8 @@ export enum PublicMessage {
    Error = 'لطفا مجددا امتحان کنید ',
    CreateSuccess = 'با موفقیت ایجاد شد',
    SystemError = 'سیستم به مشکل خورده است . لطفا بعدا تلاش کنید',
+   Like = 'با موفقیت لایک شد',
+   DisLike = 'لایک با موفقیت برداشته شد'
 }
 
 export enum ValidationMessage {
