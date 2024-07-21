@@ -1,17 +1,16 @@
 import { Request } from 'express';
+import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
 import { BlogEntity, UserEntity } from '../../app/models';
-import { ModelEnum, PublicMessage } from '../../common/enums';
-import { CreateBlogDto, FilterBlogDto } from './dto/blog.dto';
 import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
-import { NotFoundMessages } from '../../common/enums/message.enum';
 import { BlogCategoryEntity } from '../../app/models/blog.category.model';
+import { CreateBlogDto, FilterBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { GenerateRandomByte, createSlug } from '../../app/utils/functions.utils';
+import { ModelEnum, PublicMessage,  NotFoundMessages } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
 
@@ -153,11 +152,11 @@ export class BlogService
         const blog = await this.blogRepository.findOne({ where: { slug: slug } });
         return !!blog;
     }
-    async CheckExistMyBlogById(id: string): Promise<boolean>
+    async CheckExistMyBlogById(id: string)
     {
         const user = this.request.user as UserEntity;
         const blog = await this.blogRepository.findOne({ where: { id: id, user: { id:user.id } } });
-        return !!blog;
+        return { status: !!blog, blog:blog };
     }
 
     async MyBlogs(): Promise<BlogEntity[]>
@@ -179,7 +178,8 @@ export class BlogService
         {
             throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
         }
-        if (!await this.CheckExistMyBlogById(id))
+        // eslint-disable-next-line unicorn/no-await-expression-member
+        if (!(await this.CheckExistMyBlogById(id)).status)
         {
             throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
 
@@ -188,5 +188,74 @@ export class BlogService
         return {
             message : PublicMessage.DeleteSuccess,
         };
+    }
+
+
+    async UpdateBlog(id:string, blogData:UpdateBlogDto)
+    {
+        // variables
+        const user = this.request.user as UserEntity;
+        if (!isUUID(id))
+        {
+            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+        }
+        // Check Blug
+        // TODO: Check it
+        // eslint-disable-next-line unicorn/no-await-expression-member 
+        const blog = (await this.CheckExistMyBlogById(id)).blog;
+        if (!blog)
+        {
+            throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+        }
+        const { title, slug, content, description, time_for_study: time, image } = blogData;
+        let { categories } = blogData;
+
+        // Check Category
+        if (!isArray(categories) && typeof categories === 'string')  // TODO: Fix this / Should be Array
+        {
+
+            categories = categories.split(',');
+        }
+        else if (!categories || categories.length <= 0)
+        {
+            throw new HttpException(NotFoundMessages.CategoryNotFound, HttpStatus.NOT_FOUND);
+        }
+
+        if (isArray(categories) && categories.length > 0)
+        {
+            // Delete Blog Category
+            await this.blogCategoryRepository.delete({ blog: { id: blog.id } });
+        }
+
+        // implement Blog Category
+        for (const category of categories)
+        {
+
+            let _category = await this.categoryService.FindCategoryByTitle(category);
+            if (!_category)
+            {
+                _category = await this.categoryService.InsertCategory(category);
+            }
+
+
+            await this.blogCategoryRepository.insert({ blog: { id: blog.id }, category: { id: _category.id } });
+        }
+
+        let slugData = slug || title;
+        if (slugData) slugData = createSlug(slugData);
+
+        blog.title = title || blog.title;
+        blog.slug = slugData || blog.slug;
+        blog.description = description || blog.description;
+        blog.content = content || blog.content;
+        blog.time_for_study = time || blog.time_for_study;
+        blog.image = image || blog.image;
+
+        await this.blogRepository.save(blog);
+
+        return {
+            message:PublicMessage.UpdateSuccess,
+        };
+
     }
 }

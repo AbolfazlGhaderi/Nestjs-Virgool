@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateBlogDto
@@ -10,7 +10,7 @@ export class CreateBlogDto
     title: string;
     @ApiProperty({ isArray: true, type: String })
     @IsNotEmpty()
-    categories: string | string[];
+    categories: string | string[]; // TODO: should be array
     @ApiPropertyOptional()
     @IsOptional()
     // @IsString()
@@ -37,6 +37,8 @@ export class CreateBlogDto
     image: string;
 }
 
+
+export class UpdateBlogDto extends PartialType(CreateBlogDto) {}
 
 export class FilterBlogDto
 {
