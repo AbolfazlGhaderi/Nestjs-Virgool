@@ -39,4 +39,11 @@ export class CommentController
     {
         return await this.commentService.AcceptComment(id);
     }
+
+    @Put('/reject/:id') // TODO: Just Admin
+    @HttpCode(HttpStatus.OK)
+    async RejectComment(@Param('id', ParseUUIDPipe) id:string)
+    {
+        return await this.commentService.RejectComment(id);
+    }
 }

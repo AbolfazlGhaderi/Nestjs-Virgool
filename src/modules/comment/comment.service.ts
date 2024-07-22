@@ -86,6 +86,17 @@ export class CommentService
         return { message:PublicMessage.Accept };
     }
 
+    async RejectComment(id:string)
+    {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const comment = await this.CheckExistCommentById(id);
+        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
+        if (comment.accepted === false) return { message: PublicMessage.Reject };
+        comment.accepted = false;
+        await this.commentRepository.save(comment);
+        return { message:PublicMessage.Reject };
+    }
+
 
     // Common
 
