@@ -4,13 +4,14 @@ import { REQUEST } from '@nestjs/core';
 import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommentService } from '../comment/comment.service';
 import { CategoryService } from '../category/category.service';
 import { BlogStatus } from '../../common/enums/blog/status.enum';
 import { BlogCategoryEntity } from '../../app/models/blog.category.model';
 import { CreateBlogDto, FilterBlogDto, UpdateBlogDto } from './dto/blog.dto';
 import { GenerateRandomByte, createSlug } from '../../app/utils/functions.utils';
 import { ModelEnum, PublicMessage,  NotFoundMessages } from '../../common/enums';
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
 import { BlogBookmarkEntity, BlogEntity, BlogLikesEntity, UserEntity } from '../../app/models';
 
@@ -23,6 +24,7 @@ export class BlogService
         @InjectRepository(BlogLikesEntity) private readonly blogLikeRepository: Repository<BlogLikesEntity>,
         @InjectRepository(BlogBookmarkEntity) private readonly blogBookmarkRepository: Repository<BlogBookmarkEntity>,
         private readonly categoryService: CategoryService,
+        @Inject(forwardRef(() => CommentService)) private readonly commentService : CommentService,
         @Inject(REQUEST) private readonly request: Request,
     ) {}
 
@@ -317,7 +319,7 @@ export class BlogService
         };
     }
 
-    async FindOneBlogBySlug(slug:string)
+    async FindOneBlogBySlug(slug:string, paginationData:PaginationDto)
     {
         const user = this.request.user;  // TODO: Check USER for Like and bookmark
         let isLiked = false, isBookmarked = false;
@@ -332,20 +334,17 @@ export class BlogService
                 'author.username',
                 'author.id',
                 'profile.nick_name',
-                'profile.image_profile',
-                'user.id' ])
+                'profile.image_profile' ])
             .where({ slug })
             .loadRelationCountAndMap('blogs.likes', 'blogs.likes')
             .loadRelationCountAndMap('blogs.bookmarks', 'blogs.bookmarks')
-            .leftJoinAndSelect('blogs.comments', 'comments', 'comments.accepted = :accepted', { accepted:true })
-            .leftJoin('comments.user', 'user')
             .getOne();
 
         if (!blog) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
-
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const commentData = await this.commentService.FindCommentsOfBlug(blog.id, paginationData);
         if (user)
         {
-
             isLiked = !!(await this.blogLikeRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
             console.log(isLiked);
             isBookmarked = !!(await this.blogBookmarkRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
@@ -356,6 +355,7 @@ export class BlogService
             isLiked,
             isBookmarked,
             blog,
+            commentData,
         };
     }
 

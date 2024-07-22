@@ -38,9 +38,10 @@ export class BlogController
     @Get('/slug/:slug')
     @HttpCode(HttpStatus.OK)
     @SkipAuthDecorator() // Skip Authentication
-    async FindOneBlogBySlug(@Param('slug') slug: string)
+    @Pagination()
+    async FindOneBlogBySlug(@Param('slug') slug: string, @Query() paginationDto:PaginationDto)
     {
-        return await this.blogService.FindOneBlogBySlug(slug);
+        return await this.blogService.FindOneBlogBySlug(slug, paginationDto);
     }
 
     @Get('/myblogs')
