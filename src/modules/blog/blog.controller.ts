@@ -35,6 +35,13 @@ export class BlogController
     {
         return await this.blogService.BlogList(paginationData, filterBlogDto);
     }
+    @Get('/slug/:slug')
+    @HttpCode(HttpStatus.OK)
+    @SkipAuthDecorator() // Skip Authentication
+    async FindOneBlogBySlug(@Param('slug') slug: string)
+    {
+        return await this.blogService.FindOneBlogBySlug(slug);
+    }
 
     @Get('/myblogs')
     @HttpCode(HttpStatus.OK)

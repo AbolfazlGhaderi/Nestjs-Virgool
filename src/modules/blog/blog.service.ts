@@ -317,5 +317,46 @@ export class BlogService
         };
     }
 
+    async FindOneBlogBySlug(slug:string)
+    {
+        const user = this.request.user;  // TODO: Check USER for Like and bookmark
+        let isLiked = false, isBookmarked = false;
+        const blog = await this.blogRepository
+            .createQueryBuilder(ModelEnum.Blog)
+            .leftJoin('blogs.blog_categories', 'categories')
+            .leftJoin('categories.category', 'category')
+            .leftJoin('blogs.user', 'author')
+            .leftJoin('author.profile', 'profile')
+            .addSelect([ 'categories.id',
+                'category.title',
+                'author.username',
+                'author.id',
+                'profile.nick_name',
+                'profile.image_profile',
+                'user.id' ])
+            .where({ slug })
+            .loadRelationCountAndMap('blogs.likes', 'blogs.likes')
+            .loadRelationCountAndMap('blogs.bookmarks', 'blogs.bookmarks')
+            .leftJoinAndSelect('blogs.comments', 'comments', 'comments.accepted = :accepted', { accepted:true })
+            .leftJoin('comments.user', 'user')
+            .getOne();
+
+        if (!blog) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+
+        if (user)
+        {
+
+            isLiked = !!(await this.blogLikeRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
+            console.log(isLiked);
+            isBookmarked = !!(await this.blogBookmarkRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
+            console.log(isBookmarked);
+        }
+
+        return {
+            isLiked,
+            isBookmarked,
+            blog,
+        };
+    }
 
 }
