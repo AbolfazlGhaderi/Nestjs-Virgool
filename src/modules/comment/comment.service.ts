@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { UserEntity } from '../../app/models';
 import { PaginationDto } from '../../common/dtos';
@@ -10,14 +10,14 @@ import { NotFoundMessages } from '../../common/enums';
 import { CommentEntity } from '../../app/models/comment.model';
 import { PublicMessage } from '../../common/enums/message.enum';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 
 @Injectable({ scope:Scope.REQUEST })
 export class CommentService
 {
     constructor(
         @InjectRepository(CommentEntity) private readonly commentRepository : Repository<CommentEntity>,
-        private readonly blogService : BlogService,
+        @Inject(forwardRef(() => BlogService)) private readonly blogService : BlogService,
         @Inject(REQUEST) private readonly request: Request,
     ) {}
 
@@ -53,6 +53,7 @@ export class CommentService
     }
 
 
+    // this section is for admin to accept or reject
     async CommentList(pagintionData:PaginationDto)
     {
         const { limit, page, skip } = PaginationConfig(pagintionData);
@@ -98,6 +99,55 @@ export class CommentService
     }
 
 
+    async FindCommentsOfBlug(blogId:string, paginationData:PaginationDto)
+    {
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const [ comments, count ] = await this.commentRepository
+            .createQueryBuilder('comments')
+            .leftJoinAndSelect('comments.blog', 'blog')
+            .leftJoinAndSelect('comments.user', 'user')
+            .leftJoinAndSelect('user.profile', 'profile')
+            .leftJoinAndSelect('comments.children', 'child1', 'child1.accepted = :accepted', { accepted: true })
+            .leftJoinAndSelect('child1.user', 'child1User')
+            .leftJoinAndSelect('child1User.profile', 'child1UserProfile')
+            .leftJoinAndSelect('child1.children', 'child2', 'child2.accepted = :accepted', { accepted: true })
+            .leftJoinAndSelect('child2.user', 'child2User')
+            .leftJoinAndSelect('child2User.profile', 'child2UserProfile')
+            .where('comments.blog_id = :blogId AND comments.accepted = :accepted ', { blogId, accepted: true })
+            .andWhere('comments.parent IS NULL')
+            .select([
+                'comments',
+                'blog.id',
+                'blog.title',
+                'user.username',
+                'profile.nick_name',
+                'profile.image_profile',
+                'child1.text',
+                'child1.create_at',
+                'child1.id',
+                'child1.accepted',
+                'child1User.username',
+                'child1UserProfile.nick_name',
+                'child1UserProfile.image_profile',
+                'child2.text',
+                'child2.create_at',
+                'child2.id',
+                'child2.accepted',
+                'child2User.username',
+                'child2UserProfile.nick_name',
+                'child2UserProfile.image_profile',
+            ])
+            .orderBy('comments.id', 'DESC')
+            .skip(skip)
+            .take(limit)
+            .getManyAndCount();
+
+
+        return {
+            pagination: paginationGenerator(count, page, limit),
+            comments: comments,
+        };
+    }
     // Common
 
     async CheckExistCommentById(id:string)
