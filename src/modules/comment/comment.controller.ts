@@ -1,10 +1,12 @@
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from '../../common/dtos';
 import { CommentService } from './comment.service';
-import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
-import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor';
 import { CreateCommentDto } from './dto/comment.dto';
 import { SwaggerConsumes } from '../../common/enums';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { AuthDecorator } from '../../common/decorators/auth.decorator';
+import { Pagination } from '../../common/decorators/pagination.decorator';
+import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseInterceptors } from '@nestjs/common';
 
 @Controller('comment')
 @ApiTags('Comment')
@@ -20,5 +22,14 @@ export class CommentController
     async InsertComment(@Body()comentDto: CreateCommentDto)
     {
         return await this.commentService.CreateComment(comentDto);
+    }
+
+
+    @Get('/')
+    @HttpCode(HttpStatus.OK)
+    @Pagination() // Swagger
+    async CommentList(@Query() paginationData: PaginationDto)
+    {
+        return await this.commentService.CommentList(paginationData);
     }
 }

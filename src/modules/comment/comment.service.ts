@@ -2,13 +2,15 @@ import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { UserEntity } from '../../app/models';
+import { PaginationDto } from '../../common/dtos';
 import { BlogService } from '../blog/blog.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCommentDto } from './dto/comment.dto';
 import { NotFoundMessages } from '../../common/enums';
 import { CommentEntity } from '../../app/models/comment.model';
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PublicMessage } from '../../common/enums/message.enum';
+import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 
 @Injectable({ scope:Scope.REQUEST })
 export class CommentService
@@ -48,5 +50,28 @@ export class CommentService
         });
 
         return { message:PublicMessage.CreateSuccess };
+    }
+
+
+    async CommentList(pagintionData:PaginationDto)
+    {
+        const { limit, page, skip } = PaginationConfig(pagintionData);
+        const [ comments, count ] = await this.commentRepository.findAndCount({
+            where:{},
+            relations:{ blog: true, user: { profile:true } },
+            select:{
+                blog:{ id:true, title: true },
+                user:{ username: true, profile: { nick_name: true } },
+            },
+            skip,
+            take:limit,
+            order:{ id:'DESC' },
+        });
+
+
+        return {
+            pagination : paginationGenerator(count, page, limit),
+            comments:comments,
+        };
     }
 }
