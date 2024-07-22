@@ -6,7 +6,7 @@ import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
 
 @Controller('comment')
 @ApiTags('Comment')
@@ -31,5 +31,12 @@ export class CommentController
     async CommentList(@Query() paginationData: PaginationDto)
     {
         return await this.commentService.CommentList(paginationData);
+    }
+
+    @Put('/accept/:id') // TODO: Just Admin
+    @HttpCode(HttpStatus.OK)
+    async AcceptComment(@Param('id', ParseUUIDPipe) id:string)
+    {
+        return await this.commentService.AcceptComment(id);
     }
 }

@@ -47,7 +47,9 @@ export enum PublicMessage {
    Like = 'با موفقیت لایک شد',
    DisLike = 'لایک با موفقیت برداشته شد',
    Bookmark = 'با موفقیت ذخیره شد',
-   UnBookmark = ' مثاله با موفقیت از لیست ذخیره ها برداشته شد'
+   UnBookmark = ' مثاله با موفقیت از لیست ذخیره ها برداشته شد',
+   Accept = 'با موفقیت تایید شد',
+   Reject = 'با موفقیت رد شد'
 }
 
 export enum ValidationMessage {

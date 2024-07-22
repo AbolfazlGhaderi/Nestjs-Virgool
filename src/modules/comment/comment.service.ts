@@ -74,4 +74,25 @@ export class CommentService
             comments:comments,
         };
     }
+
+    async AcceptComment(id:string)
+    {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const comment = await this.CheckExistCommentById(id);
+        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
+        if (comment.accepted === true) return { message: PublicMessage.Accept };
+        comment.accepted = true;
+        await this.commentRepository.save(comment);
+        return { message:PublicMessage.Accept };
+    }
+
+
+    // Common
+
+    async CheckExistCommentById(id:string)
+    {
+        const comment = await this.commentRepository.findOne({ where:{ id:id } });
+        // return { status: !!comment, comment:comment };
+        return comment;
+    }
 }
