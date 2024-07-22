@@ -11,7 +11,7 @@ export class CommentEntity
     @Column({ nullable: false })
     text: string;
     @Column({ default: false })
-    acceoted: boolean;
+    accepted: boolean;
     @ManyToOne(() => BlogEntity, (blog) => blog.comments, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'blog_id' })
     blog: BlogEntity;

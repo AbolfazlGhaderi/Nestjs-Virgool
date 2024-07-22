@@ -120,6 +120,9 @@ export class BlogService
             .where(where, { category, search })
             .loadRelationCountAndMap('blogs.likes', 'blogs.likes')
             .loadRelationCountAndMap('blogs.bookmarks', 'blogs.bookmarks')
+            .loadRelationCountAndMap('blogs.comments', 'blogs.comments', 'coments', qb =>
+                qb.where('coments.accepted = :accepted', { accepted:true }),
+            )
             .orderBy('blogs.create_at', 'DESC')
             .skip(skip)
             .take(limit)
