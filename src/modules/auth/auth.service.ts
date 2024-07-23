@@ -1,14 +1,15 @@
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
-import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
-import { UserEntity } from '../../app/models';
 import { Request } from 'express';
+import { UserEntity } from '../../app/models';
 import { OtpService } from '../otp/otp.service';
 import { isMobilePhone } from 'class-validator';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginResponseType } from '../../common/types';
 import { TokenService } from '../token/token.service';
 import { UserService } from '../../modules/user/user.service';
+import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
+import { SmsService } from '../../common/services/sms.service';
 import { symmetricCryption } from '../../app/utils/encrypt.decrypt';
 import { UsernameValidator } from '../../app/utils/username.validator';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
@@ -23,6 +24,7 @@ export class AuthService
       private readonly userService: UserService,
       private readonly otpService: OtpService,
       private readonly tokenService: TokenService,
+      private readonly smsService:SmsService,
       @Inject(REQUEST) private request: Request,
     ) {}
 
@@ -66,42 +68,35 @@ export class AuthService
         if (!user) throw new HttpException(AuthMessage.NotFoundAccount, HttpStatus.NOT_FOUND);
 
         let otp: number;
-        let token: string;
 
         const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
+        otp = this.otpService.generateOtp();
+
+        // send otp
+
+        // save otp
+        otp = await this.otpService.SaveLoginOTP(username, otp);
+
+
+
         if (method === AuthMethods.Email)
         {
-            otp = this.otpService.generateOtp();
-
-            // send otp
-
-            // save otp
-            otp = await this.otpService.SaveLoginOTP(username, otp);
-
-            // Generate Token
-            token = this.tokenService.createOtpToken({
-                sub: userNameEncrypted,
-            });
+            // TODO: send email
         }
         else if (method === AuthMethods.Phone)
         {
-            otp = this.otpService.generateOtp();
-
-            // send otp
-
-            // save otp
-            otp = await this.otpService.SaveLoginOTP(username, otp);
-
-            // Generate Token
-            token = this.tokenService.createOtpToken({
-                sub: userNameEncrypted,
-            });
+            await this.smsService.sendOtpCode(username, otp.toString());
         }
         else
         {
             throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST); // TODO: user should can login with username
         }
+
+        // Generate Token
+        const token = this.tokenService.createOtpToken({
+            sub: userNameEncrypted,
+        });
 
         return {
             token: token,
