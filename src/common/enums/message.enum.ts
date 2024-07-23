@@ -34,7 +34,8 @@ export enum ConflictMessages {
    BlogConflict = 'این مقاله قبلا ثبت شده است'
 }
 
-export enum PublicMessage {
+export enum PublicMessage
+{
    SendOtpSuccess = 'کد با موفقیت ارسال شد',
    LoginSucces = 'ورود با موفقیت انجام شد',
    DeleteSuccess = ' با موفقیت پاک شد',
@@ -52,6 +53,12 @@ export enum PublicMessage {
    Reject = 'با موفقیت رد شد'
 }
 
-export enum ValidationMessage {
+export enum ValidationMessage
+{
    InvalidImageFormat = 'فرمت تصاویر باید .png یا .jpg یا .jpeg باشد .'
+}
+
+export enum ServiceUnavailableMessage
+{
+   SmsServiceUnavailable = 'سرویس ارسال پیامک در درسترس نمیباشد . مجددا امتحان نمایید ',
 }

@@ -18,5 +18,8 @@ namespace NodeJS {
        LIARA_SECRET_OBJS_KEY: string;
        LIARA_ACCESS_OBJS_KEY: string;
        OBJS_LOCATION_ENDPOINT: string;
+       SMS_ENDPOINT_VERIFY: string;
+       SMS_API_KEY: string;
+       SMS_TEMPLATEID: string;
    }
 }

@@ -7,3 +7,4 @@ export { CookieKeys } from './cookie.enum';
 export { TokenType } from './token.type';
 export { ImageFolderNameEnum } from './image.enum';
 export { NotFoundMessages } from './message.enum';
+export { ServiceUnavailableMessage } from './message.enum';
