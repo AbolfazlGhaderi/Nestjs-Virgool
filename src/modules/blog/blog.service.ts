@@ -346,9 +346,7 @@ export class BlogService
         if (user)
         {
             isLiked = !!(await this.blogLikeRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
-            console.log(isLiked);
             isBookmarked = !!(await this.blogBookmarkRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
-            console.log(isBookmarked);
         }
 
         return {

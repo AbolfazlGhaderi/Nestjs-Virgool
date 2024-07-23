@@ -67,7 +67,6 @@ export class TokenService
         // check exist user
         const user = await this.userRepository.findOne({ where: { id: userId } });
         if (!user) throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
-
         return user;
     }
     validateRefreshoken(token: string)
