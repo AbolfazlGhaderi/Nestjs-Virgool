@@ -35,6 +35,8 @@ export class BlogController
     {
         return await this.blogService.BlogList(paginationData, filterBlogDto);
     }
+
+
     @Get('/slug/:slug')
     @HttpCode(HttpStatus.OK)
     @SkipAuthDecorator() // Skip Authentication

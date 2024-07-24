@@ -53,7 +53,7 @@ export class CommentService
     }
 
 
-    // this section is for admin to accept or reject
+    // Admin
     async CommentList(pagintionData:PaginationDto)
     {
         const { limit, page, skip } = PaginationConfig(pagintionData);
