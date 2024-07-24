@@ -1,20 +1,12 @@
-import { ModelEnum } from '../../common/enums/model.enum';
-import {
-    Column,
-    CreateDateColumn,
-    DeleteDateColumn,
-    Entity,
-    OneToMany,
-    OneToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
-import { ProfileEntity } from './profile.model';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { BlogEntity } from './blog.model';
-import { BlogLikesEntity } from './blog.like.model';
-import { BlogBookmarkEntity } from './blog.bookmark.model';
-import { CommentEntity } from './comment.model';
 import { ImageEntity } from './image.model';
+import { CommentEntity } from './comment.model';
+import { ProfileEntity } from './profile.model';
+import { BlogLikesEntity } from './blog.like.model';
+import { RoleKey } from '../../common/enums/role.enum';
+import { ModelEnum } from '../../common/enums/model.enum';
+import { BlogBookmarkEntity } from './blog.bookmark.model';
 
 @Entity({ name: ModelEnum.User })
 export class UserEntity
@@ -27,6 +19,8 @@ export class UserEntity
     phone: string;
     @Column({ nullable: true, unique: true })
     email: string;
+    @Column({ nullable: false, default: RoleKey.User })
+    role: string;
     @Column({ nullable: false, default: false })
     verify_email: boolean;
     @Column({ nullable: false, default: false })
