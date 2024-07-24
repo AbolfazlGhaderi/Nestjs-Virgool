@@ -62,3 +62,8 @@ export enum ServiceUnavailableMessage
 {
    SmsServiceUnavailable = 'سرویس ارسال پیامک در درسترس نمیباشد . مجددا امتحان نمایید ',
 }
+
+export enum ForbiddenMessage
+{
+   RoleAcces = 'شما به این بخش دسترسی ندارید',
+}
