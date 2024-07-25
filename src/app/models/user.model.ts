@@ -7,6 +7,7 @@ import { BlogLikesEntity } from './blog.like.model';
 import { RoleKey } from '../../common/enums/role.enum';
 import { ModelEnum } from '../../common/enums/model.enum';
 import { BlogBookmarkEntity } from './blog.bookmark.model';
+import { FollowEntity } from './follow.model';
 
 @Entity({ name: ModelEnum.User })
 export class UserEntity
@@ -46,4 +47,9 @@ export class UserEntity
     comments: CommentEntity[];
     @OneToMany(() => ImageEntity, (image) => image.user)
     image: ImageEntity[];
+    @OneToMany(() => FollowEntity, (follow) => follow.following)
+    following: FollowEntity[];
+    @OneToMany(() => FollowEntity, (follow) => follow.follower)
+    follower: FollowEntity[];
+
 }

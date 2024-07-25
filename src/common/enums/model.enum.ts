@@ -8,5 +8,6 @@ export enum ModelEnum {
     BlogCategory='blog_categories',
     BlogLike='blog_like',
     BlogBookmark='blog_bookmark',
-    Image='images'
+    Image='images',
+    Follow='follow'
 }
