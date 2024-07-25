@@ -82,4 +82,11 @@ export class UserController
     {
         return await this.userService.changeUserNameS(usernameDto);
     }
+
+    @Get('/follow/:userId')
+    @ApiParam({ name:'userId' })
+    async FollowToggle(@Param('userId', ParseUUIDPipe) userId: string )
+    {
+        return await this.userService.FollowToggle(userId);
+    }
 }

@@ -50,7 +50,9 @@ export enum PublicMessage
    Bookmark = 'با موفقیت ذخیره شد',
    UnBookmark = ' مقاله با موفقیت از لیست ذخیره ها برداشته شد',
    Accept = 'با موفقیت تایید شد',
-   Reject = 'با موفقیت رد شد'
+   Reject = 'با موفقیت رد شد',
+   Follow = 'فالو شد',
+   UnFollow = 'از لیست دنبال کنندگان حذف شد '
 }
 
 export enum ValidationMessage

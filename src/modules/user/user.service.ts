@@ -3,18 +3,17 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { ProfileDto } from './dto/profile.dto';
 import { OtpService } from '../otp/otp.service';
-import { ProfileImage } from '../../common/types';
-import { isDate, Length } from 'class-validator';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GenderEnum } from '../../common/enums/profile';
 import { TokenService } from '../token/token.service';
 import { ChangeEmailDTO } from './dto/change.email.dto';
+import { FollowEntity } from '../../app/models/follow.model';
 import { ProfileEntity, UserEntity } from '../../app/models';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
-import { AuthMessage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
 import { ConflictMessages, NotFoundMessages } from '../../common/enums/message.enum';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { AuthMessage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService
@@ -25,6 +24,8 @@ export class UserService
         private readonly userRepository: Repository<UserEntity>,
         @InjectRepository(ProfileEntity)
         private readonly profileRepository: Repository<ProfileEntity>,
+        @InjectRepository(FollowEntity)
+        private readonly followRepository: Repository<FollowEntity>,
         private readonly otpService: OtpService,
         @Inject(REQUEST) private readonly request: Request,
     ) {}
@@ -249,6 +250,29 @@ export class UserService
 
         return {
             message: PublicMessage.UpdateSuccess,
+        };
+    }
+
+    async FollowToggle(followingId:string)
+    {
+        const user = this.request.user as UserEntity;
+        const following =  await this.findUserByUserId(followingId);
+        if (!following) throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
+
+        const isFollow =  await  this.followRepository.findOne({
+            where:{ following:{ id: followingId }, follower:{ id:user.id } },
+        });
+        if (isFollow)
+        {
+            await this.followRepository.remove(isFollow);
+            return {
+                message : PublicMessage.UnFollow,
+            };
+        }
+
+        await this.followRepository.insert({ follower:user,  following:following });
+        return {
+            message: PublicMessage.Follow,
         };
     }
 }
