@@ -169,10 +169,13 @@ export class UserService
     {
         const { id } = this.request.user as UserEntity;
 
-        const user = await this.userRepository.findOne({
-            where: { id },
-            relations: [ 'profile' ],
-        });
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :id', { id })
+            .leftJoinAndSelect('user.profile', 'profile')
+            .loadRelationCountAndMap('user.followers', 'user.followers')
+            .loadRelationCountAndMap('user.following', 'user.following')
+            .getOne();
         if (!user) throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
 
         return user;
