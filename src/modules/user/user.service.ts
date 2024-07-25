@@ -12,10 +12,10 @@ import { ChangeEmailDTO } from './dto/change.email.dto';
 import { FollowEntity } from '../../app/models/follow.model';
 import { ProfileEntity, UserEntity } from '../../app/models';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
-import { ConflictMessages, NotFoundMessages } from '../../common/enums/message.enum';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { AuthMessage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
+import { ConflictMessages, NotFoundMessages, BadRequestMesage } from '../../common/enums/message.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService
@@ -258,14 +258,18 @@ export class UserService
         };
     }
 
-    async FollowToggle(followingId:string)
+    async FollowToggle(followedId:string)
     {
         const user = this.request.user as UserEntity;
-        const followed =  await this.findUserByUserId(followingId);
+        if (followedId === user.id)
+        {
+            throw new HttpException(BadRequestMesage.FollowYourself, HttpStatus.BAD_REQUEST);
+        }
+        const followed = await this.findUserByUserId(followedId);
         if (!followed) throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
 
         const isFollow =  await  this.followRepository.findOne({
-            where:{ followed:{ id: followingId }, follower:{ id:user.id } },
+            where:{ followed:{ id: followedId }, follower:{ id:user.id } },
         });
         if (isFollow)
         {
@@ -291,6 +295,80 @@ export class UserService
         return {
             pagination : paginationGenerator(count, page, limit),
             users,
+        };
+    }
+
+    async GetAllFollowers(paginationData:PaginationDto)
+    {
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const user = this.request.user as UserEntity;
+
+        const [ followers, count ] = await this.followRepository.findAndCount({
+            where:{
+                followed:{ id:user.id },
+            },
+            relations: {
+                follower: { profile: true },
+            },
+            select:{
+                id:true,
+                follower:{
+                    id:true,
+                    username:true,
+                    profile:{
+                        nick_name:true,
+                        image_profile:true,
+                        bio:true,
+                    },
+                },
+            },
+            order:{ id:'DESC' },
+            take:limit,
+            skip,
+        });
+        if (followers.length === 0)
+            throw new HttpException(NotFoundMessages.FollowerNotFound, HttpStatus.NOT_FOUND);
+
+        return {
+            pagination : paginationGenerator(count, page, limit),
+            followers,
+        };
+    }
+
+
+    async GetAllFollowing(paginationData:PaginationDto)
+    {
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const user = this.request.user as UserEntity;
+
+        const [ following, count ] = await this.followRepository.findAndCount({
+            where:{
+                follower:{ id:user.id },
+            },
+            relations: {
+                followed: { profile: true },
+            },
+            select:{
+                id:true,
+                followed:{
+                    id:true,
+                    username:true,
+                    profile:{
+                        nick_name:true,
+                        image_profile:true,
+                        bio:true,
+                    },
+                },
+            },
+            order:{ id:'DESC' },
+            take:limit,
+            skip,
+        });
+        if (following.length === 0) throw new HttpException(NotFoundMessages.FollowerNotFound, HttpStatus.NOT_FOUND);
+
+        return {
+            pagination: paginationGenerator(count, page, limit),
+            following,
         };
     }
 }

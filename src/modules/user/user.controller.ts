@@ -94,12 +94,26 @@ export class UserController
         return await this.userService.FollowToggle(userId);
     }
 
-    @Get('/')
+    @Get('/list')
     @CanAccess(RoleKey.Admin)
     @Pagination()
     async GetAllUsers(@Query() paginationData: PaginationDto)
     {
         return await this.userService.GetAllUsers(paginationData);
+    }
+
+    @Get('/followers')
+    @Pagination()
+    async GetAllFollowers(@Query() paginationData: PaginationDto)
+    {
+        return await this.userService.GetAllFollowers(paginationData);
+    }
+
+    @Get('/following')
+    @Pagination()
+    async GetAllFollowing(@Query() paginationData: PaginationDto)
+    {
+        return await this.userService.GetAllFollowing(paginationData);
     }
 
 }

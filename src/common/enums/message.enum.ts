@@ -1,11 +1,11 @@
 export enum BadRequestMesage {
-   InValidData = 'اطلاعات وارد شده صحیح نمی باشند ',
-   EmailFormatIncorrect = 'ایمیل وارد شده معتبر نمی باشد',
-   MobileNumberIncorrect = 'شماره موبایل وارد شده معتبر نمی باشد',
-   RegisterMethodIncorrect = 'باید از طریق ایمیل یا شماره موبایل ثبت نام کنید',
-   SaveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
-   CategoryIncorrect =  'دسته بندی مورد نظر ثبت نشده است .  لطفا آن را ثبت کنید'
-
+    InValidData = 'اطلاعات وارد شده صحیح نمی باشند ',
+    EmailFormatIncorrect = 'ایمیل وارد شده معتبر نمی باشد',
+    MobileNumberIncorrect = 'شماره موبایل وارد شده معتبر نمی باشد',
+    RegisterMethodIncorrect = 'باید از طریق ایمیل یا شماره موبایل ثبت نام کنید',
+    SaveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
+    CategoryIncorrect = 'دسته بندی مورد نظر ثبت نشده است .  لطفا آن را ثبت کنید',
+    FollowYourself = 'شما نمیتوانید خود را فالو کنید !',
 }
 
 export enum AuthMessage {
@@ -24,7 +24,8 @@ export enum NotFoundMessages {
     UserNotFound = 'کاربر مورد نظر یافت نشد',
     BlogNotFound = 'مقاله ای یافت نشد',
     ImageNotFound = 'در دریافت تصویر مشکلی پیش آمده است ٬ لطفا به پشتیبانی پیام دهید',
-    CommentNotFound='کامنت مورد نظر یافت نشد'
+    CommentNotFound='کامنت مورد نظر یافت نشد',
+    FollowerNotFound='دنبال کننده ای پیدا نشد ',
 }
 
 export enum ConflictMessages {
