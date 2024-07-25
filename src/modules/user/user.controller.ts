@@ -10,21 +10,21 @@ import {  SwaggerConsumes } from '../../common/enums';
 import { ChangeEmailDTO } from './dto/change.email.dto';
 import { TChangeEmailC, TCheckOtp } from './types/type';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { Body, Controller, Get, HttpCode, HttpStatus, ParseFilePipe, Patch, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 
 
 
 @Controller('user')
 @ApiTags('user')
+@AuthDecorator()
 export class UserController
 {
     constructor(private readonly userService: UserService) {}
 
     @Put('/profile')
     @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-    @AuthDecorator()
     // Upload File (Setup FileFieldsInterceptor)
     // @UseInterceptors(
     // FileFieldsInterceptor(
@@ -54,7 +54,6 @@ export class UserController
 
     @Get('profile')
     @HttpCode(HttpStatus.OK)
-    @AuthDecorator()
     async GetProfileC(): Promise<UserEntity>
     {
         return await this.userService.GetProfileS();
@@ -63,7 +62,6 @@ export class UserController
     @Patch('change-email')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    @AuthDecorator()
     async ChangeEmailC(@Body() emailDTO: ChangeEmailDTO): TChangeEmailC
     {
         return await this.userService.ChangeEmailS(emailDTO);
@@ -72,7 +70,6 @@ export class UserController
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    @AuthDecorator()
     async checkOtpC(@Body() cehckDTO: CheckOtpDto): TCheckOtp
     {
         return await this.userService.checkOtpS(cehckDTO);
@@ -81,7 +78,6 @@ export class UserController
     @Patch('change-username')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    @AuthDecorator()
     async changeUserNameC(@Body() usernameDto: ChangeUserNameDTO)
     {
         return await this.userService.changeUserNameS(usernameDto);
