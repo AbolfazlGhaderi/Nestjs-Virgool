@@ -258,11 +258,11 @@ export class UserService
     async FollowToggle(followingId:string)
     {
         const user = this.request.user as UserEntity;
-        const following =  await this.findUserByUserId(followingId);
-        if (!following) throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
+        const followed =  await this.findUserByUserId(followingId);
+        if (!followed) throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
 
         const isFollow =  await  this.followRepository.findOne({
-            where:{ following:{ id: followingId }, follower:{ id:user.id } },
+            where:{ followed:{ id: followingId }, follower:{ id:user.id } },
         });
         if (isFollow)
         {
@@ -272,7 +272,7 @@ export class UserService
             };
         }
 
-        await this.followRepository.insert({ follower:user,  following:following });
+        await this.followRepository.insert({ follower: user, followed: followed });
         return {
             message: PublicMessage.Follow,
         };

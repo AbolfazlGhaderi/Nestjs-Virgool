@@ -47,9 +47,9 @@ export class UserEntity
     comments: CommentEntity[];
     @OneToMany(() => ImageEntity, (image) => image.user)
     image: ImageEntity[];
-    @OneToMany(() => FollowEntity, (follow) => follow.following)
-    following: FollowEntity[];
     @OneToMany(() => FollowEntity, (follow) => follow.follower)
-    follower: FollowEntity[];
+    following: FollowEntity[];
+    @OneToMany(() => FollowEntity, (follow) => follow.followed)
+    followers: FollowEntity[];
 
 }
