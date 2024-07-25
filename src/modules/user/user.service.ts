@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { ProfileDto } from './dto/profile.dto';
 import { OtpService } from '../otp/otp.service';
+import { PaginationDto } from '../../common/dtos';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GenderEnum } from '../../common/enums/profile';
@@ -14,6 +15,7 @@ import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { ConflictMessages, NotFoundMessages } from '../../common/enums/message.enum';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { AuthMessage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
+import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService
@@ -273,6 +275,19 @@ export class UserService
         await this.followRepository.insert({ follower:user,  following:following });
         return {
             message: PublicMessage.Follow,
+        };
+    }
+
+    async GetAllUsers(paginationData:PaginationDto)
+    {
+        const { limit, page, skip } = PaginationConfig(paginationData);
+        const [ users, count ] = await this.userRepository.findAndCount({ order:{ id:'DESC' }, take:limit, skip });
+        if (users.length === 0)
+            throw new HttpException(NotFoundMessages.UserNotFound, HttpStatus.NOT_FOUND);
+
+        return {
+            pagination : paginationGenerator(count, page, limit),
+            users,
         };
     }
 }

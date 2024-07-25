@@ -5,14 +5,18 @@
 import { UserService } from './user.service';
 import { UserEntity } from '../../app/models';
 import { ProfileDto } from './dto/profile.dto';
+import { PaginationDto } from '../../common/dtos';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
 import {  SwaggerConsumes } from '../../common/enums';
+import { RoleKey } from '../../common/enums/role.enum';
 import { ChangeEmailDTO } from './dto/change.email.dto';
 import { TChangeEmailC, TCheckOtp } from './types/type';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
+import { CanAccess } from '../../common/decorators/role.access.decorator';
+import { Pagination } from '../../common/decorators/pagination.decorator';
 import { ApiBearerAuth, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 
 
 
@@ -89,4 +93,13 @@ export class UserController
     {
         return await this.userService.FollowToggle(userId);
     }
+
+    @Get('/')
+    @CanAccess(RoleKey.Admin)
+    @Pagination()
+    async GetAllUsers(@Query() paginationData: PaginationDto)
+    {
+        return await this.userService.GetAllUsers(paginationData);
+    }
+
 }
