@@ -181,6 +181,14 @@ export class UserService
         return user;
     }
 
+    async CreateProfileFromGoogle(userData:UserEntity, profileData:{ image:string, name:string })
+    {
+        profileData.name = profileData.name || 'Guast';
+        return await this.profileRepository.save({ user:{ id:userData.id }, image_profile:profileData.image, nick_name:profileData.name });
+
+    }
+
+
     async ChangeEmailS(data: ChangeEmailDTO)
     {
         const { id, email } = this.request.user as UserEntity;

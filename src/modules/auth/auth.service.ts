@@ -3,10 +3,11 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { UserEntity } from '../../app/models';
 import { OtpService } from '../otp/otp.service';
-import { isMobilePhone } from 'class-validator';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoginResponseType } from '../../common/types';
 import { TokenService } from '../token/token.service';
+import { LoginResponseType } from '../../common/types';
+import { GoogleUser } from './types/typesAndInterfaces';
+import { isEmail, isMobilePhone } from 'class-validator';
 import { UserService } from '../../modules/user/user.service';
 import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { SmsService } from '../../common/services/sms.service';
@@ -86,10 +87,11 @@ export class AuthService
         }
         else if (method === AuthMethods.Phone)
         {
-            await this.smsService.sendOtpCode(username, otp.toString());
+            // await this.smsService.sendOtpCode(username, otp.toString());
         }
         else
         {
+            // TODO: check This Section
             throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST); // TODO: user should can login with username
         }
 
@@ -133,6 +135,7 @@ export class AuthService
             });
         }
         else if (method === AuthMethods.Phone)
+        // TODO: Check This secction 
         {
             otp = this.otpService.generateOtp();
 
@@ -263,5 +266,46 @@ export class AuthService
     checkRefreahTokenS( tokenData : CheckRefreshTokenDto )
     {
         return  this.tokenService.validateRefreshoken(tokenData.token);
+    }
+
+    // Google
+    async GoogleRedirect(userData:GoogleUser)
+    {
+        const { email, firstName, lastName, profileImage } = userData;
+        if (!email || !isEmail(email)) throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
+
+        let user = await this.userService.findUserByEmail(email);
+
+        // Implements Register / Login
+
+        if (!user)
+        {
+            // Register
+            user = this.userRepository.create({
+                email: email,
+                username: firstName + ' ' + lastName,
+            });
+
+            user = await this.userRepository.save(user);
+
+            // Save Profile
+            if (userData.profileImage) await this.userService.CreateProfileFromGoogle(user, { image:userData.profileImage, name:user.username });
+        }
+
+        // encrypt userID
+        const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+
+        // Create Access Tonken
+        const tokens = this.tokenService.generateAccessAndRefreshToken({
+            sub: sub,
+        });
+
+        // return
+        return {
+            tokenType: 'Bearer',
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            message: PublicMessage.LoginSucces,
+        };
     }
 }

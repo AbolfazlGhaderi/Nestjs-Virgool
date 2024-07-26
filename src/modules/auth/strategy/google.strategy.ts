@@ -33,8 +33,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google')
         const [ photoData ] = photos || [];
 
         const user = {
-            email : emailData.value || undefined,
-            profile_image: photoData?.value || undefined,
+            email: emailData.value || undefined,
+            profileImage: photoData?.value || undefined,
             firstName: name?.givenName,
             lastName: name?.familyName,
             accesToken,
