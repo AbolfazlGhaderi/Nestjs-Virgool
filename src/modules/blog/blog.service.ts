@@ -321,7 +321,8 @@ export class BlogService
 
     async FindOneBlogBySlug(slug:string, paginationData:PaginationDto)
     {
-        const user = this.request.user;  // TODO: Check USER for Like and bookmark
+        const user = this.request?.user as UserEntity;
+
         let isLiked = false, isBookmarked = false;
         const blog = await this.blogRepository
             .createQueryBuilder(ModelEnum.Blog)

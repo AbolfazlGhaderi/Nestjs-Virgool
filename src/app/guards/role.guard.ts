@@ -4,6 +4,7 @@ import { RoleKey } from '../../common/enums/role.enum';
 import { ForbiddenMessage } from '../../common/enums/message.enum';
 import { ROLE_ACCESS } from '../../common/decorators/role.access.decorator';
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UserEntity } from '../models';
 
 @Injectable()
 export class RoleGuard implements CanActivate
@@ -17,7 +18,8 @@ export class RoleGuard implements CanActivate
         if (!roles || roles.length === 0) return true;
 
         const request = context.switchToHttp().getRequest<Request>();
-        const userRole = request.user?.role || RoleKey.User;
+        const user = request.user as UserEntity;
+        const userRole = user.role || RoleKey.User;
         if (userRole === RoleKey.Admin) return true;
 
         if (roles.includes(userRole as RoleKey)) return true;
