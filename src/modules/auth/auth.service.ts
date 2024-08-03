@@ -29,7 +29,7 @@ export class AuthService
       @Inject(REQUEST) private request: Request,
     ) {}
 
-    async userExistenceS(authData: AuthDto)
+    async UserExistenceS(authData: AuthDto)
     {
         const { method, type, username } = authData;
 
@@ -168,7 +168,7 @@ export class AuthService
     }
 
     // Check Otp / Service
-    async checkOtpS(otpCode: string)
+    async CheckOtpS(otpCode: string)
     {
         // get Token from Cookie
         const token:string = this.request.cookies?.[CookieKeys.OTP];
@@ -263,7 +263,7 @@ export class AuthService
     }
 
     // Check Refresh Token
-    checkRefreahTokenS( tokenData : CheckRefreshTokenDto )
+    CheckRefreahTokenS( tokenData : CheckRefreshTokenDto )
     {
         return  this.tokenService.validateRefreshoken(tokenData.token);
     }

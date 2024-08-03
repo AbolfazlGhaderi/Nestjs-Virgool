@@ -48,7 +48,7 @@ export class BlogController
 
     @Get('/myblogs')
     @HttpCode(HttpStatus.OK)
-    async myBlogs()
+    async MyBlogs()
     {
         return await this.blogService.MyBlogs();
     }

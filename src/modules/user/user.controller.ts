@@ -74,17 +74,17 @@ export class UserController
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async checkOtpC(@Body() cehckDTO: CheckOtpDto): TCheckOtp
+    async CheckOtpC(@Body() cehckDTO: CheckOtpDto): TCheckOtp
     {
-        return await this.userService.checkOtpS(cehckDTO);
+        return await this.userService.CheckOtpS(cehckDTO);
     }
 
     @Patch('change-username')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async changeUserNameC(@Body() usernameDto: ChangeUserNameDTO)
+    async ChangeUserNameC(@Body() usernameDto: ChangeUserNameDTO)
     {
-        return await this.userService.changeUserNameS(usernameDto);
+        return await this.userService.ChangeUserNameS(usernameDto);
     }
 
     @Get('/follow/:userId')

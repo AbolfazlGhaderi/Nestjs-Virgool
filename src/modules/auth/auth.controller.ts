@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { CheckOtpDto } from './dto/otp.dto';
 import { AuthService } from './auth.service';
-import { SwaggerConsumes } from '../../common/enums';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { PublicMessage, SwaggerConsumes } from '../../common/enums';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
 import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
@@ -16,32 +16,31 @@ export class AuthController
    @Post('user-existence')
    @HttpCode(HttpStatus.OK)
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-    async userExistenceC(@Body() auhtDto: AuthDto, @Res({ passthrough: true }) response: Response)
+    async UserExistenceC(@Body() auhtDto: AuthDto, @Res({ passthrough: true }) response: Response)
     {
-        return await this.authService.userExistenceS(auhtDto);
+        return await this.authService.UserExistenceS(auhtDto);
     }
 
    @Post('check-otp')
    @HttpCode(HttpStatus.OK)
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-   async checkOtpC(@Body() checkOtpDto: CheckOtpDto, @Res({ passthrough: true }) response: Response)
+   async CheckOtpC(@Body() checkOtpDto: CheckOtpDto, @Res({ passthrough: true }) response: Response)
    {
-       return await this.authService.checkOtpS(checkOtpDto.code);
+       return await this.authService.CheckOtpS(checkOtpDto.code);
    }
 
-   @Get('check-login')
+   @Get('whoami')
    @HttpCode(HttpStatus.OK)
    @AuthDecorator()
-   checkLoginC(@Req() request: Request)
+   WhoAmI(@Req() request: Request)
    {
        return  request.user;
    }
 
    @Post('/refresh-token')
-      @HttpCode(HttpStatus.OK)
-
-   checkRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto)
+   @HttpCode(HttpStatus.OK)
+   CheckRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto)
    {
-       return  this.authService.checkRefreahTokenS(refreshTokenData);
+       return  this.authService.CheckRefreahTokenS(refreshTokenData);
    }
 }

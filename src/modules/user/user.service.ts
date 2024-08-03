@@ -217,7 +217,7 @@ export class UserService
         };
     }
 
-    async checkOtpS(data: CheckOtpDto)
+    async CheckOtpS(data: CheckOtpDto)
     {
         const token : string | undefined = this.request.cookies?.[CookieKeys.ChangeOTP];
         if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
@@ -252,7 +252,7 @@ export class UserService
         };
     }
 
-    async changeUserNameS(data: ChangeUserNameDTO)
+    async ChangeUserNameS(data: ChangeUserNameDTO)
     {
         const { id } = this.request.user as UserEntity;
         let { username } = data;
