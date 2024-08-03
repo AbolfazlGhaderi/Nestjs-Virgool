@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { isArray, isUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dtos';
@@ -26,6 +26,7 @@ export class BlogService
         private readonly categoryService: CategoryService,
         @Inject(forwardRef(() => CommentService)) private readonly commentService : CommentService,
         @Inject(REQUEST) private readonly request: Request,
+        private dataSource :DataSource,
     ) {}
 
     async CreateBlogS(blogData: CreateBlogDto): Promise<{ message: PublicMessage.CreateSuccess }>
@@ -350,11 +351,54 @@ export class BlogService
             isBookmarked = !!(await this.blogBookmarkRepository.findOne({ where:{ blog:{ id:blog.id }, user:{ id:user.id } } }));
         }
 
+        let queryRunner = this.dataSource.createQueryRunner();
+        queryRunner = await queryRunner.connect();
+        const suggestBlogs = await queryRunner.query(`
+            WITH suggested_blogs AS (
+                SELECT 
+                    blog.id,
+                    blog.slug,
+                    blog.title,
+                    blog.description,
+                    blog.time_for_study,
+                    blog.image,
+                    json_build_object(
+                        'username', u.username,
+                        'author_name', p.nick_name,
+                        'image', p.image_profile
+                    ) AS author,
+                    array_agg(DISTINCT cat.title) AS categories,
+                    (
+                        SELECT COUNT(*) FROM blog_like
+                        WHERE blog_like."blog_id" = blog.id
+                    ) AS likes,
+                    (
+                        SELECT COUNT(*) FROM blog_bookmark
+                        WHERE blog_bookmark."blog_id" = blog.id
+                    ) AS bookmarks,
+                    (
+                        SELECT COUNT(*) FROM comments
+                        WHERE comments."blog_id" = blog.id
+                    ) AS comments
+                FROM blogs blog
+                LEFT JOIN users u ON blog."author_id" = u.id
+                LEFT JOIN profiles p ON p."user_id" = u.id
+                LEFT JOIN blog_categories bc ON blog.id = bc."blog_id"
+                LEFT JOIN categories cat ON bc."category_id" = cat.id
+                GROUP BY blog.id, u.username, p.nick_name, p.image_profile
+                ORDER BY RANDOM()
+                LIMIT 3
+
+            )
+            SELECT * FROM suggested_blogs
+        `);
+
         return {
             isLiked,
             isBookmarked,
             blog,
             commentData,
+            suggestBlogs: suggestBlogs.rows || [],
         };
     }
 
