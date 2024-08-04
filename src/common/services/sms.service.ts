@@ -21,6 +21,7 @@ export class SmsService
         const axiosConfig: AxiosRequestConfig = {
             method: 'post',
             url: this.endpoint,
+            timeout:5000,
             headers: {
                 'Content-Type': 'application/json',
                 ACCEPT: 'application/json',
