@@ -380,4 +380,18 @@ export class UserService
             following,
         };
     }
+
+    async VerifyEmailS()
+    {
+        const user = this.request.user as UserEntity;
+
+        const code = await this.otpService.sendAndSaveVerifyOTP(user.email, 'email');
+        const token = this.tokenService.createOtpToken({ sub: user.email });
+
+        return {
+            token,
+            code, // TODO: Delete
+            message:PublicMessage.SendOtpSuccess,
+        };
+    }
 }

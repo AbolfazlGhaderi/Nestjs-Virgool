@@ -2,20 +2,20 @@
 // import {  MulterStorage } from '../../app/utils/multer.util';
 // import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
+import { TCheckOtp } from './types/type';
 import { UserService } from './user.service';
 import { UserEntity } from '../../app/models';
+import { ChangeOtpDto } from './dto/user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { PaginationDto } from '../../common/dtos';
-import { CheckOtpDto } from '../auth/dto/otp.dto';
 import {  SwaggerConsumes } from '../../common/enums';
 import { RoleKey } from '../../common/enums/role.enum';
 import { ChangeEmailDTO } from './dto/change.email.dto';
-import { TChangeEmailC, TCheckOtp } from './types/type';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
+import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { CanAccess } from '../../common/decorators/role.access.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
-import { ApiBearerAuth, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
+import { CanAccess } from '../../common/decorators/role.access.decorator';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 
 
@@ -66,15 +66,23 @@ export class UserController
     @Patch('change-email')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async ChangeEmailC(@Body() emailDTO: ChangeEmailDTO): TChangeEmailC
+    async ChangeEmailC(@Body() emailDTO: ChangeEmailDTO)
     {
         return await this.userService.ChangeEmailS(emailDTO);
     }
 
+    @Get('verify-email')
+    @HttpCode(HttpStatus.OK)
+    async VerifyEmail()
+    {
+        return await this.userService.VerifyEmailS();
+    }
+
+
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async CheckOtpC(@Body() cehckDTO: CheckOtpDto): TCheckOtp
+    async CheckOtpC(@Body() cehckDTO: ChangeOtpDto): TCheckOtp
     {
         return await this.userService.CheckOtpS(cehckDTO);
     }
