@@ -6,9 +6,10 @@ import { OtpService } from '../otp/otp.service';
 import { PaginationDto } from '../../common/dtos';
 import { CheckOtpDto } from '../auth/dto/otp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GenderEnum } from '../../common/enums/profile';
 import { TokenService } from '../token/token.service';
+import { GenderEnum } from '../../common/enums/profile';
 import { ChangeEmailDTO } from './dto/change.email.dto';
+import { OtpKey } from '../../common/enums/otp.keys.enum';
 import { FollowEntity } from '../../app/models/follow.model';
 import { ProfileEntity, UserEntity } from '../../app/models';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
@@ -230,13 +231,13 @@ export class UserService
         const payload = this.tokenService.verifyOtpToken(token, TokenType.Change);
         const newEmail = payload.sub;
 
-        const savedCode = await this.otpService.checkOtp(`${email}:Change-otp`, TokenType.Change);
+        const savedCode = await this.otpService.checkOtp(`${email}${OtpKey.Change}`, TokenType.Change);
         if (savedCode !== code)
         {
             throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);
         }
 
-        await this.otpService.deleteByKey(`${email}:Change-otp`);
+        await this.otpService.deleteByKey(`${email}${OtpKey.Change}`);
 
         // update email
         try

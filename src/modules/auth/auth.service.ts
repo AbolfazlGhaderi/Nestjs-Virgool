@@ -9,6 +9,7 @@ import { TokenService } from '../token/token.service';
 import { LoginResponseType } from '../../common/types';
 import { GoogleUser } from './types/typesAndInterfaces';
 import { isEmail, isMobilePhone } from 'class-validator';
+import { OtpKey } from '../../common/enums/otp.keys.enum';
 import { UserService } from '../../modules/user/user.service';
 import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { SmsService } from '../../common/services/sms.service';
@@ -180,12 +181,12 @@ export class AuthService
         const key = symmetricCryption.decrypted(payload.sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         // get code from Cach and check
-        const code = await this.otpService.checkOtp(`${key}:Login-otp`, TokenType.Login);
+        const code = await this.otpService.checkOtp(`${key}${OtpKey.Login}`, TokenType.Login);
 
         if (otpCode !== code) throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.UNAUTHORIZED);
 
         // delete otp from cache
-        await this.otpService.deleteByKey(`${key}:Login-otp`);
+        await this.otpService.deleteByKey(`${key}${OtpKey.Login}`);
 
         //  find user
         let user : UserEntity | null;

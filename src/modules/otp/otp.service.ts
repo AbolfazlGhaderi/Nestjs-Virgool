@@ -1,6 +1,7 @@
 import { randomInt } from 'crypto';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { OtpKey } from '../../common/enums/otp.keys.enum';
 import { AuthMessage, BadRequestMesage, TokenType } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 
@@ -25,7 +26,7 @@ export class OtpService
     {
         // Generate Code
 
-        key = `${key}:Login-otp`;
+        key = `${key}${OtpKey.Login}`;
 
         console.log(key + '  ' + code);
         // check If Otp Is Exist In Cache
@@ -61,7 +62,7 @@ export class OtpService
     // change email ------===>
     async sendAndSaveEmailOTP(email: string)
     {
-        const key = `${email}:Change-otp`;
+        const key = `${email}${OtpKey.Change}`;
         const code = this.generateOtp();
         // check If Otp Is Exist In Cache
         const otp = await this.cacheManager.get(key);
