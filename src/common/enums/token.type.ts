@@ -1,4 +1,7 @@
 export enum TokenType{
     Login = 'login',
-    ChangeOtp='change'
+    Change='change',
+    ChangeEmail='change_email',
+    VerifyEmail='verify_email',
+    VerifyPhone='verify_phone',
 }

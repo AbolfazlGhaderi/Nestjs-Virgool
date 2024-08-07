@@ -1,4 +1,6 @@
+import { TOtpToken } from '../../modules/token/types/token.type';
+
 export type LoginResponseType = {
-  token: string;
+  token: TOtpToken;
   code: string;
 };
