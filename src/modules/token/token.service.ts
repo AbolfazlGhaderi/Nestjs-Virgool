@@ -97,22 +97,14 @@ export class TokenService
         }
     }
 
-    verifyOtpToken(token: string, type: string): { sub: string }
+    verifyOtpToken(token: string, type?: string ):{sub:string}
     {
         try
         {
-            if (type === TokenType.Login)
-            {
-                return this.jwtService.verify(token, {
-                    secret: process.env.OTP_TOKEN_SECRET,
-                });
-            }
-            else if (type === TokenType.Change) // TODO: Check This Section
-            {
-                return this.jwtService.verify(token, {
-                    secret: process.env.OTP_TOKEN_SECRET,
-                });
-            }
+            return this.jwtService.verify(token, {
+                secret: process.env.OTP_TOKEN_SECRET,
+            });
+
         }
         catch
         {
@@ -120,12 +112,12 @@ export class TokenService
             {
                 throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
             }
-            else if (type === TokenType.Change)
+            else
             {
                 throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
             }
         }
-        return { sub: '' };
+
     }
 
 }

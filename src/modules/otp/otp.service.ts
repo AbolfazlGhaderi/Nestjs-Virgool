@@ -42,7 +42,7 @@ export class OtpService
         return code;
     }
 
-    async checkOtp(key: string, type: string)
+    async checkOtp(key: string, type?: TokenType)
     {
         const code: number | undefined = await this.cacheManager.get(key);
         if (code)
@@ -51,8 +51,8 @@ export class OtpService
         }
         else
         {
-            if (type === TokenType.Login) throw new UnauthorizedException(AuthMessage.ExpiredOtp);
-            else if (type === TokenType.Change)
+            if (type && type === TokenType.Login) throw new UnauthorizedException(AuthMessage.ExpiredOtp);
+            else
             {
                 throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
             }
