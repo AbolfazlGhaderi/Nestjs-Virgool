@@ -25,15 +25,10 @@ export class TokenService
             expiresIn: '2m',
         });
 
-        return token;
-    }
-
-    createChangeToken(payload: OtpCookiePayload)
-    {
-        return this.jwtService.sign(payload, {
-            secret: process.env.CHANGE_TOKEN_SECRET,
-            expiresIn: '2m',
-        });
+        return {
+            token : token,
+            expire : Date.now() + 1000 * 60 * 2, // 2 minutes
+        };
     }
     // -------------------- Access Token ----------------------------- ===>
 
@@ -112,10 +107,10 @@ export class TokenService
                     secret: process.env.OTP_TOKEN_SECRET,
                 });
             }
-            else if (type === TokenType.ChangeOtp)
+            else if (type === TokenType.Change) // TODO: Check This Section
             {
                 return this.jwtService.verify(token, {
-                    secret: process.env.CHANGE_TOKEN_SECRET,
+                    secret: process.env.OTP_TOKEN_SECRET,
                 });
             }
         }
@@ -125,7 +120,7 @@ export class TokenService
             {
                 throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
             }
-            else if (type === TokenType.ChangeOtp)
+            else if (type === TokenType.Change)
             {
                 throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
             }

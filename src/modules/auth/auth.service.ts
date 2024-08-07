@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { UserEntity } from '../../app/models';
 import { OtpService } from '../otp/otp.service';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TOtpToken } from '../token/types/token.type';
 import { TokenService } from '../token/token.service';
 import { LoginResponseType } from '../../common/types';
 import { GoogleUser } from './types/typesAndInterfaces';
@@ -119,7 +120,7 @@ export class AuthService
         const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         let otp: number;
-        let token: string;
+        let token: TOtpToken;
         if (method === AuthMethods.Email)
         {
             otp = this.otpService.generateOtp();

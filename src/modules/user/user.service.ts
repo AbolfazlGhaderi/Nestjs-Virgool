@@ -208,7 +208,7 @@ export class UserService
         // send and save Otp Code
 
         const code = await this.otpService.sendAndSaveEmailOTP(email);
-        const token = this.tokenService.createChangeToken({ sub: newEmail });
+        const token = this.tokenService.createOtpToken({ sub: newEmail });
 
         return {
             code,
@@ -219,7 +219,7 @@ export class UserService
 
     async CheckOtpS(data: CheckOtpDto)
     {
-        const token : string | undefined = this.request.cookies?.[CookieKeys.ChangeOTP];
+        const token : string | undefined = this.request.cookies?.[CookieKeys.ChangeEmail];
         if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
 
         // if (!this.request.user?.email || !this.request.user.id) {
@@ -227,10 +227,10 @@ export class UserService
         // }
         const { id, email } = this.request.user as UserEntity;
         const { code } = data;
-        const payload = this.tokenService.verifyOtpToken(token, TokenType.ChangeOtp);
+        const payload = this.tokenService.verifyOtpToken(token, TokenType.Change);
         const newEmail = payload.sub;
 
-        const savedCode = await this.otpService.checkOtp(`${email}:Change-otp`, TokenType.ChangeOtp);
+        const savedCode = await this.otpService.checkOtp(`${email}:Change-otp`, TokenType.Change);
         if (savedCode !== code)
         {
             throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);

@@ -51,7 +51,7 @@ export class OtpService
         else
         {
             if (type === TokenType.Login) throw new UnauthorizedException(AuthMessage.ExpiredOtp);
-            else if (type === TokenType.ChangeOtp)
+            else if (type === TokenType.Change)
             {
                 throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
             }
