@@ -2,5 +2,6 @@ export enum CookieKeys{
     RefreshToken = 'refreshToken',
     AccessToken = 'uidact',
     OTP='otppto',
-    ChangeEmail='chemail'
+    Change='ch',
+    Verify='ver'
 }
