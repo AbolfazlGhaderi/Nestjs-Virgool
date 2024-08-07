@@ -5,9 +5,9 @@
 import { TCheckOtp } from './types/type';
 import { UserService } from './user.service';
 import { UserEntity } from '../../app/models';
-import { ChangeOtpDto } from './dto/user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { PaginationDto } from '../../common/dtos';
+import {  UserCheckOtpDto } from './dto/user.dto';
 import {  SwaggerConsumes } from '../../common/enums';
 import { RoleKey } from '../../common/enums/role.enum';
 import { ChangeEmailDTO } from './dto/change.email.dto';
@@ -78,13 +78,12 @@ export class UserController
         return await this.userService.VerifyEmailS();
     }
 
-
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async CheckOtpC(@Body() cehckDTO: ChangeOtpDto): TCheckOtp
+    async CheckOtpC(@Body() cehckDto: UserCheckOtpDto): TCheckOtp
     {
-        return await this.userService.CheckOtpS(cehckDTO);
+        return await this.userService.CheckOtpS(cehckDto);
     }
 
     @Patch('change-username')

@@ -3,8 +3,8 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { ProfileDto } from './dto/profile.dto';
 import { OtpService } from '../otp/otp.service';
+import { UserCheckOtpDto } from './dto/user.dto';
 import { PaginationDto } from '../../common/dtos';
-import { CheckOtpDto } from '../auth/dto/otp.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenService } from '../token/token.service';
 import { GenderEnum } from '../../common/enums/profile';
@@ -13,8 +13,9 @@ import { OtpKey } from '../../common/enums/otp.keys.enum';
 import { FollowEntity } from '../../app/models/follow.model';
 import { ProfileEntity, UserEntity } from '../../app/models';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
+import { CheckOtpMethods, CheckOtpTypes } from './enums/enums';
+import { AuthMessage, CookieKeys, PublicMessage } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { AuthMessage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
 import { ConflictMessages, NotFoundMessages, BadRequestMesage } from '../../common/enums/message.enum';
 
@@ -218,39 +219,66 @@ export class UserService
         };
     }
 
-    async CheckOtpS(data: CheckOtpDto)
+    async CheckOtpS(data: UserCheckOtpDto)
     {
-        const token : string | undefined = this.request.cookies?.[CookieKeys.ChangeEmail];
+        const { code, method, type } = data;
+        const user = this.request.user as UserEntity;
+
+        // Get Token
+        const token : string | undefined = this.request.cookies?.[method === CheckOtpMethods.Change ? CookieKeys.Change : CookieKeys.Verify];
         if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
 
-        // if (!this.request.user?.email || !this.request.user.id) {
-        //    throw new UnauthorizedException('');
-        // }
-        const { id, email } = this.request.user as UserEntity;
-        const { code } = data;
-        const payload = this.tokenService.verifyOtpToken(token, TokenType.Change);
-        const newEmail = payload.sub;
+        // Verify Token
+        const payload = this.tokenService.verifyOtpToken(token);
+        const newContent = payload.sub;
 
-        const savedCode = await this.otpService.checkOtp(`${email}${OtpKey.Change}`, TokenType.Change);
+        // Check Otp Code
+        const savedCode = await this.otpService.checkOtp(
+            `${type === CheckOtpTypes.Email ? user.email : user.phone}${method === CheckOtpMethods.Change ? OtpKey.Change : OtpKey.Verify}`,
+        );
         if (savedCode !== code)
         {
             throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);
         }
 
-        await this.otpService.deleteByKey(`${email}${OtpKey.Change}`);
+        // Delete Otp Code
+        await this.otpService.deleteByKey(
+            `${type === CheckOtpTypes.Email ? user.email : user.phone}${method === CheckOtpMethods.Change ? OtpKey.Change : OtpKey.Verify}`,
+        );
 
-        // update email
         try
         {
-            await this.userRepository.update(id, { email: newEmail });
+            if (method === CheckOtpMethods.Change)
+            {
+                // Update email / phone
+                await this.userRepository.update(user.id, { [type]: newContent }); // Content = New Email 
+                return {
+                    message: PublicMessage.UpdateSuccess,
+                };
+            }
+            else
+            {
+                if (type === CheckOtpTypes.Email)
+                {
+                    user.verify_email = true;
+                    await this.userRepository.save(user);
+                }
+                else
+                {
+                    user.verify_phone = true;
+                    await this.userRepository.save(user);
+                }
+
+                return {
+                    message: PublicMessage.Accept, // verify success
+                };
+            }
         }
         catch
         {
             throw new HttpException(PublicMessage.Error, HttpStatus.BAD_REQUEST);
         }
-        return {
-            message: PublicMessage.EmailUpdated,
-        };
+
     }
 
     async ChangeUserNameS(data: ChangeUserNameDTO)
