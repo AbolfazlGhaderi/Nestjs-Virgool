@@ -77,6 +77,12 @@ export class UserController
     {
         return await this.userService.VerifyEmailS();
     }
+    @Get('verify-phone')
+    @HttpCode(HttpStatus.OK)
+    async VerifyPhone()
+    {
+        return await this.userService.VerifyPhoneS();
+    }
 
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)

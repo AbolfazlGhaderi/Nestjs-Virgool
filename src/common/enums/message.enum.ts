@@ -53,7 +53,8 @@ export enum PublicMessage
    Accept = 'با موفقیت تایید شد',
    Reject = 'با موفقیت رد شد',
    Follow = 'فالو شد',
-   UnFollow = 'از لیست دنبال کنندگان حذف شد '
+   UnFollow = 'از لیست دنبال کنندگان حذف شد ',
+   AlreadyVerified = 'قبلا تایید شده است',
 }
 
 export enum ValidationMessage

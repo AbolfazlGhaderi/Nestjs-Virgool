@@ -412,13 +412,30 @@ export class UserService
     async VerifyEmailS()
     {
         const user = this.request.user as UserEntity;
-
+        if (user.verify_email === true)
+        {
+            throw new HttpException(PublicMessage.AlreadyVerified, HttpStatus.BAD_REQUEST);
+        }
         const code = await this.otpService.sendAndSaveVerifyOTP(user.email, 'email');
         const token = this.tokenService.createOtpToken({ sub: user.email });
 
         return {
             token,
-            code, // TODO: Delete
+            message:PublicMessage.SendOtpSuccess,
+        };
+    }
+    async VerifyPhoneS()
+    {
+        const user = this.request.user as UserEntity;
+        if (user.verify_phone === true)
+        {
+            throw new HttpException(PublicMessage.AlreadyVerified, HttpStatus.BAD_REQUEST);
+        }
+        const code = await this.otpService.sendAndSaveVerifyOTP(user.phone, 'phone');
+        const token = this.tokenService.createOtpToken({ sub: user.phone });
+
+        return {
+            token,
             message:PublicMessage.SendOtpSuccess,
         };
     }
