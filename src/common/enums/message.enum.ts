@@ -3,7 +3,7 @@ export enum BadRequestMesage {
     EmailFormatIncorrect = 'ایمیل وارد شده معتبر نمی باشد',
     MobileNumberIncorrect = 'شماره موبایل وارد شده معتبر نمی باشد',
     RegisterMethodIncorrect = 'باید از طریق ایمیل یا شماره موبایل ثبت نام کنید',
-    SaveEmailOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
+    SaveOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
     CategoryIncorrect = 'دسته بندی مورد نظر ثبت نشده است .  لطفا آن را ثبت کنید',
     FollowYourself = 'شما نمیتوانید خود را فالو کنید !',
 }
