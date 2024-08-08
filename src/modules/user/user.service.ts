@@ -8,12 +8,12 @@ import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenService } from '../token/token.service';
 import { GenderEnum } from '../../common/enums/profile';
-import { ChangeEmailDTO } from './dto/change.email.dto';
 import { OtpKey } from '../../common/enums/otp.keys.enum';
-import { FollowEntity } from '../../app/models/follow.model';
 import { ProfileEntity, UserEntity } from '../../app/models';
+import { FollowEntity } from '../../app/models/follow.model';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { CheckOtpMethods, CheckOtpTypes } from './enums/enums';
+import { ChangeEmailDTO, EmailDto } from './dto/change.email.dto';
 import { AuthMessage, CookieKeys, PublicMessage } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
@@ -437,6 +437,24 @@ export class UserService
         return {
             token,
             message:PublicMessage.SendOtpSuccess,
+        };
+    }
+
+    async AddEmail(data:EmailDto)
+    {
+        const user = this.request.user as UserEntity;
+        if (user.email) throw new HttpException(BadRequestMesage.ExistEmail, HttpStatus.BAD_REQUEST);
+
+        data.email = data.email.trim().toLowerCase();
+        const existEmail = await this.findUserByEmail(data.email);
+        if (existEmail) throw new HttpException(ConflictMessages.EmailConflict, HttpStatus.CONFLICT);
+
+        user.email = data.email;
+        user.verify_email = false;
+        await this.userRepository.save(user);
+
+        return {
+            message:PublicMessage.AddEmailSuccess,
         };
     }
 }

@@ -10,9 +10,9 @@ import { PaginationDto } from '../../common/dtos';
 import {  UserCheckOtpDto } from './dto/user.dto';
 import {  SwaggerConsumes } from '../../common/enums';
 import { RoleKey } from '../../common/enums/role.enum';
-import { ChangeEmailDTO } from './dto/change.email.dto';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ChangeEmailDTO, EmailDto } from './dto/change.email.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { CanAccess } from '../../common/decorators/role.access.decorator';
@@ -77,11 +77,20 @@ export class UserController
     {
         return await this.userService.VerifyEmailS();
     }
+
     @Get('verify-phone')
     @HttpCode(HttpStatus.OK)
     async VerifyPhone()
     {
         return await this.userService.VerifyPhoneS();
+    }
+
+    @Post('add-email')
+    @HttpCode(HttpStatus.OK)
+    @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
+    async AddEmailC(@Body() emailDTO: EmailDto)
+    {
+        return await this.userService.AddEmail(emailDTO);
     }
 
     @Post('check-otp')

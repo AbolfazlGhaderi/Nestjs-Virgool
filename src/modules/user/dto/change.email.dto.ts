@@ -8,3 +8,11 @@ export class ChangeEmailDTO
    @IsString()
    email: string;
 }
+
+export class EmailDto
+{
+   @ApiProperty()
+   @IsEmail()
+   @IsString()
+   email: string;
+}

@@ -6,6 +6,8 @@ export enum BadRequestMesage {
     SaveOtp = 'کد قبلا ارسال شده است ، لطفا بعد از 2 دقیقه مجددا تلاش کنید ',
     CategoryIncorrect = 'دسته بندی مورد نظر ثبت نشده است .  لطفا آن را ثبت کنید',
     FollowYourself = 'شما نمیتوانید خود را فالو کنید !',
+    ExistEmail = 'ایمیلی برای این نام کاربری وجود دارد',
+    ExistPhone = 'شماره موبایلی برای این نام کاربری وجود دارد',
 }
 
 export enum AuthMessage {
@@ -32,7 +34,8 @@ export enum ConflictMessages {
    CategoryConflict = 'دسته بندی مورد نظر قبلا ثبت شده است',
    EmailConflict = 'این ایمیل قبلا ثبت شده است',
    UserConflict = 'این نام کاربری قبلا ثبت شده است',
-   BlogConflict = 'این مقاله قبلا ثبت شده است'
+   BlogConflict = 'این مقاله قبلا ثبت شده است',
+   PhoneConflict = 'این شماره موبایل قبلا ثبت شده است',
 }
 
 export enum PublicMessage
@@ -55,6 +58,8 @@ export enum PublicMessage
    Follow = 'فالو شد',
    UnFollow = 'از لیست دنبال کنندگان حذف شد ',
    AlreadyVerified = 'قبلا تایید شده است',
+   AddEmailSuccess='ایمیل با موفقیت ثبت شد',
+   AddPhoneSuccess='شماره تلفن با موفقیت ثبت شد',
 }
 
 export enum ValidationMessage
