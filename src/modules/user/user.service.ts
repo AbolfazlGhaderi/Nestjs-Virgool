@@ -209,7 +209,7 @@ export class UserService
 
         // send and save Otp Code
 
-        const code = await this.otpService.sendAndSaveEmailOTP(email);
+        const code = await this.otpService.sendAndSaveOTP(email, OtpKey.Change, 'email');
         const token = this.tokenService.createOtpToken({ sub: newEmail });
 
         return {
@@ -416,7 +416,7 @@ export class UserService
         {
             throw new HttpException(PublicMessage.AlreadyVerified, HttpStatus.BAD_REQUEST);
         }
-        const code = await this.otpService.sendAndSaveVerifyOTP(user.email, 'email');
+        const code = await this.otpService.sendAndSaveOTP(user.email, OtpKey.Verify, 'email');
         const token = this.tokenService.createOtpToken({ sub: user.email });
 
         return {
@@ -431,7 +431,7 @@ export class UserService
         {
             throw new HttpException(PublicMessage.AlreadyVerified, HttpStatus.BAD_REQUEST);
         }
-        const code = await this.otpService.sendAndSaveVerifyOTP(user.phone, 'phone');
+        const code = await this.otpService.sendAndSaveOTP(user.phone, OtpKey.Verify, 'phone');
         const token = this.tokenService.createOtpToken({ sub: user.phone });
 
         return {

@@ -59,32 +59,10 @@ export class OtpService
         }
     }
 
-    // change email ------===>
-    async sendAndSaveEmailOTP(email: string)
+
+    async sendAndSaveOTP(content: string, otpkey:OtpKey, type: 'email'|'phone')
     {
-        const key = `${email}${OtpKey.Change}`;
-        const code = this.generateOtp();
-        // check If Otp Is Exist In Cache
-        const otp = await this.cacheManager.get(key);
-        if (otp)
-        {
-            throw new HttpException(BadRequestMesage.SaveOtp, HttpStatus.BAD_REQUEST);
-        }
-
-        // send code to email
-
-        // Save Code To Cache
-        await this.cacheManager.set(key, code);
-        console.log(key + ' ==>  ' + code);
-
-        return code;
-    }
-
-    // Verify Email ---------------------  ===>
-
-    async sendAndSaveVerifyOTP(content: string, type: 'email'|'phone')
-    {
-        const key = `${content}${OtpKey.Verify}`;
+        const key = `${content}${otpkey}`;
         const code = this.generateOtp();
         // check If Otp Is Exist In Cache
         const otp = await this.cacheManager.get(key);
@@ -99,10 +77,12 @@ export class OtpService
         {
 
         }
-        else
+        if (type === 'phone')
         {
 
         }
+        else
+        {}
 
         // Save Code To Cache
         await this.cacheManager.set(key, code);
