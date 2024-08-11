@@ -1,20 +1,20 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Inject, Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
     imports: [ MailerModule.forRootAsync({
-        useFactory:(config:ConfigService) => ({
+        useFactory:() => ({
             transport:{
-                host: config.get<string>('EMAIL_HOST'),
-                port: config.get<number>('EMAIL_PORT'),
+                host: process.env.EMAIL_HOST,
+                port: +process.env.EMAIL_PORT,
                 auth: {
-                    user: config.get<string>('EMAIL_USER'),
-                    pass: config.get<string>('EMAIL_PASS'),
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
                 },
             },
+
         }),
     }) ],
     controllers: [],

@@ -70,6 +70,7 @@ export enum ValidationMessage
 export enum ServiceUnavailableMessage
 {
    SmsServiceUnavailable = 'سرویس ارسال پیامک در درسترس نمیباشد . مجددا امتحان نمایید ',
+   MailServiceUnavailable = '.سرویس ارسال ایمیل در دسترس نمیباشد . لطفا مجددا امتحان نمایید',
 }
 
 export enum ForbiddenMessage
