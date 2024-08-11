@@ -1,14 +1,19 @@
 import { randomInt } from 'crypto';
 import { Cache } from 'cache-manager';
+import { MailService } from '../mail/mail.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { OtpKey } from '../../common/enums/otp.keys.enum';
-import { AuthMessage, BadRequestMesage, TokenType } from '../../common/enums';
+import { GenerateOtpSubject } from '../../app/utils/functions.utils';
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthMessage, BadRequestMesage, ServiceUnavailableMessage, TokenType } from '../../common/enums';
 
 @Injectable()
 export class OtpService
 {
-    constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+    constructor(
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        private mailService:MailService,
+    ) {}
 
     // generate code
     generateOtp()
@@ -75,7 +80,9 @@ export class OtpService
 
         if (type === 'email')
         {
-
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            const result = await this.mailService.SendEmail(undefined, content, GenerateOtpSubject(otpkey), 'Code : ${code} ', `<h1>Code : ${code} </h1>`);
+            if (!result) throw new HttpException(ServiceUnavailableMessage.MailServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
         }
         if (type === 'phone')
         {
@@ -86,7 +93,7 @@ export class OtpService
 
         // Save Code To Cache
         await this.cacheManager.set(key, code);
-        console.log(key + ' ==>  ' + code);
+        console.log(key + ' ==>  ' + code);  // TODO: Remove It
 
         return code;
     }
