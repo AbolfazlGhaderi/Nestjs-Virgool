@@ -6,6 +6,7 @@ import { LoggerMiddleware } from './app/middlewares';
 import { AuthModule } from './modules/auth/auth.module';
 import { BlogModule } from './modules/blog/blog.module';
 import { UserModule } from './modules/user/user.module';
+import { MailModule } from './modules/mail/mail.module';
 import { TokenModule } from './modules/token/token.module';
 import { UploadeModule } from './modules/upload/uploade.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -27,6 +28,7 @@ import { CommentModule } from './modules/comment/comment.module';
         BlogModule,
         UploadeModule,
         CommentModule,
+        MailModule,
     ],
     controllers: [],
     providers: [ AuthModule ],
