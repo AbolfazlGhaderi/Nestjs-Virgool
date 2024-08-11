@@ -7,16 +7,16 @@ import { UserService } from './user.service';
 import { UserEntity } from '../../app/models';
 import { ProfileDto } from './dto/profile.dto';
 import { PaginationDto } from '../../common/dtos';
-import {  UserCheckOtpDto } from './dto/user.dto';
 import {  SwaggerConsumes } from '../../common/enums';
 import { RoleKey } from '../../common/enums/role.enum';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
-import { ChangeEmailDTO, EmailDto } from './dto/change.email.dto';
 import { AuthDecorator } from '../../common/decorators/auth.decorator';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { CanAccess } from '../../common/decorators/role.access.decorator';
+import {  UserCheckOtpDto, ChangeEmailDTO, EmailDto, PhoneDto } from './dto/user.dto';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { CheckOtpMethods } from './enums/enums';
 
 
 
@@ -88,17 +88,28 @@ export class UserController
     @Post('add-email')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async AddEmailC(@Body() emailDTO: EmailDto)
+    async AddEmail(@Body() emailDto: EmailDto)
     {
-        return await this.userService.AddEmail(emailDTO);
+        return await this.userService.AddEmail(emailDto);
+    }
+
+    @Post('add-phone')
+    @HttpCode(HttpStatus.OK)
+    @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
+    async AddPhone(@Body() phoneDto: PhoneDto)
+    {
+        return await this.userService.AddPhone(phoneDto);
     }
 
     @Post('check-otp')
     @HttpCode(HttpStatus.OK)
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
-    async CheckOtpC(@Body() cehckDto: UserCheckOtpDto): TCheckOtp
+    async CheckOtpC(@Body() checkDto: UserCheckOtpDto): TCheckOtp
     {
-        return await this.userService.CheckOtpS(cehckDto);
+        if (checkDto.method === CheckOtpMethods.Add)
+            return await this.userService.checkOtpAddS(checkDto);
+
+        return await this.userService.CheckOtpS(checkDto);
     }
 
     @Patch('change-username')

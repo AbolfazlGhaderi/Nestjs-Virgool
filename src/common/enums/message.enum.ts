@@ -40,7 +40,7 @@ export enum ConflictMessages {
 
 export enum PublicMessage
 {
-   SendOtpSuccess = 'کد با موفقیت ارسال شد',
+   SendOtpSuccess = 'کد تایید با موفقیت ارسال شد',
    LoginSucces = 'ورود با موفقیت انجام شد',
    DeleteSuccess = ' با موفقیت پاک شد',
    UpdateSuccess = 'با موفقیت آپدیت شد',
@@ -59,7 +59,7 @@ export enum PublicMessage
    UnFollow = 'از لیست دنبال کنندگان حذف شد ',
    AlreadyVerified = 'قبلا تایید شده است',
    AddEmailSuccess='ایمیل با موفقیت ثبت شد',
-   AddPhoneSuccess='شماره تلفن با موفقیت ثبت شد',
+   AddPhoneSuccess='شماره موبایل با موفقیت ثبت شد',
 }
 
 export enum ValidationMessage

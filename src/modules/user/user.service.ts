@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { ProfileDto } from './dto/profile.dto';
 import { OtpService } from '../otp/otp.service';
-import { UserCheckOtpDto } from './dto/user.dto';
 import { PaginationDto } from '../../common/dtos';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenService } from '../token/token.service';
@@ -13,7 +12,7 @@ import { ProfileEntity, UserEntity } from '../../app/models';
 import { FollowEntity } from '../../app/models/follow.model';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { CheckOtpMethods, CheckOtpTypes } from './enums/enums';
-import { ChangeEmailDTO, EmailDto } from './dto/change.email.dto';
+import { ChangeEmailDTO, EmailDto, PhoneDto, UserCheckOtpDto } from './dto/user.dto';
 import { AuthMessage, CookieKeys, PublicMessage } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
@@ -221,11 +220,11 @@ export class UserService
 
     async CheckOtpS(data: UserCheckOtpDto)
     {
-        const { code, method, type } = data;
+        const { code, method, type, token } = data;
         const user = this.request.user as UserEntity;
 
         // Get Token
-        const token : string | undefined = this.request.cookies?.[method === CheckOtpMethods.Change ? CookieKeys.Change : CookieKeys.Verify];
+        // const token : string | undefined = this.request.cookies?.[method === CheckOtpMethods.Change ? CookieKeys.Change : CookieKeys.Verify];
         if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
 
         // Verify Token
@@ -248,9 +247,10 @@ export class UserService
 
         try
         {
+            // Update email / phone
             if (method === CheckOtpMethods.Change)
             {
-                // Update email / phone
+
                 await this.userRepository.update(user.id, { [type]: newContent }); // Content = New Email 
                 return {
                     message: PublicMessage.UpdateSuccess,
@@ -455,6 +455,57 @@ export class UserService
 
         return {
             message:PublicMessage.AddEmailSuccess,
+        };
+    }
+    async AddPhone(data:PhoneDto)
+    {
+        const user = this.request.user as UserEntity;
+        const { phone } = data;
+        if (user.phone) throw new HttpException(BadRequestMesage.ExistPhone, HttpStatus.BAD_REQUEST);
+
+        const existPhone =  await this.findUserByPhone(phone);
+        if (existPhone) throw new HttpException(ConflictMessages.PhoneConflict, HttpStatus.CONFLICT);
+
+        const code = await this.otpService.sendAndSaveOTP(phone, OtpKey.Add, 'phone');
+        const token = this.tokenService.createOtpToken({ sub: phone });
+
+        return {
+            token,
+            message:PublicMessage.SendOtpSuccess,
+        };
+    }
+
+    async checkOtpAddS(data: UserCheckOtpDto)
+    {
+        const { code, method, token, type } = data;
+        const user = this.request.user as UserEntity;
+
+        // Get Token
+        if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
+
+        // Verify Token
+        const payload = this.tokenService.verifyOtpToken(token);
+        const newContent = payload.sub;
+
+        // Check Otp Code
+        const savedCode = await this.otpService.checkOtp(
+            `${newContent}${OtpKey.Add}`,
+        );
+        if (savedCode !== code)
+        {
+            throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);
+        }
+
+        // Delete Otp Code
+        await this.otpService.deleteByKey(
+            `${newContent}${OtpKey.Add}`,
+        );
+
+        user.phone = newContent;
+        await this.userRepository.save(user);
+
+        return {
+            message: PublicMessage.AddPhoneSuccess,
         };
     }
 }
