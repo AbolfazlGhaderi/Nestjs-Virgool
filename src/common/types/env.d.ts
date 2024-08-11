@@ -22,5 +22,9 @@ namespace NodeJS {
         SMS_TEMPLATEID: string;
         GOOGLE_CLIENT_ID: string;
         GOOGLE_CLIENT_SECRET: string;
+        EMAIL_HOST:string;
+        EMAIL_PORT:number;
+        EMAIL_USER:string;
+        EMAIL_PASS:string;
     }
 }
