@@ -106,9 +106,6 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async CheckOtpC(@Body() checkDto: UserCheckOtpDto): TCheckOtp
     {
-        if (checkDto.method === CheckOtpMethods.Add)
-            return await this.userService.checkOtpAddS(checkDto);
-
         return await this.userService.CheckOtpS(checkDto);
     }
 

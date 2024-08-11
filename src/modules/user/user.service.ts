@@ -12,8 +12,9 @@ import { ProfileEntity, UserEntity } from '../../app/models';
 import { FollowEntity } from '../../app/models/follow.model';
 import { ChangeUserNameDTO } from './dto/change.username.dto';
 import { CheckOtpMethods, CheckOtpTypes } from './enums/enums';
+import { AuthMessage, PublicMessage } from '../../common/enums';
+import { GenerateOtpKey } from '../../app/utils/functions.utils';
 import { ChangeEmailDTO, EmailDto, PhoneDto, UserCheckOtpDto } from './dto/user.dto';
-import { AuthMessage, CookieKeys, PublicMessage } from '../../common/enums';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
 import { ConflictMessages, NotFoundMessages, BadRequestMesage } from '../../common/enums/message.enum';
@@ -83,6 +84,21 @@ export class UserService
         //     throw new NotFoundException(AuthMessage.notFoundAccount);
         // }
         return user;
+    }
+
+    async UpdateUserPhone(user:UserEntity, phone:string)
+    {
+        try
+        {
+            user.phone = phone;
+            await this.userRepository.save(user);
+            return true;
+        }
+        catch (error)
+        {
+            console.log(error);
+            return false;
+        }
     }
 
     async UpdateProfileS( profileData: ProfileDto)
@@ -219,7 +235,7 @@ export class UserService
     }
 
     async CheckOtpS(data: UserCheckOtpDto)
-    {
+    { // TODO: Test this Section
         const { code, method, type, token } = data;
         const user = this.request.user as UserEntity;
 
@@ -229,21 +245,23 @@ export class UserService
 
         // Verify Token
         const payload = this.tokenService.verifyOtpToken(token);
-        const newContent = payload.sub;
+        const tokenData = payload.sub;
+
+        // Create Content { Email / Phone }
+        let content : string;
+        if (method === CheckOtpMethods.Add) content = tokenData;
+        else content = type === CheckOtpTypes.Email ? user.email : user.phone;
+
 
         // Check Otp Code
-        const savedCode = await this.otpService.checkOtp(
-            `${type === CheckOtpTypes.Email ? user.email : user.phone}${method === CheckOtpMethods.Change ? OtpKey.Change : OtpKey.Verify}`,
-        );
+        const savedCode = await this.otpService.GetOtp(GenerateOtpKey(method, content));
         if (savedCode !== code)
         {
             throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);
         }
 
         // Delete Otp Code
-        await this.otpService.deleteByKey(
-            `${type === CheckOtpTypes.Email ? user.email : user.phone}${method === CheckOtpMethods.Change ? OtpKey.Change : OtpKey.Verify}`,
-        );
+        await this.otpService.deleteByKey(GenerateOtpKey(method, content));
 
         try
         {
@@ -251,12 +269,12 @@ export class UserService
             if (method === CheckOtpMethods.Change)
             {
 
-                await this.userRepository.update(user.id, { [type]: newContent }); // Content = New Email 
+                await this.userRepository.update(user.id, { [type]: tokenData }); // Content = New Email 
                 return {
                     message: PublicMessage.UpdateSuccess,
                 };
             }
-            else
+            else if (method === CheckOtpMethods.Verify)
             {
                 if (type === CheckOtpTypes.Email)
                 {
@@ -271,6 +289,15 @@ export class UserService
 
                 return {
                     message: PublicMessage.Accept, // verify success
+                };
+            }
+            else
+            {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                const result = await this.UpdateUserPhone(user, tokenData);
+                if (!result) throw new HttpException(PublicMessage.Error, HttpStatus.BAD_REQUEST);
+                return {
+                    message: PublicMessage.AddPhoneSuccess,
                 };
             }
         }
@@ -475,37 +502,4 @@ export class UserService
         };
     }
 
-    async checkOtpAddS(data: UserCheckOtpDto)
-    {
-        const { code, method, token, type } = data;
-        const user = this.request.user as UserEntity;
-
-        // Get Token
-        if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.FORBIDDEN);
-
-        // Verify Token
-        const payload = this.tokenService.verifyOtpToken(token);
-        const newContent = payload.sub;
-
-        // Check Otp Code
-        const savedCode = await this.otpService.checkOtp(
-            `${newContent}${OtpKey.Add}`,
-        );
-        if (savedCode !== code)
-        {
-            throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.FORBIDDEN);
-        }
-
-        // Delete Otp Code
-        await this.otpService.deleteByKey(
-            `${newContent}${OtpKey.Add}`,
-        );
-
-        user.phone = newContent;
-        await this.userRepository.save(user);
-
-        return {
-            message: PublicMessage.AddPhoneSuccess,
-        };
-    }
 }

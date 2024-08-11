@@ -47,7 +47,7 @@ export class OtpService
         return code;
     }
 
-    async checkOtp(key: string, type?: TokenType)
+    async GetOtp(key: string, type?: TokenType)
     {
         const code: number | undefined = await this.cacheManager.get(key);
         if (code)
