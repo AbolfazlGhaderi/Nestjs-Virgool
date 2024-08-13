@@ -14,6 +14,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
                     pass: process.env.EMAIL_PASS,
                 },
             },
+            defaults: {
+                from: process.env.EMAIL_DEFAULT,
+            },
 
         }),
     }) ],
