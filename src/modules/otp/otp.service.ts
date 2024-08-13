@@ -3,16 +3,18 @@ import { Cache } from 'cache-manager';
 import { MailService } from '../mail/mail.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { OtpKey } from '../../common/enums/otp.keys.enum';
+import { SmsService } from '../../common/services/sms.service';
 import { GenerateOtpSubject } from '../../app/utils/functions.utils';
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthMessage, BadRequestMesage, ServiceUnavailableMessage, TokenType } from '../../common/enums';
+import { AuthMessage, BadRequestMesage, TokenType } from '../../common/enums';
 
 @Injectable()
 export class OtpService
 {
     constructor(
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
-        private mailService:MailService,
+        private readonly mailService:MailService,
+        private readonly smsService:SmsService,
     ) {}
 
     // generate code
@@ -80,13 +82,11 @@ export class OtpService
 
         if (type === 'email')
         {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            const result = await this.mailService.SendEmail(undefined, content, GenerateOtpSubject(otpkey), 'Code : ${code} ', `<h1>Code : ${code} </h1>`);
-            if (!result) throw new HttpException(ServiceUnavailableMessage.MailServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
+            await this.mailService.SendEmail('', content, GenerateOtpSubject(otpkey), `Code : ${code} `, `<h1>Code : ${code} </h1>`);
         }
         if (type === 'phone')
         {
-
+            await this.smsService.sendOtpCode(content, code.toString());
         }
         else
         {}

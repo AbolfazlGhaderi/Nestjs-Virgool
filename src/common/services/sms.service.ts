@@ -21,7 +21,7 @@ export class SmsService
         const axiosConfig: AxiosRequestConfig = {
             method: 'post',
             url: this.endpoint,
-            timeout:5000,
+            timeout:4000,
             headers: {
                 'Content-Type': 'application/json',
                 ACCEPT: 'application/json',
@@ -38,7 +38,7 @@ export class SmsService
         }
         catch (error)
         {
-            console.log(error);
+            console.log(error.response.data);
             throw new HttpException(ServiceUnavailableMessage.SmsServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
