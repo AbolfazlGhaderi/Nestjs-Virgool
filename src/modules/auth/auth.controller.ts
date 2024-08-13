@@ -24,7 +24,7 @@ export class AuthController
    @Post('check-otp')
    @HttpCode(HttpStatus.OK)
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-   async CheckOtpC(@Body() checkOtpDto: CheckOtpDto, @Res({ passthrough: true }) response: Response)
+   async CheckOtpC(@Body() checkOtpDto: CheckOtpDto) // @Res({ passthrough: true }) response: Response
    {
        return await this.authService.CheckOtpS(checkOtpDto.code);
    }

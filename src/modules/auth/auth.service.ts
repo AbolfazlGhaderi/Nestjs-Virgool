@@ -1,9 +1,10 @@
+import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { UserEntity } from '../../app/models';
 import { OtpService } from '../otp/otp.service';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MailService } from '../mail/mail.service';
 import { TOtpToken } from '../token/types/token.type';
 import { TokenService } from '../token/token.service';
 import { LoginResponseType } from '../../common/types';
@@ -15,8 +16,9 @@ import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
 import { SmsService } from '../../common/services/sms.service';
 import { symmetricCryption } from '../../app/utils/encrypt.decrypt';
 import { UsernameValidator } from '../../app/utils/username.validator';
+import { GenerateOtpKey, GenerateOtpSubject } from '../../app/utils/functions.utils';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, TokenType } from '../../common/enums';
+import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, ServiceUnavailableMessage, TokenType } from '../../common/enums';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService
@@ -28,6 +30,7 @@ export class AuthService
       private readonly otpService: OtpService,
       private readonly tokenService: TokenService,
       private readonly smsService:SmsService,
+      private readonly mailService:MailService,
       @Inject(REQUEST) private request: Request,
     ) {}
 
@@ -77,25 +80,23 @@ export class AuthService
         otp = this.otpService.generateOtp();
 
         // send otp
-
-        // save otp
-        otp = await this.otpService.SaveLoginOTP(username, otp);
-
-
-
         if (method === AuthMethods.Email)
         {
-            // TODO: send email
+            await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
         }
         else if (method === AuthMethods.Phone)
         {
-            // await this.smsService.sendOtpCode(username, otp.toString());
+            await this.smsService.sendOtpCode(username, otp.toString());
         }
         else
         {
-            // TODO: check This Section
-            throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST); // TODO: user should can login with username
+            if (user.phone) await this.smsService.sendOtpCode(user.phone, otp.toString());
+            else if (user.email)  await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
+            else throw new HttpException(BadRequestMesage.InValidData, HttpStatus.BAD_REQUEST);
         }
+
+        // save otp
+        otp = await this.otpService.SaveLoginOTP(username, otp);
 
         // Generate Token
         const token = this.tokenService.createOtpToken({
@@ -127,6 +128,7 @@ export class AuthService
             otp = this.otpService.generateOtp();
 
             // send otp
+            await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
 
             // save otp
             otp = await this.otpService.SaveLoginOTP(username, otp);
@@ -141,13 +143,8 @@ export class AuthService
         {
             otp = this.otpService.generateOtp();
 
-            // TODO: send otp {
-
-
-
-
-
-            // }
+            // send otp
+            await this.smsService.sendOtpCode(username, otp.toString());
 
             // save otp
             otp = await this.otpService.SaveLoginOTP(username, otp);
@@ -181,7 +178,7 @@ export class AuthService
         const key = symmetricCryption.decrypted(payload.sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         // get code from Cach and check
-        const code = await this.otpService.checkOtp(`${key}${OtpKey.Login}`, TokenType.Login);
+        const code = await this.otpService.GetOtp(GenerateOtpKey(undefined, key), TokenType.Login);
 
         if (otpCode !== code) throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.UNAUTHORIZED);
 
@@ -196,7 +193,7 @@ export class AuthService
             if (!user)
             {
                 user = this.userRepository.create({
-                    username: `U_${key}`,
+                    username: `u_${key}`,
                     phone: key,
                 });
                 user = await this.userRepository.save(user);
