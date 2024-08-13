@@ -26,5 +26,6 @@ namespace NodeJS {
         EMAIL_PORT:number;
         EMAIL_USER:string;
         EMAIL_PASS:string;
+        EMAIL_DEFAULT:string;
     }
 }
