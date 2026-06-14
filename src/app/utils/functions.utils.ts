@@ -20,18 +20,21 @@ export function GenerateImageName(origialName: string, section:string)
     return `${name}_${section}_${GenerateRandomByte(6)}_${time}${extname(origialName)}`;
 }
 
-export function GenerateOtpKey(method:CheckOtpMethods, conetnt:string)
+export function GenerateOtpKey(method: CheckOtpMethods, text: string)
 {
     switch (method)
     {
         case CheckOtpMethods.Add: {
-            return `${conetnt}${OtpKey.Add}`;
+            return `${text}${OtpKey.Add}`;
         }
         case CheckOtpMethods.Change: {
-            return `${conetnt}${OtpKey.Change}`;
+            return `${text}${OtpKey.Change}`;
+        }
+        case CheckOtpMethods.Login: {
+            return `${text}${OtpKey.Login}`;
         }
         default: {
-            return `${conetnt}${OtpKey.Verify}`;
+            return `${text}${OtpKey.Verify}`;
         }
     }
 

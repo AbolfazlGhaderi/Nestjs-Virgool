@@ -1,7 +1,8 @@
 export enum CheckOtpMethods {
     Change='change',
     Verify='Verify',
-    Add='Add'
+    Add='Add',
+    Login='Login',
 }
 
 export enum CheckOtpTypes {

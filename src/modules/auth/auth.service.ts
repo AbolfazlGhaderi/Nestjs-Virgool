@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
@@ -19,6 +20,7 @@ import { UsernameValidator } from '../../app/utils/username.validator';
 import { GenerateOtpKey, GenerateOtpSubject } from '../../app/utils/functions.utils';
 import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
 import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, ServiceUnavailableMessage, TokenType } from '../../common/enums';
+import { CheckOtpMethods } from '../user/enums/enums';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService
@@ -59,7 +61,6 @@ export class AuthService
         }
 
         // Send Response
-
         return {
             token: result.token,
             message: PublicMessage.SendOtpSuccess,
@@ -96,7 +97,7 @@ export class AuthService
         }
 
         // save otp
-        otp = await this.otpService.SaveLoginOTP(username, otp);
+        otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
 
         // Generate Token
         const token = this.tokenService.createOtpToken({
@@ -131,7 +132,7 @@ export class AuthService
             await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
 
             // save otp
-            otp = await this.otpService.SaveLoginOTP(username, otp);
+            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
 
             // Generate Token
             token = this.tokenService.createOtpToken({
@@ -147,7 +148,7 @@ export class AuthService
             await this.smsService.sendOtpCode(username, otp.toString());
 
             // save otp
-            otp = await this.otpService.SaveLoginOTP(username, otp);
+            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
 
             // Generate Token
             token = this.tokenService.createOtpToken({
@@ -178,7 +179,7 @@ export class AuthService
         const key = symmetricCryption.decrypted(payload.sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
 
         // get code from Cach and check
-        const code = await this.otpService.GetOtp(GenerateOtpKey(undefined, key), TokenType.Login);
+        const code = await this.otpService.GetOtp(GenerateOtpKey(CheckOtpMethods.Login, key), TokenType.Login);
 
         if (otpCode !== code) throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.UNAUTHORIZED);
 

@@ -39,6 +39,7 @@ export class S3Service
 
    async ShowFiles()
    {
+
        const parameters = {
            Bucket: process.env.LIARA_BUCKET_OBJS_NAME,
        };

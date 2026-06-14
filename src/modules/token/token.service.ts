@@ -64,6 +64,7 @@ export class TokenService
         if (!user) throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
         return user;
     }
+
     validateRefreshoken(token: string)
     {
         const { sub } =  this.verifyToken(token, 'refresh');

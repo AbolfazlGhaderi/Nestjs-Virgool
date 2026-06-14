@@ -33,8 +33,6 @@ export class OtpService
     {
         // Generate Code
 
-        key = `${key}${OtpKey.Login}`;
-
         console.log(key + '  ' + code);
         // check If Otp Is Exist In Cache
         const otp = await this.cacheManager.get(key);
