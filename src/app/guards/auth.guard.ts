@@ -4,7 +4,7 @@ import { isJWT } from 'class-validator'
 import { Request } from 'express'
 
 import { SKIP_AUTH } from '../../common/decorators/skipAuth.decorator'
-import { AuthMessage } from '../../common/enums'
+import { AuthMessage, CookieKeys } from '../../common/enums'
 import { TokenService } from '../../modules/token/token.service'
 
 @Injectable()
@@ -22,7 +22,6 @@ export class AuthGuard implements CanActivate
         const request: Request = httpContex.getRequest()
 
         const token = this.extractToken(request)
-
         // save user in Request.user
         request.user = await this.tokenService.validateAccessToken(token)
 
@@ -33,20 +32,13 @@ export class AuthGuard implements CanActivate
     // Extract Token from Request
     protected extractToken(request: Request)
     {
-        const authorization : string | undefined = request.headers.authorization
+        const authorization : string | undefined = request.headers.authorization ?? request.cookies?.[CookieKeys.AccessToken]
 
-        if (!authorization || authorization?.trim() === '')
+        if (!authorization || authorization?.trim() === '' || !isJWT(authorization))
         {
             throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED)
         }
 
-        const [ bearer, token ] = authorization.split(' ')
-
-        if (bearer?.toLowerCase() !== 'bearer' || !token || !isJWT(token))
-        {
-            throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED)
-        }
-
-        return token
+        return authorization
     }
 }

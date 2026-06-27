@@ -14,6 +14,10 @@ async function bootstrap()
     const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
     // use 
+    app.enableCors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+    })
     app.useStaticAssets('Public')
     app.use(cookieParser(process.env.COOKIE_SECRET))
     SwaggerConfig(app)

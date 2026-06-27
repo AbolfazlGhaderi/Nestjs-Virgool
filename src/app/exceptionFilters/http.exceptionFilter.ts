@@ -28,12 +28,12 @@ export class HttpExceptionFilter implements ExceptionFilter
             message = 'something wrong'
         }
 
-        const date = dayjs()
         response.status(status).json({
+            ok: false,
             statusCode: status,
-            timestamp: date.unix(),
-            error: {
-                message: message,
+            timestamp: Date.now(),
+            data: {
+                message,
             },
         })
     }
