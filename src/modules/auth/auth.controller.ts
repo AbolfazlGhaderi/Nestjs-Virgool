@@ -60,8 +60,21 @@ export class AuthController
 
    @Post('/refresh-token')
    @HttpCode(HttpStatus.OK)
-   CheckRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto)
+   CheckRefreshTokenC(@Body() refreshTokenData : CheckRefreshTokenDto, @Res({ passthrough: true }) response: Response)
    {
-       return  this.authService.CheckRefreahTokenS(refreshTokenData)
+       const result = this.authService.CheckRefreahTokenS(refreshTokenData)
+       response.cookie(CookieKeys.AccessToken, result.accessToken.token, {
+           httpOnly: true,
+           secure: process.env.NODE_ENV === 'production',
+           sameSite: 'strict',
+           maxAge: 60 * 60 * 1000, // 1 hour
+       })
+       response.cookie(CookieKeys.RefreshToken, result.refreshToken.token, {
+           httpOnly: true,
+           secure: process.env.NODE_ENV === 'production',
+           sameSite: 'strict',
+           maxAge: 60 * 60 * 24 * 3 * 1000, // 3 days
+       })
+       return result
    }
 }
