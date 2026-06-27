@@ -1,4 +1,4 @@
-import { PublicMessage } from '../../../common/enums';
+import { PublicMessage } from '../../../common/enums'
 
 export type TChangeEmailC = Promise<
     | {

@@ -1,6 +1,7 @@
-import { MailerService } from '@nestjs-modules/mailer';
-import { ServiceUnavailableMessage } from '../../common/enums';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { MailerService } from '@nestjs-modules/mailer'
+
+import { ServiceUnavailableMessage } from '../../common/enums'
 
 @Injectable()
 export class MailService
@@ -11,7 +12,7 @@ export class MailService
     // TODO: from => import from env
     async SendEmail(from:string, to:string, subject:string, text:string, html:string)
     {
-        if (from === '') from = process.env.EMAIL_DEFAULT;
+        if (from === '') from = process.env.EMAIL_DEFAULT
 
         try
         {
@@ -22,12 +23,12 @@ export class MailService
                     subject,
                     text,
                     html,
-                });
+                })
         }
         catch (error)
         {
-            console.log(error);
-            throw new HttpException(ServiceUnavailableMessage.MailServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
+            console.log(error)
+            throw new HttpException(ServiceUnavailableMessage.MailServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE)
         }
     }
 }

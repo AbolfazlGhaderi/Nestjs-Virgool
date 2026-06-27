@@ -1,9 +1,10 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
-import { AuthService } from './auth.service';
-import { GoogleUser } from './types/typesAndInterfaces';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+import { ApiTags } from '@nestjs/swagger'
+import { Request } from 'express'
+
+import { AuthService } from './auth.service'
+import { GoogleUser } from './types/typesAndInterfaces'
 
 @Controller('/auth/google')
 @ApiTags('Google Oauth')
@@ -19,7 +20,7 @@ export class GoogleOauthController
     @Get('/redirect')
     async googleRedirect(@Req() request:Request)
     {
-        const user = request.user as GoogleUser;
-        return await this.authService.GoogleRedirect(user);
+        const user = request.user as GoogleUser
+        return await this.authService.GoogleRedirect(user)
     }
 }

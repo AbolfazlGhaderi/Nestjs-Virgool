@@ -1,20 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { AuthType } from '../../../common/enums';
-import { AuthMethods } from '../../../common/enums/auth/method.enum';
-import { IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator'
+
+import { AuthType } from '../../../common/enums'
+import { AuthMethods } from '../../../common/enums/auth/method.enum'
 
 export class AuthDto
 {
   @ApiProperty()
   @IsString()
   @MinLength(3)
-  username: string;
+  username: string
   @ApiProperty({ enum: AuthType })
   @IsEnum(AuthType)
-  type: string;
+  type: string
   @ApiProperty({ enum: AuthMethods })
   @IsEnum(AuthMethods)
-  method: AuthMethods;
+  method: AuthMethods
 }
 
 export class CheckRefreshTokenDto
@@ -22,5 +23,5 @@ export class CheckRefreshTokenDto
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  token: string;
+  token: string
 }

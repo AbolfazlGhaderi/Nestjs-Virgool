@@ -2,21 +2,22 @@
 // import {  MulterStorage } from '../../app/utils/multer.util';
 // import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
-import { TCheckOtp } from './types/type';
-import { UserService } from './user.service';
-import { UserEntity } from '../../app/models';
-import { ProfileDto } from './dto/profile.dto';
-import { PaginationDto } from '../../common/dtos';
-import {  SwaggerConsumes } from '../../common/enums';
-import { RoleKey } from '../../common/enums/role.enum';
-import { ChangeUserNameDTO } from './dto/change.username.dto';
-import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
-import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { Pagination } from '../../common/decorators/pagination.decorator';
-import { CanAccess } from '../../common/decorators/role.access.decorator';
-import {  UserCheckOtpDto, ChangeEmailDTO, EmailDto, PhoneDto } from './dto/user.dto';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
-import { CheckOtpMethods } from './enums/enums';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common'
+import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger'
+
+import { UserEntity } from '../../app/models'
+import { AuthDecorator } from '../../common/decorators/auth.decorator'
+import { Pagination } from '../../common/decorators/pagination.decorator'
+import { CanAccess } from '../../common/decorators/role.access.decorator'
+import { PaginationDto } from '../../common/dtos'
+import {  SwaggerConsumes } from '../../common/enums'
+import { RoleKey } from '../../common/enums/role.enum'
+import { ChangeUserNameDTO } from './dto/change.username.dto'
+import { ProfileDto } from './dto/profile.dto'
+import {  ChangeEmailDTO, EmailDto, PhoneDto, UserCheckOtpDto } from './dto/user.dto'
+import { CheckOtpMethods } from './enums/enums'
+import { TCheckOtp } from './types/type'
+import { UserService } from './user.service'
 
 
 
@@ -52,7 +53,7 @@ export class UserController
         @Body() profileDto: ProfileDto,
     )
     {
-        return  await this.userService.UpdateProfileS( profileDto);
+        return  await this.userService.UpdateProfileS( profileDto)
 
     }
 
@@ -60,7 +61,7 @@ export class UserController
     @HttpCode(HttpStatus.OK)
     async GetProfileC(): Promise<UserEntity>
     {
-        return await this.userService.GetProfileS();
+        return await this.userService.GetProfileS()
     }
 
     @Patch('change-email')
@@ -68,21 +69,21 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async ChangeEmailC(@Body() emailDTO: ChangeEmailDTO)
     {
-        return await this.userService.ChangeEmailS(emailDTO);
+        return await this.userService.ChangeEmailS(emailDTO)
     }
 
     @Get('verify-email')
     @HttpCode(HttpStatus.OK)
     async VerifyEmail()
     {
-        return await this.userService.VerifyEmailS();
+        return await this.userService.VerifyEmailS()
     }
 
     @Get('verify-phone')
     @HttpCode(HttpStatus.OK)
     async VerifyPhone()
     {
-        return await this.userService.VerifyPhoneS();
+        return await this.userService.VerifyPhoneS()
     }
 
     @Post('add-email')
@@ -90,7 +91,7 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async AddEmail(@Body() emailDto: EmailDto)
     {
-        return await this.userService.AddEmail(emailDto);
+        return await this.userService.AddEmail(emailDto)
     }
 
     @Post('add-phone')
@@ -98,7 +99,7 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async AddPhone(@Body() phoneDto: PhoneDto)
     {
-        return await this.userService.AddPhone(phoneDto);
+        return await this.userService.AddPhone(phoneDto)
     }
 
     @Post('check-otp')
@@ -106,7 +107,7 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async CheckOtpC(@Body() checkDto: UserCheckOtpDto): TCheckOtp
     {
-        return await this.userService.CheckOtpS(checkDto);
+        return await this.userService.CheckOtpS(checkDto)
     }
 
     @Patch('change-username')
@@ -114,14 +115,14 @@ export class UserController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async ChangeUserNameC(@Body() usernameDto: ChangeUserNameDTO)
     {
-        return await this.userService.ChangeUserNameS(usernameDto);
+        return await this.userService.ChangeUserNameS(usernameDto)
     }
 
     @Get('/follow/:userId')
     @ApiParam({ name:'userId' })
     async FollowToggle(@Param('userId', ParseUUIDPipe) userId: string )
     {
-        return await this.userService.FollowToggle(userId);
+        return await this.userService.FollowToggle(userId)
     }
 
     @Get('/list')
@@ -129,21 +130,21 @@ export class UserController
     @Pagination()
     async GetAllUsers(@Query() paginationData: PaginationDto)
     {
-        return await this.userService.GetAllUsers(paginationData);
+        return await this.userService.GetAllUsers(paginationData)
     }
 
     @Get('/followers')
     @Pagination()
     async GetAllFollowers(@Query() paginationData: PaginationDto)
     {
-        return await this.userService.GetAllFollowers(paginationData);
+        return await this.userService.GetAllFollowers(paginationData)
     }
 
     @Get('/following')
     @Pagination()
     async GetAllFollowing(@Query() paginationData: PaginationDto)
     {
-        return await this.userService.GetAllFollowing(paginationData);
+        return await this.userService.GetAllFollowing(paginationData)
     }
 
 }

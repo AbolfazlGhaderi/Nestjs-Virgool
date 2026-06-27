@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { CheckOtpMethods, CheckOtpTypes } from '../enums/enums';
-import { IsEmail, IsEnum, IsJWT, IsNumberString, IsPhoneNumber, IsString, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsEmail, IsEnum, IsJWT, IsNumberString, IsPhoneNumber, IsString, Length } from 'class-validator'
+
+import { CheckOtpMethods, CheckOtpTypes } from '../enums/enums'
 
 export class UserCheckOtpDto
 {
@@ -8,19 +9,19 @@ export class UserCheckOtpDto
     @ApiProperty()
     @IsNumberString()
     @Length(5, 5)
-    code:string;
+    code:string
 
     @ApiProperty({ enum: CheckOtpMethods })
     @IsEnum(CheckOtpMethods)
-    method: CheckOtpMethods;
+    method: CheckOtpMethods
 
     @ApiProperty({ enum: CheckOtpTypes })
     @IsEnum(CheckOtpTypes)
-    type: CheckOtpTypes;
+    type: CheckOtpTypes
 
     @ApiProperty()
     @IsJWT()
-    token:string;
+    token:string
 
 }
 
@@ -30,7 +31,7 @@ export class ChangeEmailDTO
    @ApiProperty()
    @IsEmail()
    @IsString()
-   email: string;
+   email: string
 }
 
 export class EmailDto
@@ -38,12 +39,12 @@ export class EmailDto
    @ApiProperty()
    @IsEmail()
    @IsString()
-   email: string;
+   email: string
 }
 
 export class PhoneDto
 {
     @ApiProperty()
     @IsPhoneNumber('IR')
-    phone:string;
+    phone:string
 }

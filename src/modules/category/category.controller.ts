@@ -1,14 +1,15 @@
-import { PaginationDto } from '../../common/dtos';
-import { SwaggerConsumes } from '../../common/enums';
-import { CategoryService } from './category.service';
-import { RoleKey } from '../../common/enums/role.enum';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { UpdateCategoryDTO } from './dto/update.category.dsto';
-import { CreateCatetegoryDto } from './dto/create.category.dto';
-import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { Pagination } from '../../common/decorators/pagination.decorator';
-import { CanAccess } from '../../common/decorators/role.access.decorator';
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
+import { ApiConsumes, ApiTags } from '@nestjs/swagger'
+
+import { AuthDecorator } from '../../common/decorators/auth.decorator'
+import { Pagination } from '../../common/decorators/pagination.decorator'
+import { CanAccess } from '../../common/decorators/role.access.decorator'
+import { PaginationDto } from '../../common/dtos'
+import { SwaggerConsumes } from '../../common/enums'
+import { RoleKey } from '../../common/enums/role.enum'
+import { CategoryService } from './category.service'
+import { CreateCatetegoryDto } from './dto/create.category.dto'
+import { UpdateCategoryDTO } from './dto/update.category.dsto'
 
 @Controller('category')
 @ApiTags('category')
@@ -21,14 +22,14 @@ export class CategoryController
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
     async CreateCategoryC(@Body() categoryDto: CreateCatetegoryDto)
     {
-        return await this.categoryService.CreateCategoryS(categoryDto);
+        return await this.categoryService.CreateCategoryS(categoryDto)
     }
 
    @Get()
    @Pagination()
    async GetAllCategoriesC(@Query() paginationDto: PaginationDto)
    {
-       return this.categoryService.GetAllCategoriesS(paginationDto);
+       return this.categoryService.GetAllCategoriesS(paginationDto)
    }
 
    @Put('/:id')
@@ -37,7 +38,7 @@ export class CategoryController
    @CanAccess(RoleKey.Admin)
    async UpdateC(@Param('id') id: string, @Body() updateDto: UpdateCategoryDTO)
    {
-       return await this.categoryService.UpdateCategoryC(id, updateDto);
+       return await this.categoryService.UpdateCategoryC(id, updateDto)
    }
 
    @Delete('/:id')
@@ -45,6 +46,6 @@ export class CategoryController
    @CanAccess(RoleKey.Admin)
    async DeleteCategoryC(@Param('id') id: string)
    {
-       return await this.categoryService.DeleteCategoryS(id);
+       return await this.categoryService.DeleteCategoryS(id)
    }
 }

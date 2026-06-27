@@ -1,14 +1,15 @@
-import { PaginationDto } from '../../common/dtos';
-import { CommentService } from './comment.service';
-import { CreateCommentDto } from './dto/comment.dto';
-import { SwaggerConsumes } from '../../common/enums';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { RoleKey } from '../../common/enums/role.enum';
-import { AuthDecorator } from '../../common/decorators/auth.decorator';
-import { CanAccess } from '../../common/decorators/role.access.decorator';
-import { Pagination } from '../../common/decorators/pagination.decorator';
-import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors } from '@nestjs/common'
+import { ApiConsumes, ApiTags } from '@nestjs/swagger'
+
+import { ResponseControllerInterceptor } from '../../app/interceptors/response.controller.interceptor'
+import { AuthDecorator } from '../../common/decorators/auth.decorator'
+import { Pagination } from '../../common/decorators/pagination.decorator'
+import { CanAccess } from '../../common/decorators/role.access.decorator'
+import { PaginationDto } from '../../common/dtos'
+import { SwaggerConsumes } from '../../common/enums'
+import { RoleKey } from '../../common/enums/role.enum'
+import { CommentService } from './comment.service'
+import { CreateCommentDto } from './dto/comment.dto'
 
 @Controller('comment')
 @ApiTags('Comment')
@@ -23,7 +24,7 @@ export class CommentController
     @ApiConsumes(SwaggerConsumes.Json, SwaggerConsumes.UrlEncoded)
     async InsertComment(@Body()comentDto: CreateCommentDto)
     {
-        return await this.commentService.CreateComment(comentDto);
+        return await this.commentService.CreateComment(comentDto)
     }
 
     @Get('/')
@@ -32,7 +33,7 @@ export class CommentController
     @CanAccess(RoleKey.Admin)
     async CommentList(@Query() paginationData: PaginationDto)
     {
-        return await this.commentService.CommentList(paginationData);
+        return await this.commentService.CommentList(paginationData)
     }
 
     @Put('/accept/:id')
@@ -40,7 +41,7 @@ export class CommentController
     @CanAccess(RoleKey.Admin)
     async AcceptComment(@Param('id', ParseUUIDPipe) id:string)
     {
-        return await this.commentService.AcceptComment(id);
+        return await this.commentService.AcceptComment(id)
     }
 
     @Put('/reject/:id')
@@ -48,6 +49,6 @@ export class CommentController
     @CanAccess(RoleKey.Admin)
     async RejectComment(@Param('id', ParseUUIDPipe) id:string)
     {
-        return await this.commentService.RejectComment(id);
+        return await this.commentService.RejectComment(id)
     }
 }

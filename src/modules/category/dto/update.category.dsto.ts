@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class UpdateCategoryDTO
 {
@@ -7,15 +7,15 @@ export class UpdateCategoryDTO
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  title: string;
+  title: string
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  description: string;
+  description: string
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  parentId: string;
+  parentId: string
 }

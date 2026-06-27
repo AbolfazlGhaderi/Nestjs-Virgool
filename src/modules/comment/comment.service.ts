@@ -1,16 +1,17 @@
-import { Request } from 'express';
-import { IsNull, Repository } from 'typeorm';
-import { REQUEST } from '@nestjs/core';
-import { UserEntity } from '../../app/models';
-import { PaginationDto } from '../../common/dtos';
-import { BlogService } from '../blog/blog.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateCommentDto } from './dto/comment.dto';
-import { NotFoundMessages } from '../../common/enums';
-import { CommentEntity } from '../../app/models/comment.model';
-import { PublicMessage } from '../../common/enums/message.enum';
-import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util';
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common'
+import { REQUEST } from '@nestjs/core'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Request } from 'express'
+import { IsNull, Repository } from 'typeorm'
+
+import { UserEntity } from '../../app/models'
+import { CommentEntity } from '../../app/models/comment.model'
+import { PaginationConfig, paginationGenerator } from '../../app/utils/pagination.util'
+import { PaginationDto } from '../../common/dtos'
+import { NotFoundMessages } from '../../common/enums'
+import { PublicMessage } from '../../common/enums/message.enum'
+import { BlogService } from '../blog/blog.service'
+import { CreateCommentDto } from './dto/comment.dto'
 
 @Injectable({ scope:Scope.REQUEST })
 export class CommentService
@@ -24,20 +25,21 @@ export class CommentService
 
     async CreateComment(commentData:CreateCommentDto)
     {
-        const user = this.request.user as UserEntity;
-        const { blogId, parentId, text } = commentData;
-        let parentComment: CommentEntity | null = null;
+        const user = this.request.user as UserEntity
+        const { blogId, parentId, text } = commentData
+        // eslint-disable-next-line no-useless-assignment
+        let parentComment: CommentEntity | null = null
 
         // Check Blog
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const { status, blog } = await this.blogService.CheckExistBlogById(blogId);
+        const { status, blog } = await this.blogService.CheckExistBlogById(blogId)
 
-        if (!blog || status === false) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND);
+        if (!blog || status === false) throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND)
 
         if (parentId)
         {
-            parentComment = await this.commentRepository.findOne({ where: {  id:parentId  } });
-            if (!parentComment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
+            parentComment = await this.commentRepository.findOne({ where: {  id:parentId  } })
+            if (!parentComment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND)
         }
 
         const comment = await this.commentRepository.insert({
@@ -46,16 +48,16 @@ export class CommentService
             user:user,
             parent: { id:parentId },
 
-        });
+        })
 
-        return { message:PublicMessage.CreateSuccess };
+        return { message:PublicMessage.CreateSuccess }
     }
 
 
     // Admin
     async CommentList(pagintionData:PaginationDto)
     {
-        const { limit, page, skip } = PaginationConfig(pagintionData);
+        const { limit, page, skip } = PaginationConfig(pagintionData)
         const [ comments, count ] = await this.commentRepository.findAndCount({
             where:{},
             relations:{ blog: true, user: { profile:true } },
@@ -66,41 +68,41 @@ export class CommentService
             skip,
             take:limit,
             order:{ id:'DESC' },
-        });
+        })
 
 
         return {
             pagination : paginationGenerator(count, page, limit),
             comments:comments,
-        };
+        }
     }
 
     async AcceptComment(id:string)
     {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        const comment = await this.CheckExistCommentById(id);
-        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
-        if (comment.accepted === true) return { message: PublicMessage.Accept };
-        comment.accepted = true;
-        await this.commentRepository.save(comment);
-        return { message:PublicMessage.Accept };
+
+        const comment = await this.CheckExistCommentById(id)
+        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND)
+        if (comment.accepted === true) return { message: PublicMessage.Accept }
+        comment.accepted = true
+        await this.commentRepository.save(comment)
+        return { message:PublicMessage.Accept }
     }
 
     async RejectComment(id:string)
     {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        const comment = await this.CheckExistCommentById(id);
-        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
-        if (comment.accepted === false) return { message: PublicMessage.Reject };
-        comment.accepted = false;
-        await this.commentRepository.save(comment);
-        return { message:PublicMessage.Reject };
+
+        const comment = await this.CheckExistCommentById(id)
+        if (!comment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND)
+        if (comment.accepted === false) return { message: PublicMessage.Reject }
+        comment.accepted = false
+        await this.commentRepository.save(comment)
+        return { message:PublicMessage.Reject }
     }
 
 
     async FindCommentsOfBlug(blogId:string, paginationData:PaginationDto)
     {
-        const { limit, page, skip } = PaginationConfig(paginationData);
+        const { limit, page, skip } = PaginationConfig(paginationData)
         const [ comments, count ] = await this.commentRepository
             .createQueryBuilder('comments')
             .leftJoinAndSelect('comments.blog', 'blog')
@@ -139,20 +141,20 @@ export class CommentService
             .orderBy('comments.id', 'DESC')
             .skip(skip)
             .take(limit)
-            .getManyAndCount();
+            .getManyAndCount()
 
 
         return {
             pagination: paginationGenerator(count, page, limit),
             comments: comments,
-        };
+        }
     }
     // Common
 
     async CheckExistCommentById(id:string)
     {
-        const comment = await this.commentRepository.findOne({ where:{ id:id } });
+        const comment = await this.commentRepository.findOne({ where:{ id:id } })
         // return { status: !!comment, comment:comment };
-        return comment;
+        return comment
     }
 }

@@ -1,9 +1,9 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 
 export function typeOrmConfig(): TypeOrmModuleOptions
 {
     // variables...
-    const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT = 5432, DB_USERNAME } = process.env;
+    const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT = 5432, DB_USERNAME } = process.env
     // console.log({ DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME });
     return {
         type: 'postgres',
@@ -15,5 +15,5 @@ export function typeOrmConfig(): TypeOrmModuleOptions
         autoLoadEntities:false,
         entities: [ 'dist/**/**.model{.ts,.js}' ],
         synchronize:true,
-    };
+    }
 }

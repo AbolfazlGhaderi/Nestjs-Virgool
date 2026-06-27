@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
-import { CategoryEntity } from '../../app/models';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoryService } from './category.service';
-import { CategoryController } from './category.controller';
-import { AuthModule } from '../auth/auth.module';
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { CategoryEntity } from '../../app/models'
+import { AuthModule } from '../auth/auth.module'
+import { CategoryController } from './category.controller'
+import { CategoryService } from './category.service'
 
 @Module({
     imports : [ AuthModule, TypeOrmModule.forFeature([ CategoryEntity ]) ],

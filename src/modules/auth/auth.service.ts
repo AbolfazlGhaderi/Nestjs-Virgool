@@ -1,26 +1,26 @@
-/* eslint-disable import/no-unresolved */
-import { Request } from 'express';
-import { Repository } from 'typeorm';
-import { REQUEST } from '@nestjs/core';
-import { UserEntity } from '../../app/models';
-import { OtpService } from '../otp/otp.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { MailService } from '../mail/mail.service';
-import { TOtpToken } from '../token/types/token.type';
-import { TokenService } from '../token/token.service';
-import { LoginResponseType } from '../../common/types';
-import { GoogleUser } from './types/typesAndInterfaces';
-import { isEmail, isMobilePhone } from 'class-validator';
-import { OtpKey } from '../../common/enums/otp.keys.enum';
-import { UserService } from '../../modules/user/user.service';
-import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto';
-import { SmsService } from '../../common/services/sms.service';
-import { symmetricCryption } from '../../app/utils/encrypt.decrypt';
-import { UsernameValidator } from '../../app/utils/username.validator';
-import { GenerateOtpKey, GenerateOtpSubject } from '../../app/utils/functions.utils';
-import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common';
-import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, ServiceUnavailableMessage, TokenType } from '../../common/enums';
-import { CheckOtpMethods } from '../user/enums/enums';
+import { HttpException, HttpStatus, Inject, Injectable, Scope } from '@nestjs/common'
+import { REQUEST } from '@nestjs/core'
+import { InjectRepository } from '@nestjs/typeorm'
+import { isEmail, isMobilePhone } from 'class-validator'
+import { Request } from 'express'
+import { Repository } from 'typeorm'
+
+import { UserEntity } from '../../app/models'
+import { symmetricCryption } from '../../app/utils/encrypt.decrypt'
+import { GenerateOtpKey, GenerateOtpSubject } from '../../app/utils/functions.utils'
+import { UsernameValidator } from '../../app/utils/username.validator'
+import { AuthMessage, AuthMethods, AuthType, BadRequestMesage, CookieKeys, PublicMessage, ServiceUnavailableMessage, TokenType } from '../../common/enums'
+import { OtpKey } from '../../common/enums/otp.keys.enum'
+import { SmsService } from '../../common/services/sms.service'
+import { LoginResponseType } from '../../common/types'
+import { UserService } from '../../modules/user/user.service'
+import { MailService } from '../mail/mail.service'
+import { OtpService } from '../otp/otp.service'
+import { TokenService } from '../token/token.service'
+import { TOtpToken } from '../token/types/token.type'
+import { CheckOtpMethods } from '../user/enums/enums'
+import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto'
+import { GoogleUser } from './types/typesAndInterfaces'
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService
@@ -38,25 +38,25 @@ export class AuthService
 
     async UserExistenceS(authData: AuthDto)
     {
-        const { method, type, username } = authData;
+        const { method, type, username } = authData
 
-        const validUserName = UsernameValidator(username, method);
-        let result: LoginResponseType;
+        const validUserName = UsernameValidator(username, method)
+        let result: LoginResponseType
 
         switch (type)
         {
             // Login
             case AuthType.Login: {
-                result = await this.login(method, validUserName);
-                break;
+                result = await this.login(method, validUserName)
+                break
             }
             // Register
             case AuthType.Register: {
-                result = await this.register(method, validUserName);
-                break;
+                result = await this.register(method, validUserName)
+                break
             }
             default: {
-                throw new HttpException(BadRequestMesage.InValidData, HttpStatus.UNAUTHORIZED);
+                throw new HttpException(BadRequestMesage.InValidData, HttpStatus.UNAUTHORIZED)
             }
         }
 
@@ -64,165 +64,165 @@ export class AuthService
         return {
             token: result.token,
             message: PublicMessage.SendOtpSuccess,
-        };
+        }
     }
 
     // Login
     async login(method: AuthMethods, username: string)
     {
         // check Exist User
-        const user: UserEntity = await this.checkExistUser(method, username);
-        if (!user) throw new HttpException(AuthMessage.NotFoundAccount, HttpStatus.NOT_FOUND);
+        const user: UserEntity = await this.checkExistUser(method, username)
+        if (!user) throw new HttpException(AuthMessage.NotFoundAccount, HttpStatus.NOT_FOUND)
 
-        let otp: number;
+        let otp: number
 
-        const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+        const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV)
 
-        otp = this.otpService.generateOtp();
+        otp = this.otpService.generateOtp()
 
         // send otp
         if (method === AuthMethods.Email)
         {
-            await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
+            await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
         }
         else if (method === AuthMethods.Phone)
         {
-            await this.smsService.sendOtpCode(username, otp.toString());
+            await this.smsService.sendOtpCode(username, otp.toString())
         }
         else
         {
-            if (user.phone) await this.smsService.sendOtpCode(user.phone, otp.toString());
-            else if (user.email)  await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
-            else throw new HttpException(BadRequestMesage.InValidData, HttpStatus.BAD_REQUEST);
+            if (user.phone) await this.smsService.sendOtpCode(user.phone, otp.toString())
+            else if (user.email)  await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
+            else throw new HttpException(BadRequestMesage.InValidData, HttpStatus.BAD_REQUEST)
         }
 
         // save otp
-        otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
+        otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp)
 
         // Generate Token
         const token = this.tokenService.createOtpToken({
             sub: userNameEncrypted,
-        });
+        })
 
         return {
             token: token,
             code: otp.toString(),
-        };
+        }
     }
 
     // Register
     async register(method: AuthMethods, username: string)
     {
-        if (method === AuthMethods.Username) throw new HttpException(BadRequestMesage.RegisterMethodIncorrect, HttpStatus.BAD_REQUEST);
+        if (method === AuthMethods.Username) throw new HttpException(BadRequestMesage.RegisterMethodIncorrect, HttpStatus.BAD_REQUEST)
 
-        const user: UserEntity = await this.checkExistUser(method, username);
-        if (user) throw new HttpException(AuthMessage.AlreadyExistAccount, HttpStatus.CONFLICT);
+        const user: UserEntity = await this.checkExistUser(method, username)
+        if (user) throw new HttpException(AuthMessage.AlreadyExistAccount, HttpStatus.CONFLICT)
 
 
         // encrypt username{phone/email} - Optional !!!!!
-        const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+        const userNameEncrypted = symmetricCryption.encryption(username, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV)
 
-        let otp: number;
-        let token: TOtpToken;
+        let otp: number
+        let token: TOtpToken
         if (method === AuthMethods.Email)
         {
-            otp = this.otpService.generateOtp();
+            otp = this.otpService.generateOtp()
 
             // send otp
-            await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`);
+            await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
 
             // save otp
-            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
+            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp)
 
             // Generate Token
             token = this.tokenService.createOtpToken({
                 sub: userNameEncrypted,
-            });
+            })
         }
         else if (method === AuthMethods.Phone)
         // TODO: Check This section 
         {
-            otp = this.otpService.generateOtp();
+            otp = this.otpService.generateOtp()
 
             // send otp
-            await this.smsService.sendOtpCode(username, otp.toString());
+            await this.smsService.sendOtpCode(username, otp.toString())
 
             // save otp
-            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp);
+            otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp)
 
             // Generate Token
             token = this.tokenService.createOtpToken({
                 sub: userNameEncrypted,
-            });
+            })
         }
         else
         {
-            throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Please select a valid method', HttpStatus.BAD_REQUEST)
         }
         // ----------------------
 
         return {
             token: token,
             code: otp.toString(),
-        };
+        }
     }
 
     // Check Otp / Service
     async CheckOtpS(otpCode: string)
     {
         // get Token from Cookie
-        const token:string = this.request.cookies?.[CookieKeys.OTP];
-        if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.UNAUTHORIZED);
+        const token:string = this.request.cookies?.[CookieKeys.OTP]
+        if (!token) throw new HttpException(AuthMessage.ExpiredOtp, HttpStatus.UNAUTHORIZED)
 
         //  username decrypt
-        const payload = this.tokenService.verifyOtpToken(token, TokenType.Login);
-        const key = symmetricCryption.decrypted(payload.sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+        const payload = this.tokenService.verifyOtpToken(token, TokenType.Login)
+        const key = symmetricCryption.decrypted(payload.sub, process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV)
 
         // get code from Cach and check
-        const code = await this.otpService.GetOtp(GenerateOtpKey(CheckOtpMethods.Login, key), TokenType.Login);
+        const code = await this.otpService.GetOtp(GenerateOtpKey(CheckOtpMethods.Login, key), TokenType.Login)
 
-        if (otpCode !== code) throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.UNAUTHORIZED);
+        if (otpCode !== code) throw new HttpException(AuthMessage.OtpCodeIncorrect, HttpStatus.UNAUTHORIZED)
 
         // delete otp from cache
-        await this.otpService.deleteByKey(`${key}${OtpKey.Login}`);
+        await this.otpService.deleteByKey(`${key}${OtpKey.Login}`)
 
         //  find user
-        let user : UserEntity | null;
+        let user : UserEntity | null
         if (isMobilePhone(key, 'fa-IR'))
         {
-            user = await this.userRepository.findOne({ where: { phone: key } });
+            user = await this.userRepository.findOne({ where: { phone: key } })
             if (!user)
             {
                 user = this.userRepository.create({
                     username: `u_${key}`,
                     phone: key,
-                });
-                user = await this.userRepository.save(user);
+                })
+                user = await this.userRepository.save(user)
             }
 
 
         }
         else
         {
-            user = await this.userRepository.findOne({ where: { email: key } });
+            user = await this.userRepository.findOne({ where: { email: key } })
             if (!user)
             {
                 user = this.userRepository.create({
                     username: `U_${key}`,
                     email: key,
-                });
-                user = await this.userRepository.save(user);
+                })
+                user = await this.userRepository.save(user)
             }
         }
 
 
         // encrypt userID
-        const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+        const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV)
 
         // Create Access Tonken
         const tokens = this.tokenService.generateAccessAndRefreshToken({
             sub: sub,
-        });
+        })
 
         // return
         return {
@@ -230,51 +230,51 @@ export class AuthService
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             message: PublicMessage.LoginSucces,
-        };
+        }
     }
 
     // check Exist User
     async checkExistUser(method: string, username: string)
     {
-        let user;
+        let user
 
         switch (method)
         {
             case AuthMethods.Email: {
-                user = await this.userService.findUserByEmail(username);
-                break;
+                user = await this.userService.findUserByEmail(username)
+                break
             }
             case AuthMethods.Phone: {
-                user = await this.userService.findUserByPhone(username);
-                break;
+                user = await this.userService.findUserByPhone(username)
+                break
             }
             case AuthMethods.Username: {
-                user = await this.userService.findUserByUserName(username);
+                user = await this.userService.findUserByUserName(username)
 
-                break;
+                break
             }
             default: {
-                throw new HttpException(BadRequestMesage.InValidData, HttpStatus.BAD_REQUEST);
+                throw new HttpException(BadRequestMesage.InValidData, HttpStatus.BAD_REQUEST)
             }
         }
 
-        user = user as UserEntity;
-        return user;
+        user = user as UserEntity
+        return user
     }
 
     // Check Refresh Token
     CheckRefreahTokenS( tokenData : CheckRefreshTokenDto )
     {
-        return  this.tokenService.validateRefreshoken(tokenData.token);
+        return  this.tokenService.validateRefreshoken(tokenData.token)
     }
 
     // Google
     async GoogleRedirect(userData:GoogleUser)
     {
-        const { email, firstName, lastName, profileImage } = userData;
-        if (!email || !isEmail(email)) throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED);
+        const { email, firstName, lastName, profileImage } = userData
+        if (!email || !isEmail(email)) throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED)
 
-        let user = await this.userService.findUserByEmail(email);
+        let user = await this.userService.findUserByEmail(email)
 
         // Implements Register / Login
 
@@ -284,21 +284,21 @@ export class AuthService
             user = this.userRepository.create({
                 email: email,
                 username: firstName + ' ' + lastName,
-            });
+            })
 
-            user = await this.userRepository.save(user);
+            user = await this.userRepository.save(user)
 
             // Save Profile
-            if (userData.profileImage) await this.userService.CreateProfileFromGoogle(user, { image:userData.profileImage, name:user.username });
+            if (userData.profileImage) await this.userService.CreateProfileFromGoogle(user, { image:userData.profileImage, name:user.username })
         }
 
         // encrypt userID
-        const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV);
+        const sub = symmetricCryption.encryption(user.id.toString(), process.env.ENCRYPT_SECRET, process.env.ENCRYPT_IV)
 
         // Create Access Tonken
         const tokens = this.tokenService.generateAccessAndRefreshToken({
             sub: sub,
-        });
+        })
 
         // return
         return {
@@ -306,6 +306,6 @@ export class AuthService
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             message: PublicMessage.LoginSucces,
-        };
+        }
     }
 }

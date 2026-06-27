@@ -1,55 +1,56 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { BlogEntity } from './blog.model';
-import { ImageEntity } from './image.model';
-import { CommentEntity } from './comment.model';
-import { ProfileEntity } from './profile.model';
-import { BlogLikesEntity } from './blog.like.model';
-import { RoleKey } from '../../common/enums/role.enum';
-import { ModelEnum } from '../../common/enums/model.enum';
-import { BlogBookmarkEntity } from './blog.bookmark.model';
-import { FollowEntity } from './follow.model';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+
+import { ModelEnum } from '../../common/enums/model.enum'
+import { RoleKey } from '../../common/enums/role.enum'
+import { BlogBookmarkEntity } from './blog.bookmark.model'
+import { BlogLikesEntity } from './blog.like.model'
+import { BlogEntity } from './blog.model'
+import { CommentEntity } from './comment.model'
+import { FollowEntity } from './follow.model'
+import { ImageEntity } from './image.model'
+import { ProfileEntity } from './profile.model'
 
 @Entity({ name: ModelEnum.User })
 export class UserEntity
 {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id: string
     @Column({ nullable: false, unique: true })
-    username: string;
+    username: string
     @Column({ nullable: true, unique: true })
-    phone: string;
+    phone: string
     @Column({ nullable: true, unique: true })
-    email: string;
+    email: string
     @Column({ nullable: false, default: RoleKey.User })
-    role: string;
+    role: string
     @Column({ nullable: false, default: false })
-    verify_email: boolean;
+    verify_email: boolean
     @Column({ nullable: false, default: false })
-    verify_phone: boolean;
+    verify_phone: boolean
     @Column({ nullable: true, unique: false })
-    password: string;
+    password: string
     @CreateDateColumn()
-    create_at: Date;
+    create_at: Date
     @UpdateDateColumn()
-    update_at: Date;
+    update_at: Date
     @DeleteDateColumn({ nullable: true, default: null })
-    delete_at: Date;
+    delete_at: Date
 
     @OneToOne(() => ProfileEntity, (profile) => profile.user)
-    profile: ProfileEntity;
+    profile: ProfileEntity
     @OneToMany(() => BlogEntity, (blog) => blog.user)
-    blog: BlogEntity[];
+    blog: BlogEntity[]
     @OneToMany(() => BlogLikesEntity, (like) => like.user)
-    likes: BlogLikesEntity[];
+    likes: BlogLikesEntity[]
     @OneToMany(() => BlogBookmarkEntity, (bookmark) => bookmark.user)
-    bookmarks: BlogBookmarkEntity[];
+    bookmarks: BlogBookmarkEntity[]
     @OneToMany(() => CommentEntity, (comment) => comment.user)
-    comments: CommentEntity[];
+    comments: CommentEntity[]
     @OneToMany(() => ImageEntity, (image) => image.user)
-    image: ImageEntity[];
+    image: ImageEntity[]
     @OneToMany(() => FollowEntity, (follow) => follow.follower)
-    following: FollowEntity[];
+    following: FollowEntity[]
     @OneToMany(() => FollowEntity, (follow) => follow.followed)
-    followers: FollowEntity[];
+    followers: FollowEntity[]
 
 }

@@ -1,3 +1,3 @@
 
 
-export { GenderEnum } from './gender.enum';
+export { GenderEnum } from './gender.enum'

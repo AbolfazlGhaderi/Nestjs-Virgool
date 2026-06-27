@@ -1,23 +1,25 @@
-import { extname } from 'node:path';
-import { randomBytes } from 'node:crypto';
-import { OtpKey } from '../../common/enums/otp.keys.enum';
-import { CheckOtpMethods } from '../../modules/user/enums/enums';
+import { randomBytes } from 'node:crypto'
+import { extname } from 'node:path'
+
+import { OtpKey } from '../../common/enums/otp.keys.enum'
+import { CheckOtpMethods } from '../../modules/user/enums/enums'
 
 export const createSlug = (string: string) =>
 {
-    return string.replaceAll(/[!"#$%&'()*+.:;<>?@^_`~«»،ءًٌٍُِ-]+/g, '')?.replace(/\s+/g, '-');
-};
+    // eslint-disable-next-line no-misleading-character-class
+    return string.replaceAll(/[!"#$%&'()*+.:;<>?@^_`~«»،ءًٌٍُِ-]+/g, '')?.replace(/\s+/g, '-')
+}
 
 export function GenerateRandomByte(size: number)
 {
-    return randomBytes(size).toString('hex');
+    return randomBytes(size).toString('hex')
 }
 
 export function GenerateImageName(origialName: string, section:string)
 {
-    const name = origialName.split(extname(origialName))[0];
-    const time = Date.now();
-    return `${name}_${section}_${GenerateRandomByte(6)}_${time}${extname(origialName)}`;
+    const name = origialName.split(extname(origialName))[0]
+    const time = Date.now()
+    return `${name}_${section}_${GenerateRandomByte(6)}_${time}${extname(origialName)}`
 }
 
 export function GenerateOtpKey(method: CheckOtpMethods, text: string)
@@ -25,16 +27,16 @@ export function GenerateOtpKey(method: CheckOtpMethods, text: string)
     switch (method)
     {
         case CheckOtpMethods.Add: {
-            return `${text}${OtpKey.Add}`;
+            return `${text}${OtpKey.Add}`
         }
         case CheckOtpMethods.Change: {
-            return `${text}${OtpKey.Change}`;
+            return `${text}${OtpKey.Change}`
         }
         case CheckOtpMethods.Login: {
-            return `${text}${OtpKey.Login}`;
+            return `${text}${OtpKey.Login}`
         }
         default: {
-            return `${text}${OtpKey.Verify}`;
+            return `${text}${OtpKey.Verify}`
         }
     }
 
@@ -44,16 +46,16 @@ export function GenerateOtpSubject(otpKey:OtpKey)
     switch (otpKey)
     {
         case OtpKey.Add: {
-            return 'Add';
+            return 'Add'
         }
         case OtpKey.Change: {
-            return 'Change';
+            return 'Change'
         }
         case OtpKey.Verify: {
-            return 'Verify';
+            return 'Verify'
         }
         default: {
-            return 'Login';
+            return 'Login'
         }
     }
 

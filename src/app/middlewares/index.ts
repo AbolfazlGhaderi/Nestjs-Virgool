@@ -1,2 +1,2 @@
-export { LoggerMiddleware } from './logger.middleware';
-export { AddUserToReqWOV } from './addUserToReqWOV';
+export { AddUserToReqWOV } from './addUserToReqWOV'
+export { LoggerMiddleware } from './logger.middleware'

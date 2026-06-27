@@ -25,7 +25,6 @@
     "strictPropertyInitialization": false, // initial property
     "strict": true,
     "skipLibCheck": true,
-    "types": ["node"],
 
     "paths": {
       "@/*": ["./src/*"]

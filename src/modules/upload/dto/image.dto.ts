@@ -1,11 +1,11 @@
-import { IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsOptional } from 'class-validator'
 
 export class ImageDTO
 {
    @ApiProperty({ nullable:true, required:false })
    @IsOptional()
-   alt:string;
+   alt:string
    @ApiProperty({ format: 'binary', required:true })
-   image: string;
+   image: string
 }

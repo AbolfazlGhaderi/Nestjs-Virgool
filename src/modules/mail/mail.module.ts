@@ -1,6 +1,7 @@
-import { Global, Inject, Module } from '@nestjs/common';
-import { MailService } from './mail.service';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { Global, Inject, Module } from '@nestjs/common'
+import { MailerModule } from '@nestjs-modules/mailer'
+
+import { MailService } from './mail.service'
 
 @Global()
 @Module({

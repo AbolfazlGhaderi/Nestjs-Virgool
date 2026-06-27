@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumberString, IsOptional, IsString, Length } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, Length } from 'class-validator'
 
 export class CreateBlogDto
 {
@@ -7,34 +7,34 @@ export class CreateBlogDto
     @IsNotEmpty()
     @IsString()
     @Length(10, 100)
-    title: string;
+    title: string
     @ApiProperty({ isArray: true, type: String })
     @IsNotEmpty()
-    categories: string | string[]; // TODO: should be array
+    categories: string | string[] // TODO: should be array
     @ApiPropertyOptional()
     @IsOptional()
     // @IsString()
-    slug: string;
+    slug: string
     @ApiProperty()
     @IsNotEmpty()
     // @IsString()
     @IsNumberString()
-    time_for_study: string;
+    time_for_study: string
     @ApiProperty()
     @IsNotEmpty()
     // @IsString()
     @Length(10, 300)
-    description: string;
+    description: string
     @ApiProperty()
     @IsNotEmpty()
     // @IsString()
     @Length(100)
-    content: string;
+    content: string
     @ApiPropertyOptional()
     @IsOptional()
     @IsNotEmpty()
     @IsString()
-    image: string;
+    image: string
 }
 
 
@@ -44,8 +44,8 @@ export class FilterBlogDto
 {
     @ApiPropertyOptional()
     @IsOptional()
-    category: string;
+    category: string
     @ApiPropertyOptional()
     @IsOptional()
-    search: string;
+    search: string
 }

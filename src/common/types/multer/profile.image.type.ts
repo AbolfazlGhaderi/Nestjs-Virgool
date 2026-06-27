@@ -1,4 +1,4 @@
-import { MulterFile } from '../../../app/utils/multer.util';
+import { MulterFile } from '../../../app/utils/multer.util'
 
 
 export type ProfileImage = {
