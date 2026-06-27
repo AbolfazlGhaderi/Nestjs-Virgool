@@ -26,7 +26,7 @@ export class CommentService
     {
         const user = this.request.user as UserEntity;
         const { blogId, parentId, text } = commentData;
-        let parentComment = null;
+        let parentComment: CommentEntity | null = null;
 
         // Check Blog
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,7 +37,6 @@ export class CommentService
         if (parentId)
         {
             parentComment = await this.commentRepository.findOne({ where: {  id:parentId  } });
-            console.log(parentComment);
             if (!parentComment) throw new HttpException(NotFoundMessages.CommentNotFound, HttpStatus.NOT_FOUND);
         }
 

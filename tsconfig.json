@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": false,
     "removeComments": true,
 
-    "strictPropertyInitialization": true, // initial property
+    "strictPropertyInitialization": false, // initial property
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"],

@@ -36,9 +36,10 @@ export class SmsService
             if (data?.status !== 1) throw new HttpException(ServiceUnavailableMessage.SmsServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
             return data;
         }
-        catch (error)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        catch (error: any)
         {
-            console.log(error.response.data);
+            console.log(error?.response?.data);
             throw new HttpException(ServiceUnavailableMessage.SmsServiceUnavailable, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }

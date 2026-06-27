@@ -140,7 +140,7 @@ export class AuthService
             });
         }
         else if (method === AuthMethods.Phone)
-        // TODO: Check This secction 
+        // TODO: Check This section 
         {
             otp = this.otpService.generateOtp();
 

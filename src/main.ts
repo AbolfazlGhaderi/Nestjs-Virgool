@@ -1,7 +1,7 @@
 import { AppModule } from './app.module';
 import { SwaggerConfig } from './configs';
 import { NestFactory } from '@nestjs/core';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { HttpExceptionFilter } from './app/exceptionFilters/http.exceptionFilter';

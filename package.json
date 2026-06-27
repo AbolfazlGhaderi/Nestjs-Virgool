@@ -41,6 +41,7 @@
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
+    "express": "^5.2.1",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
