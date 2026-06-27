@@ -268,6 +268,14 @@ export class AuthService
         return  this.tokenService.validateRefreshoken(tokenData.token)
     }
 
+    // Logout
+    logout()
+    {
+        return {
+            message: PublicMessage.LoginSucces,
+        }
+    }
+
     // Google
     async GoogleRedirect(userData:GoogleUser)
     {

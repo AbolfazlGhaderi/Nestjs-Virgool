@@ -77,4 +77,13 @@ export class AuthController
        })
        return result
    }
+
+   @Post('logout')
+   @HttpCode(HttpStatus.OK)
+   logout(@Res({ passthrough: true }) response: Response)
+   {
+       response.clearCookie(CookieKeys.AccessToken)
+       response.clearCookie(CookieKeys.RefreshToken)
+       return this.authService.logout()
+   }
 }
