@@ -3,7 +3,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiResponseProperty, A
 import { Request, Response } from 'express'
 
 import { AuthDecorator } from '../../common/decorators/auth.decorator'
-import { PublicMessage, SwaggerConsumes } from '../../common/enums'
+import { CookieKeys, PublicMessage, SwaggerConsumes } from '../../common/enums'
 import { AuthService } from './auth.service'
 import { AuthDto, CheckRefreshTokenDto } from './dto/auth.dto'
 import { CheckOtpDto } from './dto/otp.dto'
@@ -19,15 +19,35 @@ export class AuthController
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
     async UserExistenceC(@Body() auhtDto: AuthDto, @Res({ passthrough: true }) response: Response)
     {
-        return await this.authService.UserExistenceS(auhtDto)
+        const result = await this.authService.UserExistenceS(auhtDto)
+        response.cookie(CookieKeys.OTP, result.token.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 2 * 60 * 1000, // 2 minutes
+        })
+        return result
     }
 
    @Post('check-otp')
    @HttpCode(HttpStatus.OK)
    @ApiConsumes(SwaggerConsumes.UrlEncoded, SwaggerConsumes.Json)
-   async CheckOtpC(@Body() checkOtpDto: CheckOtpDto) // @Res({ passthrough: true }) response: Response
+   async CheckOtpC(@Body() checkOtpDto: CheckOtpDto, @Res({ passthrough: true }) response: Response)
    {
-       return await this.authService.CheckOtpS(checkOtpDto.code)
+       const result = await this.authService.CheckOtpS(checkOtpDto.code)
+       response.cookie(CookieKeys.AccessToken, result.accessToken.token, {
+           httpOnly: true,
+           secure: process.env.NODE_ENV === 'production',
+           sameSite: 'strict',
+           maxAge: 60 * 60 * 1000, // 1 hour
+       })
+       response.cookie(CookieKeys.RefreshToken, result.refreshToken.token, {
+           httpOnly: true,
+           secure: process.env.NODE_ENV === 'production',
+           sameSite: 'strict',
+           maxAge: 60 * 60 * 24 * 3 * 1000, // 3 days
+       })
+       return result
    }
 
    @Get('whoami')

@@ -30,8 +30,9 @@ export class OtpService
         return
     }
 
-    async SaveLoginOTP(key: string, code: number)
+    async SaveLoginOTP(key: string, code: number, ttl?: number)
     {
+        ttl = ttl ?? 2 * 60 * 1000 // 2 minutes in milliseconds
         // Generate Code
 
         console.log(key + '  ' + code)
@@ -43,7 +44,7 @@ export class OtpService
         }
 
         // Save Code To Cache
-        await this.cacheManager.set(key, code)
+        await this.cacheManager.set(key, code, ttl)
 
         return code
     }
