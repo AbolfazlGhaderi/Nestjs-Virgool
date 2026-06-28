@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumberString, IsOptional, IsString, Length } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsNumberString, IsOptional, IsString, Length } from 'class-validator'
+
+import { BlogStatus } from '../../../common/enums/blog/status.enum'
 
 export class CreateBlogDto
 {
@@ -38,7 +40,13 @@ export class CreateBlogDto
 }
 
 
-export class UpdateBlogDto extends PartialType(CreateBlogDto) {}
+export class UpdateBlogDto extends PartialType(CreateBlogDto)
+{
+    @ApiPropertyOptional({ enum: BlogStatus })
+    @IsOptional()
+    @IsEnum(BlogStatus)
+    status: BlogStatus
+}
 
 export class FilterBlogDto
 {

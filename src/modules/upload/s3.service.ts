@@ -24,10 +24,13 @@ export class S3Service
            Body: file.buffer,
            Bucket: process.env.LIARA_BUCKET_OBJS_NAME,
            Key: file.originalname,
+           ACL: 'public-read',
        }
 
        try
        {
+           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+           // @ts-expect-error
            return await this.s3.send(new PutObjectCommand(Param))
        }
        catch (error)

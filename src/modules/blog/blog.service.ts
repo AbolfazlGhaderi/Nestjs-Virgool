@@ -16,6 +16,12 @@ import { CategoryService } from '../category/category.service'
 import { CommentService } from '../comment/comment.service'
 import { CreateBlogDto, FilterBlogDto, UpdateBlogDto } from './dto/blog.dto'
 
+type BlogWithCounts = BlogEntity & {
+    commentsCount: number
+    likesCount: number
+    bookmarksCount: number
+}
+
 @Injectable({ scope: Scope.REQUEST })
 export class BlogService
 {
@@ -177,17 +183,26 @@ export class BlogService
         return { status: !!blog, blog:blog }
     }
 
-    async MyBlogs(): Promise<BlogEntity[]>
+    async MyBlogs(): Promise<BlogWithCounts[]>
     {
         const user = this.request.user as UserEntity
 
-        const blogs = await this.blogRepository.find({ where: { user: { id: user.id } }, order: { id: 'DESC' } })
+        const blogs = await this.blogRepository.find({
+            where: { user: { id: user.id } },
+            order: { id: 'DESC' },
+            relations: ['blog_categories', 'blog_categories.category', 'comments', 'likes', 'bookmarks'],
+        })
         if (blogs.length <= 0)
         {
             throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND)
         }
 
-        return blogs
+        return blogs.map(blog => ({
+            ...blog,
+            commentsCount: blog.comments?.length || 0,
+            likesCount: blog.likes?.length || 0,
+            bookmarksCount: blog.bookmarks?.length || 0,
+        }))
     }
 
     async DeleteBlog(id :string)
@@ -224,6 +239,13 @@ export class BlogService
         {
             throw new HttpException(NotFoundMessages.BlogNotFound, HttpStatus.NOT_FOUND)
         }
+
+        // Check if blog is rejected and status is being changed
+        if (blog.status === BlogStatus.Rejected && blogData.status && blogData.status !== blog.status)
+        {
+            throw new HttpException('Cannot change status of a rejected blog', HttpStatus.BAD_REQUEST)
+        }
+
         const { title, slug, content, description, time_for_study: time, image } = blogData
         let { categories } = blogData
 
@@ -267,6 +289,7 @@ export class BlogService
         blog.content = content || blog.content
         blog.time_for_study = time || blog.time_for_study
         blog.image = image || blog.image
+        if (blogData.status) blog.status = blogData.status
 
         await this.blogRepository.save(blog)
 
