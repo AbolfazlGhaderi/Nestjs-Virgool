@@ -1,4 +1,5 @@
 allowBuilds:
   '@nestjs/core': true
+  '@openrouter/sdk': true
   '@scarf/scarf': true
   '@swc/core': true

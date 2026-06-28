@@ -2,8 +2,10 @@ import { MiddlewareConsumer, Module, NestModule, Type } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
+import { AiModule } from './ai/ai.module'
 import { LoggerMiddleware } from './app/middlewares'
 import { typeOrmConfig } from './configs'
+import { ArticlesModule } from './modules/articles/articles.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { BlogModule } from './modules/blog/blog.module'
 import { CategoryModule } from './modules/category/category.module'
@@ -21,6 +23,7 @@ import { UserModule } from './modules/user/user.module'
             envFilePath: (process.cwd(), '.env'),
         }),
         TypeOrmModule.forRoot(typeOrmConfig()),
+        AiModule,
         AuthModule,
         UserModule,
         OtpModule,
@@ -30,6 +33,7 @@ import { UserModule } from './modules/user/user.module'
         UploadeModule,
         CommentModule,
         MailModule,
+        ArticlesModule,
     ],
     controllers: [],
     providers: [ AuthModule ],
