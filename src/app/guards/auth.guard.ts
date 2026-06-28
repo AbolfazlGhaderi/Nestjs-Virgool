@@ -32,8 +32,8 @@ export class AuthGuard implements CanActivate
     // Extract Token from Request
     protected extractToken(request: Request)
     {
-        const authorization : string | undefined = request.headers.authorization ?? request.cookies?.[CookieKeys.AccessToken]
-
+        let authorization: string | undefined = request.headers.authorization ?? request.cookies?.[CookieKeys.AccessToken]
+        authorization = authorization && authorization.includes('Bearer ') ? authorization.split(' ')[1] : authorization
         if (!authorization || authorization?.trim() === '' || !isJWT(authorization))
         {
             throw new HttpException(AuthMessage.LoginAgain, HttpStatus.UNAUTHORIZED)

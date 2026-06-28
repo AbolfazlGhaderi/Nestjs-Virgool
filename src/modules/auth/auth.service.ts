@@ -83,7 +83,7 @@ export class AuthService
         // send otp
         if (method === AuthMethods.Email)
         {
-            await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
+            // await this.mailService.SendEmail('', user.email, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
         }
         else if (method === AuthMethods.Phone)
         {
@@ -129,7 +129,7 @@ export class AuthService
             otp = this.otpService.generateOtp()
 
             // send otp
-            await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
+            // await this.mailService.SendEmail('', username, GenerateOtpSubject(OtpKey.Login), `Login => Code : ${otp} `, `<h1>Login => Code : ${otp} </h1>`)
 
             // save otp
             otp = await this.otpService.SaveLoginOTP(GenerateOtpKey(CheckOtpMethods.Login, username), otp)
