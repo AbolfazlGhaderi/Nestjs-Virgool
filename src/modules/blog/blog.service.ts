@@ -44,7 +44,7 @@ export class BlogService
         let { categories } = blogData
 
         // Ckeck Slug
-        let slugData = slug ?? title
+        let slugData = slug || title
         slugData = createSlug(slugData)
         const hasBlog = await this.CheckExistBlogBySlug(slugData)
         if (hasBlog)
@@ -189,7 +189,7 @@ export class BlogService
 
         const blogs = await this.blogRepository.find({
             where: { user: { id: user.id } },
-            order: { id: 'DESC' },
+            order: { create_at: 'DESC' },
             relations: ['blog_categories', 'blog_categories.category', 'comments', 'likes', 'bookmarks'],
         })
         if (blogs.length <= 0)
@@ -280,7 +280,11 @@ export class BlogService
             await this.blogCategoryRepository.insert({ blog: { id: blog.id }, category: { id: _category.id } })
         }
 
-        let slugData = slug || title
+        let slugData = slug
+        if (!slugData)
+        {
+            slugData = title || blog.title
+        }
         if (slugData) slugData = createSlug(slugData)
 
         blog.title = title || blog.title
